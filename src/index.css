@@ -243,6 +243,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .physics-heading { margin-bottom: 28px; }
 .physics-heading p { margin-top: 15px; color: var(--muted); font-size: 12px; }
 .physics-hint { margin-bottom: 8px; color: var(--quiet); font-size: 8px; }
+.physics-field-viewport { border-radius: var(--radius-card); }
 .physics-field { position: relative; height: var(--physics-field-height, clamp(380px, 48vw, 575px)); overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: var(--radius-card); background: radial-gradient(ellipse at 55% 55%, rgb(var(--accent-rgb) / .08), transparent 52%), repeating-linear-gradient(0deg, transparent 0 46px, rgb(var(--paper-rgb) / .035) 47px), repeating-linear-gradient(90deg, transparent 0 46px, rgb(var(--paper-rgb) / .035) 47px), var(--surface-field); }
 .physics-field::before { position: absolute; inset: 0; content: ""; opacity: .24; background: radial-gradient(circle at center, transparent 25%, rgb(var(--shadow-rgb) / .28) 110%); pointer-events: none; }
 .physics-corner, .physics-floor { position: absolute; z-index: 3; color: var(--quiet); font-size: 8px; pointer-events: none; }
@@ -423,10 +424,12 @@ h1, h2, h3, h4, p { margin: 0; }
   .project-meta h3 { font-size: 16px; }
   .project-meta p { font-size: 10px; }
   .physics-hint { max-width: 100px; text-align: right; line-height: 1.7; }
-  .physics-field { height: var(--physics-field-height, 450px); }
-  .physics-item, .physics-item .tech-lamp { width: 74px; height: 89px; }
-  .physics-field .tech-lamp-logo { width: 34px; height: 34px; }
-  .physics-field .tech-lamp-logo > svg { width: 27px; height: 27px; }
+  .physics-field-viewport { height: clamp(540px, 72svh, 590px); overflow: hidden; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: 20px; }
+  .physics-field { height: var(--physics-field-height, 520px); border: 0; border-radius: 20px; }
+  .physics-item, .physics-item .tech-lamp { width: clamp(46px, 14.5vw, 52px); height: clamp(56px, 17.2vw, 62px); }
+  .physics-item .tech-lamp { touch-action: none; }
+  .physics-field .tech-lamp-logo { width: clamp(22px, 7vw, 25px); height: clamp(22px, 7vw, 25px); }
+  .physics-field .tech-lamp-logo > svg { width: clamp(17px, 5.5vw, 20px); height: clamp(17px, 5.5vw, 20px); }
   .physics-floor { max-width: 190px; line-height: 1.7; }
   .about-preview { grid-template-columns: 1fr; gap: 35px; }
   .about-art { width: min(78vw, 350px); }

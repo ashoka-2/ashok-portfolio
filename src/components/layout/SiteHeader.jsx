@@ -15,7 +15,7 @@ export default function SiteHeader() {
         {siteConfig.navLinks.map((item) => <NavLink key={item.href} to={item.href} end={item.href === '/'}>{item.label}</NavLink>)}
       </nav>
       <ThemeToggle />
-      <Button kind="link" to="/contact" className="nav-contact">Let’s talk <ArrowUpRight size={14} /></Button>
+      <Button kind="link" to="/contact" className="nav-contact">Let’s talk</Button>
       <button className="menu-toggle" type="button" onClick={() => setOpen(!open)} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>{open ? <X /> : <Menu />}</button>
     </div>
     {open && <nav className="mobile-nav" aria-label="Mobile navigation">

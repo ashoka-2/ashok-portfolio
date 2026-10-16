@@ -6,6 +6,8 @@ export default function PhysicsField({ items }) {
   const field = useRef(null)
   const bodies = useRef([])
   const engineRef = useRef(null)
+  const mouseConstraint = useRef(null)
+  const gesture = useRef(null)
   useEffect(() => {
     const node = field.current
     if (!node) return
@@ -16,10 +18,14 @@ export default function PhysicsField({ items }) {
     mouse.element.removeEventListener('mousewheel', mouse.mousewheel)
     mouse.element.removeEventListener('DOMMouseScroll', mouse.mousewheel)
     const drag = Matter.MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.18, damping: 0.1, render: { visible: false } } })
+    mouseConstraint.current = drag
     Matter.Composite.add(engine.world, drag)
     let walls = []
     const build = () => {
       const { width, height } = node.getBoundingClientRect()
+      const columns = Math.max(3, Math.floor(width / 94))
+      const neededHeight = Math.max(450, Math.ceil(els.length / columns) * 73 + 150)
+      if (Math.abs(height - neededHeight) > 1) node.style.setProperty('--physics-field-height', `${neededHeight}px`)
       walls.forEach((wall) => Matter.Composite.remove(engine.world, wall))
       walls = [
         Matter.Bodies.rectangle(width / 2, height + 45, width + 100, 90, { isStatic: true }),
@@ -57,9 +63,10 @@ export default function PhysicsField({ items }) {
     frame = requestAnimationFrame(tick)
     const resize = new ResizeObserver(build)
     resize.observe(node)
-    return () => { cancelAnimationFrame(frame); resize.disconnect(); Matter.Engine.clear(engine); Matter.Composite.clear(engine.world); bodies.current = [] }
+    return () => { cancelAnimationFrame(frame); resize.disconnect(); Matter.Engine.clear(engine); Matter.Composite.clear(engine.world); bodies.current = []; mouseConstraint.current = null }
   }, [items])
   const nudge = (event) => {
+    if (mouseConstraint.current?.constraint?.bodyB) return
     const bounds = field.current.getBoundingClientRect()
     const x = event.clientX - bounds.left
     const y = event.clientY - bounds.top
@@ -72,17 +79,24 @@ export default function PhysicsField({ items }) {
       }
     })
   }
-  const toss = (event, id) => {
-    const index = items.findIndex((item) => item.id === id)
-    const body = bodies.current[index]
-    if (!body) return
-    const bounds = field.current.getBoundingClientRect()
-    const dir = event.clientX < bounds.left + bounds.width / 2 ? 1 : -1
-    Matter.Body.applyForce(body, body.position, { x: dir * 0.018, y: -0.018 })
+  const startGesture = (event, tech) => {
+    gesture.current = { id: tech.id, x: event.clientX, y: event.clientY, moved: false }
   }
-  return <div className="physics-field" ref={field} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
+  const trackGesture = (event, tech) => {
+    const current = gesture.current
+    if (!current || current.id !== tech.id) return
+    if (Math.hypot(event.clientX - current.x, event.clientY - current.y) > 8) current.moved = true
+  }
+  const suppressDragClick = (event, tech) => {
+    if (gesture.current?.id === tech.id && gesture.current.moved) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    gesture.current = null
+  }
+  return <div className="physics-field" ref={field} style={{ '--physics-field-height': '650px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
     <span className="physics-corner">A TOOLBOX, IN MOTION</span>
-    {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => toss(event, tech.id)}><TechLamp tech={tech} compact /></span>)}
-    <span className="physics-floor">MOVE YOUR POINTER · TAP A TOKEN TO OPEN ITS PAGE</span>
+    {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} compact /></span>)}
+    <span className="physics-floor">DRAG TO DROP · CLICK TO OPEN</span>
   </div>
 }

@@ -1,6 +1,6 @@
-import { Icon } from '@iconify/react'
 import { Link } from 'react-router-dom'
 import lampSvg from './tech-emblem.svg?raw'
+import TechMark from './TechMark.jsx'
 
 function hueOf(hex) {
   const value = hex.replace('#', '')
@@ -12,12 +12,14 @@ function hueOf(hex) {
   return ((hue * 60) + 360) % 360
 }
 
-export default function TechLamp({ tech, compact = false }) {
+export default function TechLamp({ tech, compact = false, decorative = false }) {
   const color = tech.color || '#62A8E8'
   const hueRotation = hueOf(color) - 205
-  return <Link className={`tech-lamp${compact ? ' compact' : ''}`} style={{ '--lamp-color': color, '--lamp-hue': `${hueRotation}deg` }} to={`/tech/${tech.id}`} aria-label={`Learn more about ${tech.label}`} title={`${tech.label} — open details`}>
+  const Lamp = decorative ? 'span' : Link
+  const linkProps = decorative ? {} : { to: `/tech/${tech.id}`, 'aria-label': `Learn more about ${tech.label}`, title: `${tech.label} — open details` }
+  return <Lamp className={`tech-lamp${compact ? ' compact' : ''}`} style={{ '--lamp-color': color, '--lamp-hue': `${hueRotation}deg` }} {...linkProps}>
     <span className="tech-lamp-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: lampSvg }} />
-    <span className="tech-lamp-logo"><Icon icon={tech.icon} color={color} aria-hidden="true" /><span className="lamp-fallback" aria-hidden="true">{tech.short.slice(0, 2)}</span></span>
+    <span className="tech-lamp-logo"><TechMark tech={tech} /></span>
     {!compact && <span className="tech-lamp-label">{tech.short}</span>}
-  </Link>
+  </Lamp>
 }

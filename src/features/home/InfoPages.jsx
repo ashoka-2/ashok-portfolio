@@ -6,7 +6,7 @@ import { techStack } from '../../utils/tech.js'
 import TechLamp from '../../components/tech/TechLamp.jsx'
 
 export function AboutPage() {
-  return <div className="info-page section-wrap"><span className="section-kicker">A BIT ABOUT ME</span><div className="info-title"><h1>Still learning.<br /><em>Always building.</em></h1><img src="/images/ashok-character.png" alt="Illustrated portrait of Ashok Kumar" /></div><div className="info-columns"><p>{profile.statement}</p><div><h2>How I work</h2><p>{profile.philosophy}</p><h2>What I’m curious about</h2><ul>{profile.focusAreas.slice(0, 5).map((area) => <li key={area}>{area}</li>)}</ul><p>{profile.education.degree}<br />{profile.education.institution} · {profile.education.period}</p><Button to="/contact" kind="secondary">Get in touch <ArrowUpRight size={15} /></Button></div></div><div className="about-tech"><h2>A few tools I reach for</h2><div className="emblem-grid">{techStack.slice(0, 9).map((tech) => <TechLamp key={tech.id} tech={tech} />)}</div></div></div>
+  return <div className="info-page section-wrap"><span className="section-kicker">A BIT ABOUT ME</span><div className="info-title"><h1>Still learning.<br /><em>Always building.</em></h1><img src="/images/ashok-character.png" alt="Illustrated portrait of Ashok Kumar" /></div><div className="info-columns"><p>{profile.statement}</p><div><h2>How I work</h2><p>{profile.philosophy}</p><h2>What I’m curious about</h2><ul>{profile.focusAreas.slice(0, 5).map((area) => <li key={area}>{area}</li>)}</ul><p>{profile.education.degree}<br />{profile.education.institution} · {profile.education.period}</p><Button to="/contact" kind="secondary">Get in touch</Button></div></div><div className="about-tech"><h2>A few tools I reach for</h2><div className="emblem-grid">{techStack.slice(0, 9).map((tech) => <TechLamp key={tech.id} tech={tech} />)}</div></div></div>
 }
 
 export function ContactPage() {
@@ -14,5 +14,5 @@ export function ContactPage() {
 }
 
 export function NotFoundPage() {
-  return <div className="info-page not-found section-wrap"><span className="section-kicker">404 / NOT QUITE HERE</span><h1>Looks like<br /><em>we took a wrong turn.</em></h1><Button to="/" kind="secondary">Back to the homepage <ArrowUpRight size={15} /></Button></div>
+  return <div className="info-page not-found section-wrap"><span className="section-kicker">404 / NOT QUITE HERE</span><h1>Looks like<br /><em>we took a wrong turn.</em></h1><Button to="/" kind="secondary">Back to the homepage</Button></div>
 }

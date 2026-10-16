@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Lenis from 'lenis'
@@ -10,6 +10,8 @@ import SiteHeader from '../components/layout/SiteHeader.jsx'
 import SiteFooter from '../components/layout/SiteFooter.jsx'
 import Preloader from '../components/layout/Preloader.jsx'
 
+const AmbientLamps = lazy(() => import('../components/tech/AmbientLamps.jsx'))
+
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 export default function App() {
@@ -20,7 +22,7 @@ export default function App() {
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) return
-    const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.9 })
+    const lenis = new Lenis({ lerp: 0.13, wheelMultiplier: 1.25, touchMultiplier: 1.1 })
     lenis.on('scroll', ScrollTrigger.update)
     const ticker = (time) => lenis.raf(time * 1000)
     gsap.ticker.add(ticker)
@@ -45,6 +47,7 @@ export default function App() {
   }, [theme, dispatch])
   return <div ref={root} className="app-shell min-h-screen w-full">
     <Preloader />
+    <Suspense fallback={null}><AmbientLamps key={location.pathname} route={location.pathname} /></Suspense>
     <SiteHeader />
     <main><AppRoutes /></main>
     <SiteFooter />

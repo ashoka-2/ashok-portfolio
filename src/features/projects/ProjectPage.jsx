@@ -8,7 +8,7 @@ import Button from '../../components/buttons/Button.jsx'
 export default function ProjectPage() {
   const { slug } = useParams()
   const project = projects.find((item) => item.slug === slug)
-  if (!project) return <div className="info-page section-wrap"><span className="section-kicker">PROJECT NOT FOUND</span><h1>That one’s<br /><em>still a sketch.</em></h1><Button to="/projects" kind="secondary">Back to projects <ArrowUpRight size={15} /></Button></div>
+  if (!project) return <div className="info-page section-wrap"><span className="section-kicker">PROJECT NOT FOUND</span><h1>That one’s<br /><em>still a sketch.</em></h1><Button to="/projects" kind="secondary">Back to projects</Button></div>
   const stack = (project.stack || []).map((label) => techStack.find((item) => item.label.toLowerCase() === label.toLowerCase() || item.short.toLowerCase() === label.toLowerCase())).filter(Boolean)
   return <article className="project-detail section-wrap">
     <Link className="back-link" to="/projects"><ArrowLeft size={15} /> All projects</Link>

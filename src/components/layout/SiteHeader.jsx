@@ -10,18 +10,34 @@ import ThemeToggle from './ThemeToggle.jsx'
 export default function SiteHeader() {
   const header = useRef(null)
   const mobileNav = useRef(null)
+  const progress = useRef(null)
   const [open, setOpen] = useState(false)
-  const { contextSafe } = useGSAP(() => {
-    const motion = gsap.matchMedia()
-    motion.add('(prefers-reduced-motion: no-preference)', () => {
+  const { contextSafe } = useGSAP((_, contextSafe) => {
+    const playEntrance = contextSafe(() => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
       const entrance = gsap.timeline({ defaults: { ease: 'power3.out' } })
       entrance.fromTo('.nav-wrap', { y: -18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.65 })
         .fromTo('.nav-wrap .wordmark, .nav-wrap .desktop-nav a, .nav-wrap > .theme-toggle, .nav-wrap .nav-contact, .nav-wrap .menu-toggle',
           { y: -8, autoAlpha: 0 },
           { y: 0, autoAlpha: 1, duration: 0.42, stagger: 0.055, ease: 'power2.out' }, '-=0.28')
     })
+    const waitsForPreloader = !sessionStorage.getItem('portfolio-loaded')
+    if (waitsForPreloader) window.addEventListener('portfolio:ready', playEntrance, { once: true })
+    else playEntrance()
     gsap.set(mobileNav.current, { autoAlpha: 0, y: -10, pointerEvents: 'none' })
-    return () => motion.revert()
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.to(progress.current, {
+        scaleX: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: document.documentElement, start: 'top top', end: 'max', scrub: 0.25 },
+      })
+      gsap.to('.nav-wrap', {
+        height: 52,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: document.documentElement, start: 'top -56', toggleActions: 'play none none reverse' },
+      })
+    }
+    return () => window.removeEventListener('portfolio:ready', playEntrance)
   }, { scope: header })
   const animateMenu = contextSafe((show) => {
     const panel = mobileNav.current
@@ -45,6 +61,7 @@ export default function SiteHeader() {
   const close = () => { setOpen(false); animateMenu(false) }
   const toggleMenu = () => { const next = !open; setOpen(next); animateMenu(next) }
   return <header className="site-header" ref={header} onKeyDown={(event) => { if (event.key === 'Escape' && open) close() }}>
+    <div className="scroll-progress" ref={progress} aria-hidden="true" />
     <div className="nav-wrap">
       <Link className="wordmark" to="/" onClick={close}><span className="wordmark-mark">A<span>.</span></span><span>ASHOK<br /><small>DEVELOPER & DESIGNER</small></span></Link>
       <nav className="desktop-nav" aria-label="Main navigation">

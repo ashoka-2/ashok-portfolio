@@ -134,14 +134,19 @@ h1, h2, h3, h4, p { margin: 0; }
 :root[data-theme="light"] .theme-toggle-thumb { transform: translateX(15px); }
 .theme-toggle-label { font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: .08em; }
 .button-arrow { flex: 0 0 auto; }
-.site-header { position: absolute; z-index: 40; inset: 0 0 auto; padding: 19px var(--page) 0; }
+.site-header { position: fixed; z-index: 40; inset: 0 0 auto; padding: 19px var(--page) 0; pointer-events: none; }
+.scroll-progress { position: fixed; z-index: 80; inset: 0 auto auto 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); transform: scaleX(0); transform-origin: left center; pointer-events: none; }
 .nav-wrap { width: min(100%, var(--measure)); height: 58px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 0 15px 0 18px; border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); }
+.nav-wrap { pointer-events: auto; box-shadow: 0 8px 28px rgb(var(--shadow-rgb) / .06); transition: border-color .25s ease, box-shadow .25s ease; }
+.site-header:has(.nav-wrap:hover) .nav-wrap { border-color: var(--line-strong); box-shadow: 0 12px 36px rgb(var(--shadow-rgb) / .13); }
 .wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--paper); font-size: 12px; font-weight: 800; letter-spacing: .03em; line-height: 1.05; }
 .wordmark-mark { color: var(--accent); font-size: 27px; line-height: 1; letter-spacing: -.12em; }
 .wordmark-mark span { color: var(--paper); }
 .wordmark small { display: inline-block; margin-top: 4px; color: var(--quiet); font-family: "DM Mono", monospace; font-size: 7px; font-weight: 400; letter-spacing: .11em; }
 .desktop-nav { display: flex; align-items: center; gap: clamp(18px, 3vw, 43px); }
-.desktop-nav a { color: var(--muted); font-size: 12px; transition: color .2s ease; }
+.desktop-nav a { position: relative; padding-block: 8px; color: var(--muted); font-size: 12px; transition: color .2s ease; }
+.desktop-nav a::after { position: absolute; right: 0; bottom: 2px; left: 0; height: 1px; content: ""; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .28s var(--ease-soft); }
+.desktop-nav a:hover::after, .desktop-nav a.active::after { transform: scaleX(1); }
 .desktop-nav a:hover, .desktop-nav a.active { color: var(--accent-light); }
 .nav-contact { width: 154px; height: 58px; min-width: 154px; min-height: 58px; color: var(--accent-light); }
 .menu-toggle, .mobile-nav { display: none; }

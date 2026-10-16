@@ -9,7 +9,11 @@ export default function Preloader() {
   useEffect(() => {
     if (!visible || !ref.current) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const done = () => { sessionStorage.setItem('portfolio-loaded', 'yes'); setVisible(false) }
+    const done = () => {
+      sessionStorage.setItem('portfolio-loaded', 'yes')
+      setVisible(false)
+      window.dispatchEvent(new Event('portfolio:ready'))
+    }
     if (reduce) { done(); return }
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ onComplete: done })

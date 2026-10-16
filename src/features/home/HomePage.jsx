@@ -1,3 +1,6 @@
+import { useRef } from 'react'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 import { ArrowDown, ArrowUpRight, Code2, GitBranch, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Button from '../../components/buttons/Button.jsx'
@@ -8,10 +11,25 @@ import { projects } from '../../utils/projects.js'
 import { techStack } from '../../utils/tech.js'
 
 export default function HomePage() {
+  const hero = useRef(null)
   const featured = projects.slice(0, 3)
   const toolboxTech = techStack
+  useGSAP(() => {
+    const motion = gsap.matchMedia()
+    motion.add('(prefers-reduced-motion: no-preference)', () => {
+      const portrait = hero.current.querySelector('.portrait-image')
+      const note = hero.current.querySelector('.portrait-note')
+      const codeChip = hero.current.querySelector('.chip-code')
+      const sparkChip = hero.current.querySelector('.chip-spark')
+      gsap.to(portrait, { y: -17, duration: 3.5, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      gsap.to(note, { y: -10, rotation: 2, duration: 4.1, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      gsap.to(codeChip, { y: 11, duration: 3.2, delay: 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      gsap.to(sparkChip, { y: -12, duration: 3.8, delay: 0.2, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+    })
+    return () => motion.revert()
+  }, { scope: hero })
   return <>
-    <section className="hero page-gutter" id="top">
+    <section className="hero page-gutter" id="top" ref={hero}>
       <div className="hero-copy">
         <p className="hero-intro" data-reveal>Software developer <span>·</span> AI enthusiast <span>·</span> Kerala, India</p>
         <h1 data-reveal>I make digital<br />things <em>feel</em> different<span className="title-period">.</span></h1>

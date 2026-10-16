@@ -56,7 +56,7 @@ export default function AmbientLamps({ route }) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduceMotion) return
     gsap.utils.toArray('[data-ambient-lamp]', layer.current).forEach((lamp, index) => {
-      gsap.to(lamp, { y: index % 2 ? -9 : 9, rotation: index % 2 ? -2 : 2, duration: 6 + (index % 4), repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      gsap.to(lamp, { y: index % 2 ? -20 : 20, rotation: index % 2 ? -3 : 3, duration: 3.2 + (index % 4) * 0.45, delay: index * 0.12, repeat: -1, yoyo: true, ease: 'sine.inOut' })
     })
   }, { scope: layer, dependencies: [lamps], revertOnUpdate: true })
 

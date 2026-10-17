@@ -34,8 +34,34 @@ export default function HomePage() {
     return () => motion.revert()
   }, { scope: hero })
 
+  const handleHeroPointerMove = (e) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const rect = hero.current?.getBoundingClientRect()
+    if (!rect) return
+    const relX = (e.clientX - rect.left) / rect.width - 0.5
+    const relY = (e.clientY - rect.top) / rect.height - 0.5
+    
+    gsap.to('.portrait-image', { x: relX * 22, y: relY * 20, duration: 0.6, ease: 'power2.out', overwrite: 'auto' })
+    gsap.to('.portrait-glow', { x: relX * -36, y: relY * -32, duration: 0.8, ease: 'power2.out', overwrite: 'auto' })
+    gsap.to('.portrait-orbit.orbit-one', { x: relX * 16, y: relY * 16, rotation: -19 + relX * 8, duration: 0.7, ease: 'power2.out', overwrite: 'auto' })
+    gsap.to('.portrait-orbit.orbit-two', { x: relX * -18, y: relY * -18, rotation: 22 - relX * 6, duration: 0.7, ease: 'power2.out', overwrite: 'auto' })
+    gsap.to('.portrait-note', { x: relX * 38, y: relY * 34, duration: 0.5, ease: 'power2.out', overwrite: 'auto' })
+    gsap.to('.chip-code', { x: relX * 32, y: relY * 28, duration: 0.5, ease: 'power2.out', overwrite: 'auto' })
+    gsap.to('.chip-spark', { x: relX * 42, y: relY * 38, duration: 0.5, ease: 'power2.out', overwrite: 'auto' })
+  }
+
+  const handleHeroPointerLeave = () => {
+    gsap.to(['.portrait-image', '.portrait-glow', '.portrait-orbit', '.portrait-note', '.chip-code', '.chip-spark'], {
+      x: 0,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out',
+      overwrite: 'auto'
+    })
+  }
+
   return <>
-    <section className="hero page-gutter" id="top" ref={hero}>
+    <section className="hero page-gutter" id="top" ref={hero} onPointerMove={handleHeroPointerMove} onPointerLeave={handleHeroPointerLeave}>
       <div className="hero-scene" aria-hidden="true">
         <Suspense fallback={<div className="hero-fluid hero-fluid-static" />}>
           <HeroFluidCanvas />

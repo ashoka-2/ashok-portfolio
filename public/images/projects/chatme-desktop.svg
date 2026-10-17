@@ -1,11 +1,184 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%">
-  <rect width="1600" height="1000" fill="#060F12"/>
-  <rect x="40" y="30" width="1520" height="940" rx="24" fill="#0D191D" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
-  <text x="170" y="65" fill="#75A6B2" font-family="system-ui, sans-serif" font-size="14" font-weight="600">chatMe Real-Time WebSocket Messenger</text>
-  <rect x="80" y="120" width="340" height="800" rx="16" fill="#0A1417"/>
-  <rect x="440" y="120" width="1080" height="800" rx="16" fill="#0A1417"/>
-  <rect x="480" y="200" width="460" height="60" rx="18" fill="#14262C"/>
-  <text x="505" y="238" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="15">Hey! Is the new WebSocket pipeline live?</text>
-  <rect x="980" y="280" width="500" height="60" rx="18" fill="#06B6D4"/>
-  <text x="1005" y="318" fill="#060F12" font-family="system-ui, sans-serif" font-size="15" font-weight="600">Yes! Sub-15ms latency across all channels.</text>
+  <defs>
+    <linearGradient id="cm-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c0d12"/>
+      <stop offset="100%" stop-color="#07080a"/>
+    </linearGradient>
+    <linearGradient id="cm-card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#14151e"/>
+      <stop offset="100%" stop-color="#0e0f16"/>
+    </linearGradient>
+    <linearGradient id="cm-bubble" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3566ef"/>
+      <stop offset="100%" stop-color="#2448ba"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="1000" fill="url(#cm-bg)"/>
+
+  <!-- Leftmost Server Icons Column -->
+  <rect x="0" y="0" width="72" height="1000" fill="#090a0e" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <circle cx="36" cy="40" r="20" fill="#3566ef"/>
+  <text x="36" y="47" fill="#ffffff" font-family="system-ui, sans-serif" font-size="16" font-weight="800" text-anchor="middle">C</text>
+  <rect x="18" y="76" width="36" height="2" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="36" cy="110" r="18" fill="#1b1c26"/>
+  <text x="36" y="116" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">AI</text>
+  <circle cx="36" cy="160" r="18" fill="#1b1c26"/>
+  <text x="36" y="166" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">JS</text>
+  <circle cx="36" cy="210" r="18" fill="#1b1c26"/>
+  <text x="36" y="216" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">UX</text>
+
+  <!-- Channels & Chats Sidebar -->
+  <rect x="72" y="0" width="280" height="1000" fill="#0d0e14" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="96" y="42" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="16" font-weight="700">chatMe Studio</text>
+  <rect x="300" y="26" width="32" height="24" rx="6" fill="rgba(255,255,255,0.06)"/>
+  <text x="316" y="42" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13" text-anchor="middle">🔒</text>
+
+  <!-- Channel Category -->
+  <text x="96" y="90" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">TEXT CHANNELS</text>
+  <!-- Active Channel -->
+  <rect x="88" y="104" width="248" height="36" rx="8" fill="rgba(53,102,239,0.15)"/>
+  <text x="110" y="127" fill="#608dff" font-family="system-ui, sans-serif" font-size="13" font-weight="600"># general-chat</text>
+  <text x="110" y="163" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13"># ai-experiments</text>
+  <text x="110" y="199" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13"># code-reviews</text>
+  <text x="110" y="235" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="13"># architecture</text>
+
+  <!-- Voice Channels -->
+  <text x="96" y="290" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">VOICE &amp; VIDEO (WEBRTC)</text>
+  <rect x="88" y="306" width="248" height="88" rx="10" fill="#14151f" stroke="rgba(53,102,239,0.2)" stroke-width="1"/>
+  <text x="110" y="332" fill="#10b981" font-family="system-ui, sans-serif" font-size="13" font-weight="600">🔊 Dev Sync (Live)</text>
+  <text x="124" y="356" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="11">Ashok Kumar (Speaking...)</text>
+  <text x="124" y="376" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="11">Sarah L. · Alex T.</text>
+
+  <!-- Central Chat Feed -->
+  <g transform="translate(352, 0)">
+    <!-- Channel Header -->
+    <rect x="0" y="0" width="868" height="64" fill="#0f1118" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <text x="32" y="38" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="16" font-weight="700"># general-chat</text>
+    <text x="150" y="38" fill="#6e6e72" font-family="system-ui, sans-serif" font-size="12">| End-to-end encrypted room with instant WebSockets</text>
+    <rect x="740" y="18" width="100" height="28" rx="14" fill="rgba(16,185,129,0.12)"/>
+    <text x="790" y="36" fill="#10b981" font-family="'DM Mono', monospace" font-size="11" text-anchor="middle">ONLINE: 24</text>
+
+    <!-- Chat Messages -->
+    <!-- Message 1 -->
+    <g transform="translate(32, 100)">
+      <circle cx="20" cy="20" r="18" fill="#3566ef"/>
+      <text x="20" y="26" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">AK</text>
+      <text x="52" y="18" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Ashok Kumar</text>
+      <text x="156" y="18" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">10:42 AM</text>
+      <text x="52" y="44" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="14">Just deployed the new WebRTC audio bridge with noise cancellation! Check the audio fidelity in Dev Sync.</text>
+    </g>
+
+    <!-- Message 2 -->
+    <g transform="translate(32, 180)">
+      <circle cx="20" cy="20" r="18" fill="#ec4899"/>
+      <text x="20" y="26" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">SL</text>
+      <text x="52" y="18" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Sarah Lin</text>
+      <text x="126" y="18" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">10:43 AM</text>
+      <text x="52" y="44" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="14">Latency feels almost zero. Did you benchmark the socket payload?</text>
+    </g>
+
+    <!-- Message 3 (Code Snippet) -->
+    <g transform="translate(32, 260)">
+      <circle cx="20" cy="20" r="18" fill="#3566ef"/>
+      <text x="20" y="26" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">AK</text>
+      <text x="52" y="18" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Ashok Kumar</text>
+      <text x="156" y="18" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">10:44 AM</text>
+      <rect x="52" y="32" width="620" height="130" rx="12" fill="#0b0c10" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <text x="72" y="60" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">// WebRTC Audio Track Initialization</text>
+      <text x="72" y="84" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">const stream = await navigator.mediaDevices.getUserMedia({</text>
+      <text x="72" y="108" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">  audio: { echoCancellation: true, noiseSuppression: true }</text>
+      <text x="72" y="132" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">}); peerConnection.addTrack(stream.getAudioTracks()[0]);</text>
+    </g>
+
+    <!-- Message 4 (Voice note waveform) -->
+    <g transform="translate(32, 450)">
+      <circle cx="20" cy="20" r="18" fill="#10b981"/>
+      <text x="20" y="26" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">AT</text>
+      <text x="52" y="18" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="14" font-weight="600">Alex Turner</text>
+      <text x="146" y="18" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">10:46 AM</text>
+      <rect x="52" y="32" width="380" height="60" rx="14" fill="url(#cm-card)" stroke="rgba(53,102,239,0.3)" stroke-width="1"/>
+      <circle cx="82" cy="62" r="16" fill="#3566ef"/>
+      <polygon points="78,54 90,62 78,70" fill="#ffffff"/>
+      <!-- Waveform bars -->
+      <g fill="#608dff">
+        <rect x="114" y="56" width="4" height="12" rx="2"/>
+        <rect x="124" y="50" width="4" height="24" rx="2"/>
+        <rect x="134" y="44" width="4" height="36" rx="2"/>
+        <rect x="144" y="52" width="4" height="20" rx="2"/>
+        <rect x="154" y="46" width="4" height="32" rx="2"/>
+        <rect x="164" y="40" width="4" height="44" rx="2"/>
+        <rect x="174" y="50" width="4" height="24" rx="2"/>
+        <rect x="184" y="55" width="4" height="14" rx="2"/>
+        <rect x="194" y="48" width="4" height="28" rx="2"/>
+        <rect x="204" y="54" width="4" height="16" rx="2"/>
+        <rect x="214" y="42" width="4" height="40" rx="2"/>
+        <rect x="224" y="50" width="4" height="24" rx="2"/>
+        <rect x="234" y="58" width="4" height="8" rx="2"/>
+      </g>
+      <text x="260" y="66" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="11">0:38 / 1:12</text>
+    </g>
+
+    <!-- Typing Indicator -->
+    <g transform="translate(84, 860)">
+      <circle cx="8" cy="8" r="3" fill="#3566ef"/>
+      <circle cx="20" cy="8" r="3" fill="#3566ef"/>
+      <circle cx="32" cy="8" r="3" fill="#3566ef"/>
+      <text x="46" y="12" fill="#6e6e72" font-family="system-ui, sans-serif" font-size="12">Sarah is typing...</text>
+    </g>
+
+    <!-- Composer Bar -->
+    <g transform="translate(32, 900)">
+      <rect x="0" y="0" width="804" height="60" rx="30" fill="#141620" stroke="rgba(255,255,255,0.09)" stroke-width="1"/>
+      <circle cx="32" cy="30" r="16" fill="rgba(255,255,255,0.06)"/>
+      <text x="32" y="35" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="18" text-anchor="middle">+</text>
+      <text x="64" y="36" fill="#6e6e72" font-family="system-ui, sans-serif" font-size="14">Message #general-chat (End-to-End Encrypted)...</text>
+      <circle cx="770" cy="30" r="18" fill="#3566ef"/>
+      <polygon points="764,24 778,30 764,36" fill="#ffffff"/>
+    </g>
+  </g>
+
+  <!-- Right Sidebar: Active Voice & Peers -->
+  <g transform="translate(1220, 0)">
+    <rect x="0" y="0" width="380" height="1000" fill="#0d0f16" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <text x="24" y="42" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="15" font-weight="600">Active Audio Room</text>
+    
+    <!-- Audio Waveform Visualizer -->
+    <rect x="20" y="70" width="340" height="200" rx="16" fill="url(#cm-card)" stroke="rgba(53,102,239,0.25)" stroke-width="1"/>
+    <text x="40" y="100" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="13" font-weight="600">Dev Sync · WebRTC Opus</text>
+    <text x="40" y="120" fill="#10b981" font-family="'DM Mono', monospace" font-size="10">SPEAKER: Ashok Kumar (Stereo 48kHz)</text>
+    
+    <!-- Big Live Waveform -->
+    <g stroke="#3566ef" stroke-width="3" fill="none">
+      <path d="M 40 190 Q 70 140 100 180 T 160 130 T 220 210 T 280 150 T 340 190"/>
+      <path d="M 40 190 Q 80 170 120 190 T 200 160 T 260 190 T 340 190" stroke="#10b981" stroke-width="2"/>
+    </g>
+
+    <!-- Peers list -->
+    <text x="24" y="310" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">CONNECTED MEMBERS (3)</text>
+    <g transform="translate(20, 330)">
+      <rect x="0" y="0" width="340" height="52" rx="12" fill="#12141d"/>
+      <circle cx="28" cy="26" r="14" fill="#3566ef"/>
+      <text x="28" y="31" fill="#fff" font-family="system-ui, sans-serif" font-size="11" text-anchor="middle">AK</text>
+      <text x="56" y="26" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="13" font-weight="600">Ashok Kumar</text>
+      <text x="56" y="42" fill="#10b981" font-family="'DM Mono', monospace" font-size="10">Host · Unmuted</text>
+    </g>
+
+    <g transform="translate(20, 394)">
+      <rect x="0" y="0" width="340" height="52" rx="12" fill="#12141d"/>
+      <circle cx="28" cy="26" r="14" fill="#ec4899"/>
+      <text x="28" y="31" fill="#fff" font-family="system-ui, sans-serif" font-size="11" text-anchor="middle">SL</text>
+      <text x="56" y="26" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="13" font-weight="600">Sarah Lin</text>
+      <text x="56" y="42" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="10">Listening · Muted</text>
+    </g>
+
+    <g transform="translate(20, 458)">
+      <rect x="0" y="0" width="340" height="52" rx="12" fill="#12141d"/>
+      <circle cx="28" cy="26" r="14" fill="#10b981"/>
+      <text x="28" y="31" fill="#fff" font-family="system-ui, sans-serif" font-size="11" text-anchor="middle">AT</text>
+      <text x="56" y="26" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="13" font-weight="600">Alex Turner</text>
+      <text x="56" y="42" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="10">Listening · Muted</text>
+    </g>
+  </g>
 </svg>

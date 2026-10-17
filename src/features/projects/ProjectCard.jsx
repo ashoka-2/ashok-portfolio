@@ -45,6 +45,8 @@ export default function ProjectCard({ project, index = 0, stacked = false }) {
     // 3D subtle card tilt
     const tiltX = (normY - 0.5) * -7
     const tiltY = (normX - 0.5) * 7
+    cardEl.style.setProperty('--mouse-x', `${event.clientX - cardRect.left}px`)
+    cardEl.style.setProperty('--mouse-y', `${event.clientY - cardRect.top}px`)
     gsap.to(cardEl, {
       rotateX: tiltX,
       rotateY: tiltY,

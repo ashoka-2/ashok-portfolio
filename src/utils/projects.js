@@ -25,11 +25,11 @@ export const projects = [
       github: "https://github.com/ashoka-2/snap2bill",
       live: ""
     },
-    desktopImage: "/images/projects/snap2bill-desktop.svg",
+    desktopImage: "/images/projects/snap2bill-desktop.jpg",
     mobileImage: "/images/projects/snap2bill-mobile.svg",
     images: [
       {
-        url: "/images/projects/snap2bill-desktop.svg",
+        url: "/images/projects/snap2bill-desktop.jpg",
         title: "Snap2Bill Retail & Wholesale Dashboard",
         caption: "Inventory reconciliation, camera item recognition stream & automated GST billing engine",
         aspect: "desktop"
@@ -42,8 +42,8 @@ export const projects = [
       }
     ],
     cover: {
-      dark: "/images/projects/snap2bill-desktop.svg",
-      light: "/images/projects/snap2bill-desktop.svg"
+      dark: "/images/projects/snap2bill-desktop.jpg",
+      light: "/images/projects/snap2bill-desktop.jpg"
     },
     accent: "#10B981"
   },
@@ -73,11 +73,11 @@ export const projects = [
       github: "https://github.com/ashoka-2/FullStack",
       live: "https://parsuai.vercel.app/"
     },
-    desktopImage: "/images/projects/parsu-desktop.svg",
+    desktopImage: "/images/projects/parsu-desktop.jpg",
     mobileImage: "/images/projects/parsu-mobile.svg",
     images: [
       {
-        url: "/images/projects/parsu-desktop.svg",
+        url: "/images/projects/parsu-desktop.jpg",
         title: "Autonomous Agent Execution Environment",
         caption: "Unified LangChain pipeline with live Tavily web grounding and BYOK encryption",
         aspect: "desktop"
@@ -90,8 +90,8 @@ export const projects = [
       }
     ],
     cover: {
-      dark: "/images/projects/parsu-desktop.svg",
-      light: "/images/projects/parsu-desktop.svg"
+      dark: "/images/projects/parsu-desktop.jpg",
+      light: "/images/projects/parsu-desktop.jpg"
     },
     accent: "#20B8CD"
   },
@@ -121,11 +121,11 @@ export const projects = [
       github: "https://github.com/ashoka-2/Capstone",
       live: ""
     },
-    desktopImage: "/images/projects/codespace-desktop.svg",
+    desktopImage: "/images/projects/codespace-desktop.jpg",
     mobileImage: "/images/projects/codespace-mobile.svg",
     images: [
       {
-        url: "/images/projects/codespace-desktop.svg",
+        url: "/images/projects/codespace-desktop.jpg",
         title: "Cloud IDE & Microservices Terminal",
         caption: "Isolated container sandbox with WebSocket shell streaming and Monaco code editor",
         aspect: "desktop"
@@ -138,8 +138,8 @@ export const projects = [
       }
     ],
     cover: {
-      dark: "/images/projects/codespace-desktop.svg",
-      light: "/images/projects/codespace-desktop.svg"
+      dark: "/images/projects/codespace-desktop.jpg",
+      light: "/images/projects/codespace-desktop.jpg"
     },
     accent: "#8B5CF6"
   },

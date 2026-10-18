@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { X, Copy, Check, ArrowUpRight, Mail, MapPin } from 'lucide-react'
 import GithubIcon from '../icons/GithubIcon.jsx'
 import { profile } from '../../utils/profile.js'
+import { portfolioAssets } from '../../lib/assets.js'
 
 export default function ContactOverlay({ isOpen, onClose }) {
   const [copied, setCopied] = useState(false)
@@ -23,10 +24,22 @@ export default function ContactOverlay({ isOpen, onClose }) {
     }
   }, [isOpen, onClose])
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText(profile.contact.email)
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.contact.email)
+    } catch {
+      const field = document.createElement('textarea')
+      field.value = profile.contact.email
+      field.setAttribute('readonly', '')
+      field.style.position = 'fixed'
+      field.style.opacity = '0'
+      document.body.appendChild(field)
+      field.select()
+      document.execCommand('copy')
+      field.remove()
+    }
     setCopied(true)
-    setTimeout(() => setCopied(false), 2400)
+    window.setTimeout(() => setCopied(false), 2400)
   }
 
   return (
@@ -39,11 +52,12 @@ export default function ContactOverlay({ isOpen, onClose }) {
       aria-modal="true"
       aria-labelledby="contact-heading"
       aria-hidden={!isOpen}
+      inert={!isOpen}
     >
       <div ref={modalRef} className="contact-modal">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
-          <div>
+          <div className="contact-heading-copy">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-pink)] font-semibold">
               06 — INITIATE CONTACT
             </span>
@@ -51,6 +65,7 @@ export default function ContactOverlay({ isOpen, onClose }) {
               Want to start a new project?
             </h2>
           </div>
+          <img className="contact-avatar" src={portfolioAssets.portraits.avatar} alt="Portrait of Ashok Kumar" />
           <button
             onClick={onClose}
             className="w-10 h-10 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--accent-pink)] hover:border-[var(--accent-pink)] transition-colors"
@@ -89,7 +104,7 @@ export default function ContactOverlay({ isOpen, onClose }) {
             </button>
             <a
               href={`mailto:${profile.contact.email}?subject=Project%20Inquiry%20%E2%80%94%20Ashok%20Kumar`}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--accent-amber)] text-white text-xs font-mono font-semibold shadow-md hover:brightness-110 transition-transform active:scale-95"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--accent-amber)] text-[var(--base-bg)] text-xs font-mono font-semibold shadow-md hover:brightness-110 transition-transform active:scale-95"
             >
               <span>Mail</span>
               <ArrowUpRight size={14} />

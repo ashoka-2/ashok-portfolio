@@ -45,17 +45,17 @@ void main(){
   
   float field = smoothstep(0.32, 0.95, n1 * 0.45 + n2 * 0.35 + wave * 0.15 + halo + uScroll * 0.00004);
   
-  // 60 / 30 / 10 COLOR SYSTEM
-  vec3 ink = vec3(0.043, 0.043, 0.071);       // #0B0B12 (60% base)
-  vec3 violet = vec3(0.169, 0.106, 0.420);    // #2B1B6B (30% secondary mesh)
-  vec3 indigo = vec3(0.357, 0.239, 0.961);    // var(--secondary-mesh-2)
-  vec3 hotPink = vec3(1.0, 0.282, 0.643);     // var(--accent-pink) (10% accent)
-  vec3 amber = vec3(1.0, 0.541, 0.239);       // var(--accent-amber)
+  // Obsidian depth with ultraviolet, cyan, coral and chartreuse light.
+  vec3 ink = vec3(0.035, 0.039, 0.059);       // #090A0F
+  vec3 violet = vec3(0.482, 0.380, 1.000);    // #7B61FF
+  vec3 cyan = vec3(0.000, 0.941, 1.000);      // #00F0FF
+  vec3 coral = vec3(1.000, 0.302, 0.176);     // #FF4D2D
+  vec3 lime = vec3(0.831, 1.000, 0.000);      // #D4FF00
 
   vec3 color = mix(ink, violet, smoothstep(0.12, 0.62, field));
-  color = mix(color, indigo, smoothstep(0.48, 0.88, field));
-  color = mix(color, hotPink, smoothstep(0.80, 1.08, field) * 0.68);
-  color = mix(color, amber, smoothstep(0.92, 1.20, field + wave * 0.12) * 0.42);
+  color = mix(color, cyan, smoothstep(0.40, 0.77, field + wave * 0.08) * 0.72);
+  color = mix(color, coral, smoothstep(0.70, 0.97, field) * 0.7);
+  color = mix(color, lime, smoothstep(0.93, 1.12, field + wave * 0.12) * 0.58);
 
   // Vignette
   float vignette = 1.0 - smoothstep(0.18, 1.22, length((uv - 0.5) * vec2(0.92, 1.0)));

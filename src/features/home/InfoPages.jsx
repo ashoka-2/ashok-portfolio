@@ -6,10 +6,11 @@ import Button from '../../components/buttons/Button.jsx'
 import { profile } from '../../utils/profile.js'
 import { techStack } from '../../utils/tech.js'
 import LocalTime from '../../components/motion/LocalTime.jsx'
+import { portfolioAssets } from '../../lib/assets.js'
 
 export function AboutPage() {
   return (
-    <div className="page-container py-28 relative" data-page-content>
+    <div className="page-container py-28 relative about-page" data-page-content>
       <div className="mb-10">
         <Link
           to="/"
@@ -34,9 +35,9 @@ export function AboutPage() {
       {/* Two-column layout with photo & philosophy */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 items-start">
         <div className="lg:col-span-5">
-          <div className="rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/5] bg-[#13121F] relative">
+          <div className="rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/5] bg-[var(--surface-1)] relative">
             <img
-              src="/generated/me-studio-headshot.jpg"
+              src={portfolioAssets.portraits.about}
               alt="Ashok Kumar"
               className="w-full h-full object-cover"
             />
@@ -98,14 +99,26 @@ export function AboutPage() {
 export function ContactPage() {
   const [copied, setCopied] = useState(false)
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText(profile.contact.email)
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.contact.email)
+    } catch {
+      const field = document.createElement('textarea')
+      field.value = profile.contact.email
+      field.setAttribute('readonly', '')
+      field.style.position = 'fixed'
+      field.style.opacity = '0'
+      document.body.appendChild(field)
+      field.select()
+      document.execCommand('copy')
+      field.remove()
+    }
     setCopied(true)
-    setTimeout(() => setCopied(false), 2400)
+    window.setTimeout(() => setCopied(false), 2400)
   }
 
   return (
-    <div className="page-container py-28 relative" data-page-content>
+    <div className="page-container py-28 relative contact-page" data-page-content>
       <div className="mb-10">
         <Link
           to="/"
@@ -149,7 +162,7 @@ export function ContactPage() {
         <div className="space-y-4">
           <a
             href={`mailto:${profile.contact.email}?subject=Project%20Inquiry%20%E2%80%94%20Ashok%20Kumar`}
-            className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-[var(--accent-pink)] via-[var(--secondary-mesh-2)] to-[var(--accent-amber)] text-white font-display font-bold text-base hover:brightness-110 transition-all shadow-lg"
+            className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-[var(--accent-pink)] via-[var(--secondary-mesh-2)] to-[var(--accent-amber)] text-[var(--base-bg)] font-display font-bold text-base hover:brightness-110 transition-all shadow-lg"
           >
             <span>COMPOSE EMAIL IN DEFAULT CLIENT</span>
             <ArrowUpRight size={18} />

@@ -2,11 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Layers, List } from 'lucide-react'
 import gsap from 'gsap'
-import ProjectCard from './ProjectCard.jsx'
+import ProjectStack from './ProjectStack.jsx'
 
-export default function SelectedWorks({ projects }) {
+export default function SelectedWorks({ projects, initialView = 'list' }) {
   const [activeProject, setActiveProject] = useState(null)
-  const [viewMode, setViewMode] = useState('list') // 'list' or 'grid'
+  const [viewMode, setViewMode] = useState(initialView) // 'list' or 'grid'
   const previewRef = useRef(null)
   const listRef = useRef(null)
   const mousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
@@ -55,9 +55,10 @@ export default function SelectedWorks({ projects }) {
         <div className="flex items-center gap-1.5 p-1 rounded-full bg-[var(--surface-1)] border border-[var(--border-default)]">
           <button
             onClick={() => setViewMode('list')}
+            aria-pressed={viewMode === 'list'}
             className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
               viewMode === 'list'
-                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-white shadow-sm font-semibold'
+                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-[var(--base-bg)] shadow-sm font-semibold'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -66,9 +67,10 @@ export default function SelectedWorks({ projects }) {
           </button>
           <button
             onClick={() => setViewMode('grid')}
+            aria-pressed={viewMode === 'grid'}
             className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
               viewMode === 'grid'
-                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-white shadow-sm font-semibold'
+                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-[var(--base-bg)] shadow-sm font-semibold'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -137,11 +139,7 @@ export default function SelectedWorks({ projects }) {
 
       {/* Mode B: Stacked / Grid Cards View */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.slug} project={project} index={index} />
-          ))}
-        </div>
+        <ProjectStack projects={projects} />
       )}
 
       {/* Floating Media Preview Window (Follows Cursor on Hover) */}
@@ -151,13 +149,13 @@ export default function SelectedWorks({ projects }) {
         aria-hidden="true"
       >
         {activeProject && (
-          <div className="w-full h-full relative overflow-hidden bg-[#13121F]">
+          <div className="w-full h-full relative overflow-hidden bg-[var(--surface-1)]">
             <img
               src={activeProject.desktopImage || activeProject.cover?.dark}
               alt=""
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B12]/80 via-transparent to-transparent flex items-end p-4">
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--base-bg)]/80 via-transparent to-transparent flex items-end p-4">
               <div>
                 <span className="font-mono text-[10px] uppercase text-[var(--accent-pink)] font-semibold">
                   {activeProject.index} · CLICK TO EXPLORE

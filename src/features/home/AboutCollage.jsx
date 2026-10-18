@@ -4,6 +4,8 @@ import { useGSAP } from '@gsap/react'
 import { ArrowUpRight, Sparkles, Terminal, Code } from 'lucide-react'
 import WordReveal from '../../components/motion/WordReveal.jsx'
 import { profile } from '../../utils/profile.js'
+import { portfolioAssets } from '../../lib/assets.js'
+import { projects } from '../../utils/projects.js'
 
 export default function AboutCollage() {
   const collageRef = useRef(null)
@@ -36,8 +38,8 @@ export default function AboutCollage() {
 
   const stats = [
     { label: 'EDUCATION', value: 'BCA (2023 - 2026)', sub: 'SNGCAS Kannur, Kerala' },
-    { label: 'PROJECTS', value: '8 Completed', sub: 'From AI to Cloud Sandboxes' },
-    { label: 'CRAFT', value: '100% Hand-Crafted', sub: 'Zero Template Shortcuts' },
+    { label: 'PROJECTS', value: `${projects.length} builds`, sub: 'From AI to cloud systems' },
+    { label: 'FOCUS', value: `${profile.focusAreas.length} areas`, sub: 'Software · AI · creative tech' },
     { label: 'LOCATION', value: 'Kerala, India', sub: 'Available Worldwide (IST)' },
   ]
 
@@ -70,10 +72,10 @@ export default function AboutCollage() {
       {/* Offset Media Collage (5-6 images) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 mb-16 items-center">
         {/* Image 1: Studio Portrait */}
-        <div className="collage-card col-span-2 row-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[#13121F] relative group">
+        <div className="collage-card col-span-2 row-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[var(--surface-1)] relative group">
           <img
-            src="/generated/me-studio-headshot.jpg"
-            alt="Ashok Kumar studio portrait with violet and pink rim light"
+            src={portfolioAssets.portraits.about}
+            alt="Ashok Kumar in a warm, softly lit creative studio portrait"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-white/90">
@@ -82,10 +84,10 @@ export default function AboutCollage() {
         </div>
 
         {/* Image 2: Creative Tech Workspace */}
-        <div className="collage-card col-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/3] bg-[#13121F] relative group">
+        <div className="collage-card col-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/3] bg-[var(--surface-1)] relative group">
           <img
-            src="/generated/me-workspace.jpg"
-            alt="Ashok Kumar in high-tech creative developer studio"
+            src={portfolioAssets.portraits.working}
+            alt="Ashok Kumar reviewing interface concepts at his workbench"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-white/90">
@@ -94,10 +96,10 @@ export default function AboutCollage() {
         </div>
 
         {/* Image 3: 3D Fluid Glass Orb */}
-        <div className="collage-card col-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[#13121F] relative group">
+        <div className="collage-card col-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[var(--surface-1)] relative group">
           <img
-            src="/generated/hero-gradient-orb.jpg"
-            alt="Abstract chromatic fluid 3D glass orb"
+            src={portfolioAssets.visuals.glassStudy}
+            alt="Sculptural glass and chrome form lit in violet, cyan, coral, and chartreuse"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-white/90">
@@ -106,24 +108,12 @@ export default function AboutCollage() {
         </div>
 
         {/* Image 4: Vector Body Illustration */}
-        <div className="collage-card col-span-1 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[3/4] bg-[#1B1A2C] relative group">
-          <img
-            src="/me/portrait_vector_body.jpg"
-            alt="Ashok Kumar vector illustration"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute bottom-3 left-3 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono text-white/90">
-            VECTOR
+        <div className="collage-card col-span-2 md:col-span-1 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[var(--surface-1)] relative group">
+          <div className="flex h-full flex-col justify-between p-6 sm:p-8">
+            <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)]">CURRENTLY EXPLORING</span>
+            <p className="font-display text-2xl sm:text-3xl text-[var(--text-primary)] leading-tight">{profile.focusAreas.slice(0, 3).join(' · ')}</p>
+            <span className="font-mono text-[10px] text-[var(--accent-pink)]">KERALA, INDIA ↗</span>
           </div>
-        </div>
-
-        {/* Image 5: Vector Head Emblem */}
-        <div className="collage-card col-span-1 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[#13121F] relative group">
-          <img
-            src="/me/portrait_vector_head.jpg"
-            alt="Ashok Kumar vector head portrait"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
         </div>
       </div>
 

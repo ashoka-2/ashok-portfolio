@@ -48,7 +48,7 @@ export default function ThemeToggle({ className = '' }) {
       height: '100vh',
       pointerEvents: 'none',
       zIndex: '99998',
-      background: nextMode === 'dark' ? '#0B0B12' : '#F4F1EA',
+      background: nextMode === 'dark' ? '#090A0F' : '#F4F0EA',
       clipPath: `circle(0px at ${x}px ${y}px)`,
       transition: 'clip-path 0.7s cubic-bezier(0.77, 0, 0.175, 1)',
     })
@@ -97,6 +97,12 @@ export default function ThemeToggle({ className = '' }) {
             { y: 0 }, 
             { y: 38, duration: 0.2, yoyo: true, repeat: 1, ease: 'power2.inOut', onComplete: () => triggerThemeTransition(e) }
           )
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          triggerThemeTransition(e)
         }
       }}
       title="Pull cord to toggle dark/light theme"

@@ -69,7 +69,7 @@ export default function ProjectPage() {
   const titleChars = project.title.split('')
 
   return (
-    <article className="page-container py-28 relative" ref={pageRef} data-page-content>
+    <article className="page-container py-28 relative project-case-study" ref={pageRef} data-page-content>
       {/* Back button */}
       <div className="mb-10">
         <Link
@@ -108,7 +108,7 @@ export default function ProjectPage() {
       </p>
 
       {/* Hero Slot receiving Flutter Flight Ghost */}
-      <div className="relative w-full aspect-[16/9] max-h-[720px] rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] mb-16 bg-[#13121F]">
+      <div className="relative w-full aspect-[16/9] max-h-[720px] rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] mb-16 bg-[var(--surface-1)]">
         <img
           ref={heroSlotRef}
           data-hero-target={project.slug}
@@ -162,7 +162,7 @@ export default function ProjectPage() {
               href={project.links.live}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-white font-semibold hover:brightness-110 transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-[var(--base-bg)] font-semibold hover:brightness-110 transition-all shadow-md"
             >
               <span>LIVE SITE</span>
               <ExternalLink size={14} />
@@ -209,7 +209,7 @@ export default function ProjectPage() {
             {project.images.slice(1).map((img, i) => (
               <div
                 key={i}
-                className="rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] bg-[#13121F]"
+                className="rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] bg-[var(--surface-1)]"
               >
                 <img src={img.url} alt={img.title || ''} className="w-full h-auto object-cover" />
                 <div className="p-5 border-t border-[var(--border-subtle)]">
@@ -249,7 +249,7 @@ export default function ProjectPage() {
               </p>
             </div>
 
-            <div className="w-14 h-14 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-primary)] group-hover:bg-[var(--accent-pink)] group-hover:border-transparent group-hover:text-white transition-all shadow-md shrink-0">
+            <div className="w-14 h-14 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-primary)] group-hover:bg-[var(--accent-pink)] group-hover:border-transparent group-hover:text-[var(--base-bg)] transition-all shadow-md shrink-0">
               <ArrowUpRight size={26} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </div>
           </div>

@@ -21,7 +21,7 @@ export default function ProjectsPage() {
       })
 
   return (
-    <div className="page-container py-28 relative" data-page-content>
+    <div className="page-container py-28 relative projects-index-page" data-page-content>
       {/* Back button */}
       <div className="mb-10">
         <Link
@@ -35,7 +35,7 @@ export default function ProjectsPage() {
 
       {/* Header */}
       <div className="max-w-3xl mb-12">
-        <span className="section-kicker">ALL CASE STUDIES</span>
+        <span className="section-kicker">02 / PROJECT ARCHIVE · {String(projects.length).padStart(2, '0')} BUILDS</span>
         <h1 className="text-fluid-h1 font-display font-black text-[var(--text-primary)] mb-4">
           Things I've <em>shipped.</em>
         </h1>
@@ -50,9 +50,10 @@ export default function ProjectsPage() {
           <button
             key={cat}
             onClick={() => setFilter(cat)}
+            aria-pressed={filter === cat}
             className={`px-3.5 py-1.5 rounded-full font-mono text-xs transition-all ${
               filter === cat
-                ? 'bg-[var(--accent-pink)] text-white font-bold shadow-md'
+                ? 'bg-[var(--accent-pink)] text-[var(--base-bg)] font-bold shadow-md'
                 : 'bg-[var(--surface-1)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--accent-pink)] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -62,7 +63,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Works Component */}
-      <SelectedWorks projects={filtered} />
+      <SelectedWorks projects={filtered} initialView="grid" />
     </div>
   )
 }

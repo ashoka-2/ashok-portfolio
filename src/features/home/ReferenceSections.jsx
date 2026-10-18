@@ -32,11 +32,28 @@ export function AboutBento() {
 
 export function ProcessSection() {
   const root = useRef(null)
+  const heading = useRef(null)
   const track = useRef(null)
   const viewport = useRef(null)
   const progress = useRef(null)
   useGSAP(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.fromTo(heading.current,
+      { y: 34, autoAlpha: 0, filter: 'blur(12px)' },
+      {
+        y: 0,
+        autoAlpha: 1,
+        filter: 'blur(0px)',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: root.current,
+          start: 'top 78%',
+          end: 'top 48%',
+          scrub: 0.7,
+          invalidateOnRefresh: true,
+        },
+      },
+    )
     const media = gsap.matchMedia()
     media.add('(min-width: 900px)', () => {
       const distance = () => Math.max(0, (track.current?.scrollWidth || 0) - window.innerWidth + 80)
@@ -51,7 +68,7 @@ export function ProcessSection() {
     progress.current.style.transform = `scaleX(${amount})`
   }
   return <section className="ref-section ref-process" id="process" ref={root}>
-    <div className="ref-wrap"><SectionTitle number={processContent.section.number} label={processContent.section.label} title={<>{processContent.section.heading[0]} <em>{processContent.section.heading[1]}</em></>} aside={processContent.section.aside} /></div>
+    <div className="ref-wrap"><div ref={heading}><SectionTitle number={processContent.section.number} label={processContent.section.label} title={<>{processContent.section.heading[0]} <em>{processContent.section.heading[1]}</em></>} aside={processContent.section.aside} /></div></div>
     <div className="ref-process-viewport" ref={viewport} onScroll={updateNativeProgress}><div className="ref-process-track" ref={track}>{processContent.steps.map(([title, description], index) => <article className="ref-step" key={title}><span className="ref-step-number">{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{description}</p></div></article>)}</div></div>
     <div className="ref-progress"><i ref={progress} /></div>
   </section>

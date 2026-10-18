@@ -102,7 +102,7 @@ export default function SiteHeader() {
         </div>
       </header>
 
-      <ThemeToggle className="theme-cord-fixed" />
+      <ThemeToggle className="theme-cord-navbar" />
 
       {/* Full-Screen Circular Clip-Path Overlay Menu */}
       <div

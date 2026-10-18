@@ -1,55 +1,30 @@
-import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import gsap from 'gsap'
+import { PullCord } from 'pullcord'
+import 'pullcord/pullcord.css'
 import { toggleTheme } from '../../features/preferences/themeSlice.js'
 
 export default function ThemeToggle({ className = '' }) {
   const mode = useSelector((state) => state.theme.mode)
   const dispatch = useDispatch()
-  const cordRef = useRef(null)
-  const [dragging, setDragging] = useState(false)
-  const dragStartY = useRef(0)
-  const currentPull = useRef(0)
-  const suppressClick = useRef(false)
+  const pointerDown = useRef(false)
+  const releasePending = useRef(false)
 
-  const handlePointerDown = (e) => {
-    setDragging(true)
-    dragStartY.current = e.clientY
-    currentPull.current = 0
-    window.addEventListener('pointermove', handlePointerMove)
-    window.addEventListener('pointerup', handlePointerUp)
-  }
-
-  const handlePointerMove = (e) => {
-    const diff = Math.max(0, Math.min(65, e.clientY - dragStartY.current))
-    currentPull.current = diff
-    if (cordRef.current) {
-      gsap.to(cordRef.current, {
-        y: diff,
-        duration: 0.1,
-        ease: 'power1.out',
-        overwrite: 'auto',
-      })
-    }
-  }
-
-  const triggerThemeTransition = (e) => {
-    const x = e?.clientX ?? window.innerWidth - 32
-    const y = e?.clientY ?? window.innerHeight / 2
-    document.documentElement.style.setProperty('--theme-click-x', `${x}px`)
-    document.documentElement.style.setProperty('--theme-click-y', `${y}px`)
+  const applyThemeTransition = () => {
+    document.documentElement.style.setProperty('--theme-click-x', `${window.innerWidth - 32}px`)
+    document.documentElement.style.setProperty('--theme-click-y', '176px')
 
     if (document.startViewTransition) {
       document.startViewTransition(() => flushSync(() => dispatch(toggleTheme())))
       return
     }
 
-    // Keep a soft expanding blur reveal in browsers without View Transitions.
+    // Keep the same expanding blur transition where View Transitions are unavailable.
     const wave = document.createElement('div')
     wave.className = 'theme-wave-fallback'
-    wave.style.setProperty('--theme-click-x', `${x}px`)
-    wave.style.setProperty('--theme-click-y', `${y}px`)
+    wave.style.setProperty('--theme-click-x', `${window.innerWidth - 32}px`)
+    wave.style.setProperty('--theme-click-y', '176px')
     document.body.appendChild(wave)
     requestAnimationFrame(() => {
       wave.classList.add('is-visible')
@@ -58,72 +33,42 @@ export default function ThemeToggle({ className = '' }) {
     })
   }
 
-  const handlePointerUp = (e) => {
-    window.removeEventListener('pointermove', handlePointerMove)
-    window.removeEventListener('pointerup', handlePointerUp)
-    setDragging(false)
-    
-    if (currentPull.current > 32) {
-      suppressClick.current = true
-      triggerThemeTransition(e)
+  useEffect(() => {
+    const onPointerDown = () => { pointerDown.current = true }
+    const onPointerUp = () => {
+      pointerDown.current = false
+      if (releasePending.current) {
+        releasePending.current = false
+        applyThemeTransition()
+      }
     }
+    window.addEventListener('pointerdown', onPointerDown, true)
+    window.addEventListener('pointerup', onPointerUp, true)
+    window.addEventListener('pointercancel', onPointerUp, true)
+    return () => {
+      window.removeEventListener('pointerdown', onPointerDown, true)
+      window.removeEventListener('pointerup', onPointerUp, true)
+      window.removeEventListener('pointercancel', onPointerUp, true)
+    }
+  }, [])
 
-    if (cordRef.current) {
-      gsap.to(cordRef.current, {
-        y: 0,
-        duration: 0.85,
-        ease: 'elastic.out(1.2, 0.35)',
-      })
+  const onPull = () => {
+    // PullCord signals at its detent; wait for the physical release before
+    // starting the page-wide theme reveal. Click and keyboard still respond.
+    if (pointerDown.current) {
+      releasePending.current = true
+      return
     }
-    currentPull.current = 0
+    applyThemeTransition()
   }
 
   return (
-    <div 
-      className={`pull-cord-wrap ${className} ${dragging ? 'is-pulling' : ''}`}
-      onPointerDown={handlePointerDown} 
-      onClick={(e) => {
-        if (suppressClick.current) {
-          suppressClick.current = false
-          return
-        }
-        if (currentPull.current <= 5) {
-          gsap.fromTo(cordRef.current, 
-            { y: 0 }, 
-            { y: 38, duration: 0.2, yoyo: true, repeat: 1, ease: 'power2.inOut', onComplete: () => triggerThemeTransition(e) }
-          )
-        }
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          triggerThemeTransition(e)
-        }
-      }}
-      title="Pull cord to toggle dark/light theme"
-      role="button"
-      tabIndex={0}
-      aria-label={`Toggle theme (currently ${mode})`}
-    >
-      <span className="theme-cord-label" aria-hidden="true">THEME</span>
-      <svg 
-        className="pull-cord-svg" 
-        width="30"
-        height="84"
-        viewBox="0 0 22 64" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g ref={cordRef}>
-          {/* Top bracket fixture */}
-          <rect x="7" y="0" width="8" height="4" rx="1.5" fill="var(--text-tertiary)" />
-          {/* Flexible hanging beaded chain */}
-          <line x1="11" y1="4" x2="11" y2="44" stroke="var(--text-muted)" strokeWidth="1.5" strokeDasharray="2 3" />
-          {/* Weighted handle bead with glowing accent */}
-          <circle cx="11" cy="48" r="7" fill="var(--surface-2)" stroke="var(--accent-pink)" strokeWidth="1.5" />
-          <circle cx="11" cy="48" r="3.5" fill={mode === 'dark' ? 'var(--accent-pink)' : 'var(--accent-amber)'} />
-        </g>
-      </svg>
-    </div>
+    <PullCord
+      className={className}
+      onPull={onPull}
+      pulled={mode === 'light'}
+      ariaLabel={`Toggle theme (currently ${mode})`}
+      config={{ gravity: 1250, damping: 0.94, iterations: 20, stretchMax: 26 }}
+    />
   )
 }

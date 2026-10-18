@@ -4,6 +4,7 @@ import GithubIcon from '../../components/icons/GithubIcon.jsx'
 import { Link } from 'react-router-dom'
 import Button from '../../components/buttons/Button.jsx'
 import { profile } from '../../utils/profile.js'
+import { gmailComposeUrl } from '../../utils/site.js'
 import { techStack } from '../../utils/tech.js'
 import LocalTime from '../../components/motion/LocalTime.jsx'
 import { portfolioAssets } from '../../lib/assets.js'
@@ -163,10 +164,11 @@ export function ContactPage() {
 
         <div className="space-y-4">
           <Button
-            href={`mailto:${profile.contact.email}?subject=Project%20Inquiry%20%E2%80%94%20Ashok%20Kumar`}
+            href={gmailComposeUrl(profile.contact.email, { subject: 'Project Inquiry — Ashok Kumar' })}
+            target="_blank" rel="noreferrer"
             kind="primary" className="w-full py-4 rounded-2xl font-display text-base"
           >
-            <span>COMPOSE EMAIL IN DEFAULT CLIENT</span>
+            <span>COMPOSE EMAIL IN GMAIL</span>
             <ArrowUpRight size={18} />
           </Button>
         </div>

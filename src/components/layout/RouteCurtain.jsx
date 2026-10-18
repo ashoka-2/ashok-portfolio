@@ -71,19 +71,11 @@ export default function RouteCurtain() {
 
       // Back navigation with flight
       if (backSlug) {
-        const source = document.querySelector('.detail-hero-slot') || document.querySelector('.detail-cover')
-        if (startProjectFlight(backSlug, source)) {
-          pending.current = true
-          transitionType.current = 'flight'
-          const pageContent = document.querySelector('[data-page-content], .motion-page, main')
-          gsap.to(pageContent, {
-            autoAlpha: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-            onComplete: () => navigate(next, { state: backState }),
-          })
-          return
-        }
+        // The home route does not own a stable project-image landing slot, so
+        // send this direction through the curtain instead of leaving a ghost
+        // image detached over the returned page.
+        coverRoute(next, 'SELECTED WORKS', backState)
+        return
       }
 
       // Forward project click with flight
@@ -93,7 +85,7 @@ export default function RouteCurtain() {
         sessionStorage.setItem('portfolio-project-scroll', String(window.scrollY))
         pending.current = true
         transitionType.current = 'flight'
-        const pageContent = document.querySelector('[data-page-content], .motion-page, main')
+        const pageContent = document.querySelector('.motion-page [data-page-content]') || document.querySelector('.motion-page')
         gsap.to(pageContent, {
           autoAlpha: 0,
           duration: 0.3,
@@ -120,7 +112,26 @@ export default function RouteCurtain() {
   }, [contextSafe, coverRoute, location.hash, location.pathname, location.search, navigate])
 
   useEffect(() => {
-    if (!pending.current || transitionType.current !== 'curtain' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!pending.current) return
+
+    // Flight transitions fade the old route before navigating. Clear their
+    // lock as soon as the destination route commits, or all later links become
+    // no-ops until a full reload.
+    if (transitionType.current === 'flight') {
+      // Recover the route content and shell before the destination paints.
+      // The main element is included to clean up stale hidden state from older
+      // transitions that accidentally selected it as the outgoing page.
+      gsap.set(['#main-content', '.motion-page', '.motion-page [data-page-content]'], {
+        autoAlpha: 1,
+        clearProps: 'opacity,visibility',
+      })
+      pending.current = false
+      transitionType.current = null
+      window.dispatchEvent(new Event('portfolio:route-transition-end'))
+      return
+    }
+
+    if (transitionType.current !== 'curtain' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const pieces = panels.current?.children
     if (!pieces?.length) {
       pending.current = false

@@ -8,11 +8,11 @@ export function getActiveFlight() {
 
 export function startProjectFlight(slug, sourceImg) {
   if (!sourceImg || !slug) return false
-  const img = sourceImg.tagName === 'IMG' ? sourceImg : sourceImg.querySelector('img')
+  const img = sourceImg.tagName === 'IMG' ? sourceImg : sourceImg.querySelector('img:not(.sr-only)')
   if (!img) return false
 
   const rect = img.getBoundingClientRect()
-  if (!rect.width || !rect.height) return false
+  if (rect.width < 40 || rect.height < 40) return false
 
   const borderRadius = window.getComputedStyle(img).borderRadius || '16px'
 
@@ -53,9 +53,9 @@ export function startProjectFlight(slug, sourceImg) {
 }
 
 export function landProjectFlight(slug, targetImg) {
-  if (!activeFlight || activeFlight.slug !== slug || !targetImg) {
+  if (!activeFlight) return false
+  if (activeFlight.slug !== slug || !targetImg) {
     clearProjectFlight()
-    window.dispatchEvent(new Event('portfolio:route-transition-end'))
     return false
   }
 

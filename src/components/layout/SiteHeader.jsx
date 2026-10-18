@@ -6,6 +6,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import ThemeToggle from './ThemeToggle.jsx'
 import { profile } from '../../utils/profile.js'
+import { gmailComposeUrl } from '../../utils/site.js'
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -42,7 +43,10 @@ export default function SiteHeader() {
   // Close menu upon route navigation
   useEffect(() => {
     setMenuOpen(false)
-  }, [location.pathname])
+    setHidden(false)
+    setScrolled(window.scrollY > 60)
+    lastScrollY.current = window.scrollY
+  }, [location.pathname, location.hash])
 
   useEffect(() => {
     if (!menuOpen) return undefined
@@ -94,19 +98,19 @@ export default function SiteHeader() {
           </Link>
 
           <nav className="ref-top-links" aria-label="Portfolio sections">
-            <a href="/about">About</a>
-            <a href="/#work">Work</a>
-            <a href="/#process">Process</a>
-            <a href="/#capabilities">Services</a>
-            <a href="/#play">Play</a>
+            <Link to="/about">About</Link>
+            <Link to="/#work">Work</Link>
+            <Link to="/#process">Process</Link>
+            <Link to="/#capabilities">Services</Link>
+            <Link to="/#play">Play</Link>
           </nav>
 
           {/* Right Actions: Let's Talk Pill + Menu Pill + Pull Cord */}
           <div className="flex items-center gap-3">
-            <a href="/contact" className="nav-pill cursor-pointer" aria-label="Go to contact page">
+            <Link to="/contact" className="nav-pill cursor-pointer" aria-label="Go to contact page">
               <span>LET'S TALK</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-pink)]" />
-            </a>
+            </Link>
 
             <button
               ref={menuButtonRef}
@@ -163,15 +167,15 @@ export default function SiteHeader() {
               )
             }
             return (
-              <a
+              <Link
                 key={link.num}
-                href={link.href}
+                to={link.href}
                 onClick={() => setMenuOpen(false)}
                 className="menu-link-item"
               >
                 <span className="menu-link-index">{link.num}</span>
                 <span>{link.label}</span>
-              </a>
+              </Link>
             )
           })}
         </nav>
@@ -190,7 +194,9 @@ export default function SiteHeader() {
               <ArrowUpRight size={12} />
             </a>
             <a
-              href={`mailto:${profile.contact.email}`}
+              href={gmailComposeUrl(profile.contact.email)}
+              target="_blank"
+              rel="noreferrer"
               className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
             >
               <Mail size={15} />

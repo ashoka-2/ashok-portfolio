@@ -17,7 +17,7 @@ export default function ProjectCard({ project, index = 0, stacked = false }) {
 
   return (
     <Link
-      className={`project-card project-card-modern${stacked ? ' project-card-stacked' : ''}`}
+      className={`project-card project-card-modern grain-card${stacked ? ' project-card-stacked' : ''}`}
       style={{ '--project-accent': 'var(--accent)' }}
       to={`/projects/${project.slug}`}
       data-scroll-reveal={!stacked || undefined}

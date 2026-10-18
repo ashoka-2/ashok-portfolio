@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import SelectedWorks from '../projects/SelectedWorks.jsx'
 import PhysicsField from '../physics/PhysicsField.jsx'
+import HeroFur from './HeroFur.jsx'
 import Button from '../../components/buttons/Button.jsx'
 import { profile } from '../../utils/profile.js'
 import { projects } from '../../utils/projects.js'
@@ -32,6 +33,7 @@ export default function HomePage() {
     <header className="ref-hero" id="top">
       <div className="ref-hero-glow" aria-hidden="true" />
       <h1 className="ref-sr">{hero.title}</h1>
+      <HeroFur />
       <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas /></Suspense>
       {hero.stickers.map((sticker, index) => <span className={`ref-sticker ref-sticker-${['one', 'two', 'three'][index]}`} key={sticker}>{sticker}</span>)}
       <div className="ref-hero-ui">

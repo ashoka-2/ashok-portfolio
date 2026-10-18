@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { X, Copy, Check, ArrowUpRight, Mail, MapPin } from 'lucide-react'
 import GithubIcon from '../icons/GithubIcon.jsx'
 import { profile } from '../../utils/profile.js'
+import { gmailComposeUrl } from '../../utils/site.js'
 import { portfolioAssets } from '../../lib/assets.js'
 
 export default function ContactOverlay({ isOpen, onClose }) {
@@ -103,7 +104,9 @@ export default function ContactOverlay({ isOpen, onClose }) {
               <span>{copied ? 'Copied!' : 'Copy'}</span>
             </button>
             <a
-              href={`mailto:${profile.contact.email}?subject=Project%20Inquiry%20%E2%80%94%20Ashok%20Kumar`}
+              href={gmailComposeUrl(profile.contact.email, { subject: 'Project Inquiry — Ashok Kumar' })}
+              target="_blank"
+              rel="noreferrer"
               className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--accent-amber)] text-[var(--base-bg)] text-xs font-mono font-semibold shadow-md hover:brightness-110 transition-transform active:scale-95"
             >
               <span>Mail</span>

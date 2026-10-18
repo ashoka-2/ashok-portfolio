@@ -7,6 +7,7 @@ import { projects } from '../../utils/projects.js'
 import { techStack } from '../../utils/tech.js'
 import { aboutContent, processContent, capabilitiesContent, faqContent, physicsContent } from '../../utils/pageContent.js'
 import Button from '../../components/buttons/Button.jsx'
+import { gmailComposeUrl } from '../../utils/site.js'
 
 function SectionTitle({ number, label, title, aside }) {
   return <div className="ref-section-heading"><div><span className="ref-eyebrow">{number} / {label}</span><h2>{title}</h2></div>{aside && <span className="ref-aside">{aside}</span>}</div>
@@ -142,7 +143,7 @@ export function CapabilitiesSection() {
   const [pick, setPick] = useState({ type: 'site', motion: 'gsap', time: 'flex' })
   const { options: estimatorOptions } = capabilitiesContent.estimator
   const labels = Object.fromEntries(Object.entries(estimatorOptions).map(([key, options]) => [key, options.find((option) => option[1] === pick[key])[0]]))
-  const sendBody = encodeURIComponent(`Hi Ashok,\n\nProject type: ${labels.type}\nMotion level: ${labels.motion}\nTimeline: ${labels.time}\n\nA bit about the project:\n`)
+  const sendBody = `Hi Ashok,\n\nProject type: ${labels.type}\nMotion level: ${labels.motion}\nTimeline: ${labels.time}\n\nA bit about the project:\n`
   return <section className="ref-section" id="capabilities">
     <div className="ref-wrap"><SectionTitle number={capabilitiesContent.section.number} label={capabilitiesContent.section.label} title={<>{capabilitiesContent.section.heading[0]} <em>{capabilitiesContent.section.heading[1]}</em></>} />
       <div className="ref-capabilities">{capabilitiesContent.cards.map(([title, description, tags], index) => <article className="ref-cap-card" key={title}><span className="ref-cap-number">0{index + 1}</span><h3>{title}</h3><p>{description}</p><div className="ref-tags">{tags.map((tag) => <span key={tag}>{tag}</span>)}</div></article>)}</div>
@@ -150,7 +151,7 @@ export function CapabilitiesSection() {
         <div className="ref-panel"><h3>{capabilitiesContent.estimator.heading}</h3><p className="ref-muted">{capabilitiesContent.estimator.description}</p>
           {Object.entries(estimatorOptions).map(([group, options]) => <div className="ref-option-group" key={group}><span className="ref-mono ref-muted">{capabilitiesContent.estimator.groups[group]}</span><div className="ref-chips">{options.map(([label, value]) => <button className="ref-chip" key={value} type="button" aria-pressed={pick[group] === value} onClick={() => setPick((old) => ({ ...old, [group]: value }))}>{label}</button>)}</div></div>)}
         </div>
-        <div className="ref-panel ref-roadmap"><span className="ref-mono ref-muted">{capabilitiesContent.estimator.roadmapLabel}</span><ol>{estimateSteps(pick).map((step) => <li key={step}>{step}</li>)}</ol><p className="ref-sum">{labels.type}, {labels.motion.toLowerCase()}, {labels.time.toLowerCase()}.</p><Button href={`mailto:${profile.contact.email}?subject=Project%20brief&body=${sendBody}`} kind="primary">{capabilitiesContent.estimator.sendLabel} <ArrowUpRight size={16} /></Button></div>
+        <div className="ref-panel ref-roadmap"><span className="ref-mono ref-muted">{capabilitiesContent.estimator.roadmapLabel}</span><ol>{estimateSteps(pick).map((step) => <li key={step}>{step}</li>)}</ol><p className="ref-sum">{labels.type}, {labels.motion.toLowerCase()}, {labels.time.toLowerCase()}.</p><Button href={gmailComposeUrl(profile.contact.email, { subject: 'Project brief', body: sendBody })} target="_blank" rel="noreferrer" kind="primary">{capabilitiesContent.estimator.sendLabel} <ArrowUpRight size={16} /></Button></div>
       </div>
     </div>
   </section>

@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { profile } from '../../utils/profile.js'
 import { footerContent } from '../../utils/pageContent.js'
+import { gmailComposeUrl } from '../../utils/site.js'
 import Button from '../buttons/Button.jsx'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -61,7 +62,7 @@ export default function SiteFooter() {
     <div className="ref-wrap" id="contactIn">
       <span className="ref-eyebrow">{footerContent.eyebrow}</span>
       <h2>{footerContent.heading[0]} <em>{footerContent.heading[1]}</em><br />{footerContent.heading[2]}</h2>
-      <a className="ref-contact-email" href={`mailto:${profile.contact.email}`}><Mail size={19} />{profile.contact.email}</a>
+      <a className="ref-contact-email" href={gmailComposeUrl(profile.contact.email)} target="_blank" rel="noreferrer"><Mail size={19} />{profile.contact.email}</a>
       <div className="ref-contact-actions">
         <Button kind="primary" onClick={copyEmail}>{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy email'}</Button>
         <Button kind="secondary" href={profile.contact.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={15} /></Button>

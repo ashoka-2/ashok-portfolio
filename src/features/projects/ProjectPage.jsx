@@ -104,7 +104,7 @@ export default function ProjectPage() {
       </p>
 
       {/* Hero Slot receiving Flutter Flight Ghost */}
-      <div className="relative w-full aspect-[16/9] max-h-[720px] rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] mb-16 bg-[var(--surface-1)]">
+      <div className="grain-media relative w-full aspect-[16/9] max-h-[720px] rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] mb-16 bg-[var(--surface-1)]">
         <img
           ref={heroSlotRef}
           data-hero-target={project.slug}
@@ -205,7 +205,7 @@ export default function ProjectPage() {
             {project.images.slice(1).map((img, i) => (
               <div
                 key={i}
-                className="grain-card rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] bg-[var(--surface-1)]"
+                className="grain-media grain-card rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] bg-[var(--surface-1)]"
               >
                 <img src={img.url} alt={img.title || ''} className="w-full h-auto object-cover" />
                 <div className="p-5 border-t border-[var(--border-subtle)]">

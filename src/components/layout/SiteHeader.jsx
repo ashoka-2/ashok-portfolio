@@ -1,80 +1,200 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { ArrowUpRight, Mail, Menu, X } from 'lucide-react'
+import GithubIcon from '../icons/GithubIcon.jsx'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { Link, NavLink } from 'react-router-dom'
-import { ArrowUpRight, Menu, X } from 'lucide-react'
-import { siteConfig } from '../../utils/site.js'
-import Button from '../buttons/Button.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
+import ContactOverlay from './ContactOverlay.jsx'
+import LocalTime from '../motion/LocalTime.jsx'
+import { profile } from '../../utils/profile.js'
 
 export default function SiteHeader() {
-  const header = useRef(null)
-  const mobileNav = useRef(null)
-  const progress = useRef(null)
-  const [open, setOpen] = useState(false)
-  const { contextSafe } = useGSAP((_, contextSafe) => {
-    const playEntrance = contextSafe(() => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-      const entrance = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      entrance.fromTo('.nav-wrap', { y: -18, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.65 })
-        .fromTo('.nav-wrap .wordmark, .nav-wrap .desktop-nav a, .nav-wrap > .theme-toggle, .nav-wrap .nav-contact, .nav-wrap .menu-toggle',
-          { y: -8, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.42, stagger: 0.055, ease: 'power2.out' }, '-=0.28')
-    })
-    const waitsForPreloader = !sessionStorage.getItem('portfolio-loaded')
-    if (waitsForPreloader) window.addEventListener('portfolio:ready', playEntrance, { once: true })
-    else playEntrance()
-    gsap.set(mobileNav.current, { autoAlpha: 0, y: -10, pointerEvents: 'none' })
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      gsap.to(progress.current, {
-        scaleX: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: document.documentElement, start: 'top top', end: 'max', scrub: 0.25 },
-      })
-      gsap.to('.nav-wrap', {
-        height: 52,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: document.documentElement, start: 'top -56', toggleActions: 'play none none reverse' },
-      })
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  const lastScrollY = useRef(0)
+  const location = useLocation()
+  const headerRef = useRef(null)
+
+  // Scroll detection for hide/show navbar and glass styling
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY > 60) {
+        setScrolled(true)
+        if (currentScrollY > lastScrollY.current + 8 && currentScrollY > 180) {
+          setHidden(true)
+        } else if (currentScrollY < lastScrollY.current - 12) {
+          setHidden(false)
+        }
+      } else {
+        setScrolled(false)
+        setHidden(false)
+      }
+      lastScrollY.current = currentScrollY
     }
-    return () => window.removeEventListener('portfolio:ready', playEntrance)
-  }, { scope: header })
-  const animateMenu = contextSafe((show) => {
-    const panel = mobileNav.current
-    if (!panel) return
-    const entries = [...panel.children]
-    gsap.killTweensOf([panel, ...entries])
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      gsap.set(panel, { autoAlpha: show ? 1 : 0, y: 0, scaleY: 1, pointerEvents: show ? 'auto' : 'none', visibility: show ? 'visible' : 'hidden' })
-      gsap.set(entries, { clearProps: 'all' })
-      return
-    }
-    if (show) {
-      gsap.set(panel, { visibility: 'visible', pointerEvents: 'auto' })
-      gsap.fromTo(panel, { autoAlpha: 0, y: -12, scaleY: 0.97 }, { autoAlpha: 1, y: 0, scaleY: 1, duration: 0.32, ease: 'power3.out' })
-      gsap.fromTo(entries, { autoAlpha: 0, y: -8 }, { autoAlpha: 1, y: 0, duration: 0.28, delay: 0.07, stagger: 0.045, ease: 'power2.out' })
-      return
-    }
-    gsap.to(entries, { autoAlpha: 0, y: -5, duration: 0.14, stagger: { each: 0.02, from: 'end' }, ease: 'power1.in' })
-    gsap.to(panel, { autoAlpha: 0, y: -9, scaleY: 0.98, duration: 0.23, delay: 0.06, ease: 'power2.in', onComplete: () => gsap.set(panel, { visibility: 'hidden', pointerEvents: 'none' }) })
-  })
-  const close = () => { setOpen(false); animateMenu(false) }
-  const toggleMenu = () => { const next = !open; setOpen(next); animateMenu(next) }
-  return <header className="site-header" ref={header} onKeyDown={(event) => { if (event.key === 'Escape' && open) close() }}>
-    <div className="scroll-progress" ref={progress} aria-hidden="true" />
-    <div className="nav-wrap">
-      <Link className="wordmark" to="/" onClick={close}><span className="wordmark-mark">A<span>.</span></span><span>ASHOK<br /><small>DEVELOPER & DESIGNER</small></span></Link>
-      <nav className="desktop-nav" aria-label="Main navigation">
-        {siteConfig.navLinks.map((item) => <NavLink key={item.href} to={item.href} end={item.href === '/'}>{item.label}</NavLink>)}
-      </nav>
-      <ThemeToggle />
-      <Button kind="link" to="/contact" className="nav-contact">Let’s talk</Button>
-      <button className="menu-toggle" type="button" onClick={toggleMenu} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>{open ? <X /> : <Menu />}</button>
-    </div>
-    <nav className="mobile-nav" ref={mobileNav} aria-label="Mobile navigation" aria-hidden={!open}>
-      {siteConfig.navLinks.map((item) => <NavLink key={item.href} to={item.href} end={item.href === '/'} onClick={close}><span>{item.index}</span>{item.label}<ArrowUpRight size={17} /></NavLink>)}
-      <ThemeToggle className="mobile-theme-toggle" />
-      <a className="mobile-mail" href={`mailto:${siteConfig.socials[1].href.replace('mailto:', '')}`} onClick={close}>Start a conversation ↗</a>
-    </nav>
-  </header>
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close menu upon route navigation
+  useEffect(() => {
+    setMenuOpen(false)
+    setContactOpen(false)
+  }, [location.pathname])
+
+  const menuLinks = [
+    { num: '01', label: 'WORK', href: '/#work' },
+    { num: '02', label: 'ABOUT', href: '/#about' },
+    { num: '03', label: 'SERVICES', href: '/#services' },
+    { num: '04', label: 'JOURNEY', href: '/#journey' },
+    { num: '05', label: 'FAQ', href: '/#faq' },
+    { num: '06', label: 'CONTACT', action: () => { setMenuOpen(false); setContactOpen(true) } },
+  ]
+
+  return (
+    <>
+      <header
+        ref={headerRef}
+        className={`site-navbar ${scrolled ? 'nav-scrolled' : ''} ${hidden && !menuOpen ? 'nav-hidden' : ''}`}
+      >
+        <div className="page-container nav-inner">
+          {/* Logo Mark Left */}
+          <Link to="/" className="flex items-center gap-2 group" aria-label="Ashok Kumar Home">
+            <span className="w-9 h-9 rounded-xl bg-[var(--surface-1)] border border-[var(--border-default)] flex items-center justify-center font-display font-black text-sm text-[var(--text-primary)] group-hover:border-[var(--accent-pink)] group-hover:text-[var(--accent-pink)] transition-all shadow-[var(--highlight-top)]">
+              AK
+            </span>
+            <div className="hidden sm:flex flex-col">
+              <span className="font-display font-bold text-xs uppercase tracking-tight text-[var(--text-primary)]">
+                ASHOK KUMAR
+              </span>
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--text-tertiary)]">
+                CREATIVE TECH
+              </span>
+            </div>
+          </Link>
+
+          {/* Center: Live Availability & Time */}
+          <div className="hidden md:flex items-center">
+            <div className="status-badge">
+              <span className="status-dot" />
+              <span>AVAILABLE FOR SELECT WORK · </span>
+              <LocalTime />
+              <span> IST</span>
+            </div>
+          </div>
+
+          {/* Right Actions: Let's Talk Pill + Menu Pill + Pull Cord */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setContactOpen(true)}
+              className="nav-pill cursor-pointer"
+              aria-label="Open contact dialog"
+            >
+              <span>LET'S TALK</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-pink)]" />
+            </button>
+
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="nav-pill cursor-pointer"
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            >
+              <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
+              {menuOpen ? <X size={14} /> : <Menu size={14} />}
+            </button>
+
+            {/* Pull-cord Theme Toggle */}
+            <div className="ml-1 flex items-center">
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Full-Screen Circular Clip-Path Overlay Menu */}
+      <div
+        className={`menu-overlay ${menuOpen ? 'is-open' : ''}`}
+        aria-hidden={!menuOpen}
+      >
+        {/* Top bar inside menu */}
+        <div className="flex items-center justify-between w-full">
+          <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)]">
+            INDEX NAVIGATION
+          </span>
+          <button
+            onClick={() => setMenuOpen(false)}
+            className="w-10 h-10 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--accent-pink)] hover:border-[var(--accent-pink)] transition-colors"
+            aria-label="Close menu"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Big Links */}
+        <nav className="menu-links my-auto flex flex-col py-6" aria-label="Overlay main navigation">
+          {menuLinks.map((link) => {
+            if (link.action) {
+              return (
+                <button
+                  key={link.num}
+                  onClick={link.action}
+                  className="menu-link-item text-left bg-transparent border-none p-0 cursor-pointer"
+                >
+                  <span className="menu-link-index">{link.num}</span>
+                  <span>{link.label}</span>
+                </button>
+              )
+            }
+            return (
+              <a
+                key={link.num}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="menu-link-item"
+              >
+                <span className="menu-link-index">{link.num}</span>
+                <span>{link.label}</span>
+              </a>
+            )
+          })}
+        </nav>
+
+        {/* Bottom Socials & Microcopy */}
+        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-[var(--border-subtle)] font-mono text-xs text-[var(--text-secondary)]">
+          <div className="flex items-center gap-6">
+            <a
+              href={profile.contact.github}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
+            >
+              <GithubIcon size={15} />
+              <span>GITHUB</span>
+              <ArrowUpRight size={12} />
+            </a>
+            <a
+              href={`mailto:${profile.contact.email}`}
+              className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
+            >
+              <Mail size={15} />
+              <span>{profile.contact.email}</span>
+              <ArrowUpRight size={12} />
+            </a>
+          </div>
+
+          <div className="text-[var(--text-tertiary)]">
+            KERALA, INDIA · 2026
+          </div>
+        </div>
+      </div>
+
+      {/* Full-Screen Contact Overlay */}
+      <ContactOverlay isOpen={contactOpen} onClose={() => setContactOpen(false)} />
+    </>
+  )
 }

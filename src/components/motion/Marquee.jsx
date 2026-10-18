@@ -1,100 +1,71 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import gsap from 'gsap'
-import { useGSAP } from '@gsap/react'
-import { getLenis } from '../layout/SmoothScroll.jsx'
-
-const items = [
-  'CREATIVE TECHNOLOGIST',
-  'AUTONOMOUS AGENTS',
-  'FULL STACK SYSTEMS',
-  'MICRO-INTERACTIONS',
-  'GENERATIVE AI',
-  'COMPUTER VISION',
-]
+import { Sparkles, Terminal, Cpu, Zap } from 'lucide-react'
 
 export default function Marquee() {
-  const root = useRef(null)
+  const trackRef = useRef(null)
+  const currentSpeed = useRef(1)
+  const targetSpeed = useRef(1)
 
-  useGSAP(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const track = root.current?.querySelector('.marquee-track')
-    if (!track) return
+  useEffect(() => {
+    let animId
+    let pos = 0
+    let lastScrollY = window.scrollY
 
-    // Base continuous marquee scroll loop
-    const loop = gsap.to(track, {
-      xPercent: -50,
-      duration: 22,
-      repeat: -1,
-      ease: 'none',
-    })
+    const handleScroll = () => {
+      const delta = Math.abs(window.scrollY - lastScrollY)
+      lastScrollY = window.scrollY
+      // Scale speed with scroll velocity
+      targetSpeed.current = Math.min(6, 1 + delta * 0.12)
+    }
 
-    let currentScale = { val: 1 }
-    const applyVelocity = (vel) => {
-      // Scale speed smoothly based on scroll speed (up to 4.5x)
-      const absVel = Math.abs(vel)
-      const targetScale = Math.min(1 + absVel * 0.18, 5)
-      
-      gsap.to(currentScale, {
-        val: targetScale,
-        duration: 0.22,
-        ease: 'power1.out',
-        overwrite: 'auto',
-        onUpdate: () => {
-          loop.timeScale(currentScale.val)
-        },
-        onComplete: () => {
-          gsap.to(currentScale, {
-            val: 1,
-            duration: 1.0,
-            ease: 'power2.out',
-            onUpdate: () => {
-              loop.timeScale(currentScale.val)
-            }
-          })
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    const animate = () => {
+      // Lerp current speed back to baseline 1
+      currentSpeed.current += (targetSpeed.current - currentSpeed.current) * 0.08
+      targetSpeed.current += (1 - targetSpeed.current) * 0.04
+
+      pos -= 1.4 * currentSpeed.current
+      if (trackRef.current) {
+        const halfWidth = trackRef.current.scrollWidth / 2
+        if (pos <= -halfWidth) {
+          pos = 0
         }
-      })
-    }
-
-    const lenis = getLenis()
-    if (lenis) {
-      lenis.on('scroll', (e) => {
-        applyVelocity(e.velocity || 0)
-      })
-    } else {
-      let lastY = window.scrollY
-      let lastTime = performance.now()
-      const onScroll = () => {
-        const now = performance.now()
-        const dt = Math.max(now - lastTime, 16)
-        const dy = window.scrollY - lastY
-        const vel = (dy / dt) * 10
-        lastY = window.scrollY
-        lastTime = now
-        applyVelocity(vel)
+        trackRef.current.style.transform = `translateX(${pos}px)`
       }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      return () => window.removeEventListener('scroll', onScroll)
+      animId = requestAnimationFrame(animate)
     }
-  }, { scope: root })
 
-  const renderGroup = (key) => (
-    <div className="marquee-group" key={key}>
-      {items.map((item, idx) => (
-        <span className="marquee-item" key={`${item}-${idx}`}>
-          <span className="marquee-text">{item}</span>
-          <span className="marquee-separator" aria-hidden="true">✦</span>
-        </span>
-      ))}
-    </div>
-  )
+    animId = requestAnimationFrame(animate)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      cancelAnimationFrame(animId)
+    }
+  }, [])
+
+  const phrases = [
+    { text: "LET'S MAKE IT MAKE SENSE", icon: <Sparkles size={20} className="text-amber-300" /> },
+    { text: "GOOD LOOKS INCLUDED", icon: <Zap size={20} className="text-white" /> },
+    { text: "ALLERGIC TO GENERIC", icon: <Terminal size={20} className="text-pink-200" /> },
+    { text: "AUTONOMOUS BY DESIGN", icon: <Cpu size={20} className="text-violet-200" /> },
+    { text: "REASONABLY OBSESSED WITH DETAILS", icon: <Sparkles size={20} className="text-amber-300" /> },
+  ]
 
   return (
-    <div className="infinite-marquee" ref={root} aria-hidden="true">
-      <div className="marquee-track">
-        {renderGroup('grp-1')}
-        {renderGroup('grp-2')}
+    <div className="marquee-strip-outer" aria-hidden="true">
+      <div ref={trackRef} className="marquee-track">
+        {/* Render repeated sets for smooth infinite scroll */}
+        {[...phrases, ...phrases, ...phrases, ...phrases].map((item, idx) => (
+          <div key={idx} className="marquee-text-item">
+            <span>{item.text}</span>
+            <span className="inline-flex items-center justify-center p-1.5 rounded-full bg-white/15">
+              {item.icon}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
-

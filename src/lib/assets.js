@@ -7,6 +7,7 @@ export const portfolioAssets = {
     avatar: '/images/portraits/portrait-avatar-editorial.webp',
     about: '/images/portraits/portrait-about-creative.webp',
     working: '/images/portraits/portrait-working-candid.webp',
+    professional: '/generated/me-studio-headshot.jpg',
   },
   visuals: {
     glassStudy: '/images/theme/chromatic-glass-study.webp',

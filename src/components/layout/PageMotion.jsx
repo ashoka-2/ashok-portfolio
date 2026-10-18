@@ -22,8 +22,9 @@ export default function PageMotion({ children }) {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      intro.fromTo(root.current, { autoAlpha: 0, y: 14 }, {
-        autoAlpha: 1, y: 0, duration: 0.55, clearProps: 'transform,visibility,opacity',
+      // Keep route content visible even if a media transition or lazy image takes longer.
+      intro.fromTo(root.current, { y: 10 }, {
+        y: 0, duration: 0.28, clearProps: 'transform',
       })
 
       const openingText = root.current.querySelectorAll('[data-reveal]')

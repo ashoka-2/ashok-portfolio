@@ -27,18 +27,17 @@ export function AboutPage() {
           Curiosity is the engine.<br />
           <em>Craft is the vehicle.</em>
         </h1>
-        <p className="text-fluid-body text-[var(--text-secondary)] leading-relaxed">
-          {profile.statement}
-        </p>
+        <p className="text-fluid-body text-[var(--text-secondary)] leading-relaxed">{profile.statement}</p>
+        <div className="mt-5 flex flex-wrap gap-2">{profile.roleList.map((role) => <span className="grain-card about-role-chip" key={role}>{role}</span>)}</div>
       </div>
 
       {/* Two-column layout with photo & philosophy */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 items-start">
         <div className="lg:col-span-5">
-          <div className="rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/5] bg-[var(--surface-1)] relative">
+          <div className="grain-card rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/5] bg-[var(--surface-1)] relative about-portrait-card">
             <img
-              src={portfolioAssets.portraits.about}
-              alt="Ashok Kumar"
+              src={portfolioAssets.portraits.professional}
+              alt="Professional portrait of Ashok Kumar"
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-4 left-4 right-4 p-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 font-mono text-xs text-white">
@@ -48,7 +47,7 @@ export function AboutPage() {
         </div>
 
         <div className="lg:col-span-7 space-y-8">
-          <div className="p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
+          <div className="grain-card p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-pink)] block mb-2 font-semibold">
               MY PHILOSOPHY
             </span>
@@ -60,7 +59,7 @@ export function AboutPage() {
             </p>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
+          <div className="grain-card p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-amber)] block mb-2 font-semibold">
               ACADEMIC FOUNDATION
             </span>
@@ -75,7 +74,7 @@ export function AboutPage() {
             </span>
           </div>
 
-          <div className="p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
+          <div className="grain-card p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--secondary-mesh-2)] block mb-3 font-semibold">
               AREAS OF ACTIVE EXPLORATION
             </span>
@@ -91,6 +90,10 @@ export function AboutPage() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="about-page-cta">
+        <p className="text-[var(--text-secondary)]">Curious about building something together?</p>
+        <div className="flex flex-wrap gap-3"><Button to="/contact" kind="primary">Start a conversation <ArrowUpRight size={16} /></Button><Button to="/projects" kind="secondary">Explore selected work <ArrowUpRight size={16} /></Button></div>
       </div>
     </div>
   )
@@ -129,7 +132,7 @@ export function ContactPage() {
         </Link>
       </div>
 
-      <div className="max-w-3xl mb-14">
+      <div className="max-w-3xl mb-10">
         <span className="section-kicker">INITIATE CONTACT</span>
         <h1 className="text-fluid-h1 font-display font-black text-[var(--text-primary)] mb-6">
           Let's talk about<br />
@@ -140,34 +143,41 @@ export function ContactPage() {
         </p>
       </div>
 
-      <div className="max-w-2xl p-8 sm:p-12 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] mb-12">
+      <div className="contact-page-grid">
+      <div className="grain-card contact-details-card p-8 sm:p-12 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)]">
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-[var(--border-subtle)]">
           <div>
             <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)] block mb-1">
               DIRECT EMAIL
             </span>
-            <div className="font-mono text-lg sm:text-xl font-bold text-[var(--text-primary)]">
+            <div className="contact-email-address font-mono text-lg sm:text-xl font-bold text-[var(--text-primary)]">
               {profile.contact.email}
             </div>
           </div>
-          <button
-            onClick={copyEmail}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] text-xs font-mono font-medium hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink)] transition-colors"
-          >
+          <Button kind="tertiary" onClick={copyEmail} className="text-xs font-mono">
             {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
             <span>{copied ? 'COPIED' : 'COPY'}</span>
-          </button>
+          </Button>
         </div>
+        <div className="contact-location-line"><MapPin size={15} /><span>{profile.location}</span><span className="contact-location-dot" /><span>Open to thoughtful collaborations</span></div>
 
         <div className="space-y-4">
-          <a
+          <Button
             href={`mailto:${profile.contact.email}?subject=Project%20Inquiry%20%E2%80%94%20Ashok%20Kumar`}
-            className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-[var(--accent-pink)] via-[var(--secondary-mesh-2)] to-[var(--accent-amber)] text-[var(--base-bg)] font-display font-bold text-base hover:brightness-110 transition-all shadow-lg"
+            kind="primary" className="w-full py-4 rounded-2xl font-display text-base"
           >
             <span>COMPOSE EMAIL IN DEFAULT CLIENT</span>
             <ArrowUpRight size={18} />
-          </a>
+          </Button>
         </div>
+      </div>
+      <aside className="contact-portrait-column">
+        <div className="grain-card contact-portrait-card">
+          <img src={portfolioAssets.portraits.professional} alt="Professional portrait of Ashok Kumar" loading="lazy" />
+          <div className="contact-portrait-caption"><span className="section-kicker">ASHOK KUMAR · KERALA, INDIA</span><h2>Good work starts with a good conversation.</h2><Link to="/about">A little more about me <ArrowUpRight size={15} /></Link></div>
+        </div>
+        <div className="grain-card contact-note"><Sparkles size={17} /><span>Tell me what you are working on, what feels stuck, or what you would like to explore.</span></div>
+      </aside>
       </div>
     </div>
   )

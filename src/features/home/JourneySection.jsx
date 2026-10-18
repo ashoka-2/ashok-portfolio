@@ -65,7 +65,7 @@ export default function JourneySection() {
             </div>
 
             {/* Card Content */}
-            <div className="p-6 sm:p-8 rounded-2xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] hover:border-[var(--accent-pink)]/50 transition-colors">
+            <div className="grain-card p-6 sm:p-8 rounded-2xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] hover:border-[var(--accent-pink)]/50 transition-colors">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <span className="font-mono text-sm font-bold text-[var(--accent-amber)]">
                   {item.year}

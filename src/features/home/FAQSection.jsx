@@ -57,7 +57,7 @@ export default function FAQSection() {
         {faqs.map((faq, idx) => {
           const isOpen = openIdx === idx
           return (
-            <div key={idx} className="faq-item">
+            <div key={idx} className="faq-item grain-card">
               <button
                 onClick={() => toggle(idx)}
                 className="faq-trigger cursor-pointer group"

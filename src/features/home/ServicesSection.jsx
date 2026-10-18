@@ -63,7 +63,7 @@ export default function ServicesSection() {
         {services.map((item, idx) => (
           <div
             key={item.index}
-            className="service-card group cursor-pointer"
+            className="service-card grain-card group cursor-pointer"
             onPointerEnter={() => setHoveredIdx(idx)}
             onPointerLeave={() => setHoveredIdx(null)}
           >

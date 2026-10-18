@@ -1,17 +1,11 @@
-import { useId, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import mainArtwork from './mainbtn.svg?raw'
-import linkArtwork from './link.svg?raw'
 
-export default function Button({ children, to, href, kind = 'primary', className = '', ...props }) {
-  const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
-  const svg = useMemo(() => (kind === 'primary' ? mainArtwork : linkArtwork)
-    .replace(/\bid="([^"]+)"/g, (_, value) => `id="${value}-${id}"`)
-    .replace(/url\(#([^)]+)\)/g, (_, value) => `url(#${value}-${id})`)
-    .replace(/href="#([^"]+)"/g, (_, value) => `href="#${value}-${id}"`), [kind, id])
-  const content = <><span className="button-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: svg }} /><span className="button-label">{children}</span></>
-  const classes = `button button-${kind} ${className}`
-  if (to) return <Link className={classes} to={to} {...props}>{content}</Link>
-  if (href) return <a className={classes} href={href} {...props}>{content}</a>
-  return <button type="button" className={classes} {...props}>{content}</button>
+const variants = { primary: 'ref-primary', secondary: 'ref-secondary', tertiary: 'ref-tertiary' }
+
+/** Shared portfolio action. Use kind="primary", "secondary", or "tertiary" across every route. */
+export default function Button({ children, to, href, kind = 'primary', className = '', type = 'button', ...props }) {
+  const classes = `ref-button ${variants[kind] || variants.primary} ${className}`.trim()
+  if (to) return <Link className={classes} to={to} {...props}>{children}</Link>
+  if (href) return <a className={classes} href={href} {...props}>{children}</a>
+  return <button type={type} className={classes} {...props}>{children}</button>
 }

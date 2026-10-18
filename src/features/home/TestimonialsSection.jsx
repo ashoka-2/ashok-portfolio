@@ -52,7 +52,7 @@ export default function TestimonialsSection({ items = testimonialsData }) {
         </div>
       </div>
 
-      <div className="p-8 sm:p-12 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] relative">
+      <div className="grain-card p-8 sm:p-12 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] relative">
         <Quote size={40} className="text-[var(--accent-pink)]/30 mb-6" />
         <p className="font-display text-xl sm:text-2xl lg:text-3xl font-medium leading-relaxed text-[var(--text-primary)] mb-8">
           "{current.quote}"

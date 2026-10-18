@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import SelectedWorks from '../projects/SelectedWorks.jsx'
 import PhysicsField from '../physics/PhysicsField.jsx'
+import Button from '../../components/buttons/Button.jsx'
 import { profile } from '../../utils/profile.js'
 import { projects } from '../../utils/projects.js'
 import { techStack } from '../../utils/tech.js'
@@ -42,7 +43,7 @@ export default function HomePage() {
           </div>
           <div className="ref-hero-actions">
             <div className="ref-meta">{hero.meta.map((item) => <span key={item}>{item}</span>)}</div>
-            <div className="ref-cta-row"><a className="ref-button ref-primary" href="#work">{hero.primaryAction} <ArrowDown size={16} /></a><a className="ref-button ref-secondary" href="#contact">{hero.secondaryAction} <ArrowUpRight size={16} /></a></div>
+            <div className="ref-cta-row"><Button href="#work" kind="primary">{hero.primaryAction} <ArrowDown size={16} /></Button><Button href="#contact" kind="secondary">{hero.secondaryAction} <ArrowUpRight size={16} /></Button></div>
           </div>
         </div>
       </div>

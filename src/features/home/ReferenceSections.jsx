@@ -6,19 +6,71 @@ import { profile } from '../../utils/profile.js'
 import { projects } from '../../utils/projects.js'
 import { techStack } from '../../utils/tech.js'
 import { aboutContent, processContent, capabilitiesContent, faqContent, physicsContent } from '../../utils/pageContent.js'
+import Button from '../../components/buttons/Button.jsx'
 
 function SectionTitle({ number, label, title, aside }) {
   return <div className="ref-section-heading"><div><span className="ref-eyebrow">{number} / {label}</span><h2>{title}</h2></div>{aside && <span className="ref-aside">{aside}</span>}</div>
 }
 
 export function AboutBento() {
+  const root = useRef(null)
+  const intro = useRef(null)
   const [activeGroup, setActiveGroup] = useState('Frontend')
   const count = useMemo(() => ({ projects: projects.length, tools: techStack.length }), [])
   const { skillGroups, openTo, labels } = aboutContent
-  return <section className="ref-section ref-about" id="about">
+  useGSAP(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const words = intro.current?.querySelectorAll('[data-about-word]')
+    const gooBlurs = intro.current?.querySelectorAll('[data-about-blur]')
+    const gooThresholds = intro.current?.querySelectorAll('[data-about-alpha]')
+    if (!words?.length) return
+    gsap.set(words, { autoAlpha: 0, filter: 'blur(5px)', y: 5 })
+    if (gooBlurs?.length) gsap.set(gooBlurs, { attr: { stdDeviation: 3.2 } })
+    const reveal = gsap.timeline({
+      scrollTrigger: {
+        trigger: intro.current,
+        start: 'top 100px',
+        end: () => `+=${Math.round(window.innerHeight * 1.25)}`,
+        pin: true,
+        pinSpacing: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+      },
+    })
+    reveal.to(words, {
+      autoAlpha: 1,
+      filter: 'blur(0px)',
+      y: 0,
+      stagger: { each: 0.045, from: 'start' },
+      ease: 'none',
+    }, 0)
+    if (gooBlurs?.length) reveal.to(gooBlurs, {
+      attr: { stdDeviation: 0.01 },
+      stagger: { each: 0.045, from: 'start' },
+      ease: 'none',
+    }, 0)
+    if (gooThresholds?.length) reveal.to(gooThresholds, {
+      attr: { slope: 1, intercept: 0 },
+      stagger: { each: 0.045, from: 'start' },
+      ease: 'none',
+    }, 0)
+  }, { scope: root })
+  const revealWords = (text, key) => text.split(/(\s+)/).map((part, index) =>
+    /^\s+$/.test(part) ? part : (() => {
+      const filterId = `about-goo-${key}-${index}`
+      return <span className="ref-about-goo-word" key={`${key}-${index}`} style={{ filter: `url(#${filterId})` }}>
+        <svg className="ref-inline-filter" aria-hidden="true" focusable="false"><defs><filter id={filterId} x="-35%" y="-45%" width="170%" height="190%"><feGaussianBlur data-about-blur in="SourceGraphic" stdDeviation="3.2" result="blur"/><feComponentTransfer in="blur" result="goo"><feFuncA data-about-alpha type="linear" slope="10" intercept="-3.5"/></feComponentTransfer><feComposite in="SourceGraphic" in2="goo" operator="atop"/></filter></defs></svg>
+        <span className="ref-about-word" data-about-word>{part}</span>
+      </span>
+    })(),
+  )
+  return <section className="ref-section ref-about" id="about" ref={root}>
     <div className="ref-wrap">
-      <SectionTitle number={aboutContent.section.number} label={aboutContent.section.label} title={<>{aboutContent.section.heading[0]} <em>{aboutContent.section.heading[1]}</em></>} />
-      <p className="ref-manifesto">{aboutContent.manifesto[0]}<mark>{aboutContent.manifesto[1]}</mark>{aboutContent.manifesto[2]}<mark>{aboutContent.manifesto[3]}</mark>{aboutContent.manifesto[4]}<mark>{aboutContent.manifesto[5]}</mark>{aboutContent.manifesto[6]}</p>
+      <div className="ref-about-intro" ref={intro}>
+        <SectionTitle number={aboutContent.section.number} label={aboutContent.section.label} title={<>{aboutContent.section.heading[0]} <em>{aboutContent.section.heading[1]}</em></>} />
+        <p className="ref-manifesto">{revealWords(aboutContent.manifesto[0], 'plain-0')}<mark>{revealWords(aboutContent.manifesto[1], 'mark-1')}</mark>{revealWords(aboutContent.manifesto[2], 'plain-2')}<mark>{revealWords(aboutContent.manifesto[3], 'mark-3')}</mark>{revealWords(aboutContent.manifesto[4], 'plain-4')}<mark>{revealWords(aboutContent.manifesto[5], 'mark-5')}</mark>{revealWords(aboutContent.manifesto[6], 'plain-6')}</p>
+      </div>
       <div className="ref-bento">
         <article className="ref-bcard ref-b1"><span className="ref-mono ref-muted">{labels.workStyle}</span><div className="ref-words">{aboutContent.workStyles.map((word) => <span key={word}>{word}</span>)}</div></article>
         <article className="ref-bcard ref-b2"><span className="ref-mono ref-muted">{labels.stack}</span><div className="ref-tabs" role="tablist" aria-label={labels.skillTabs}>{Object.keys(skillGroups).map((group) => <button key={group} type="button" role="tab" aria-selected={activeGroup === group} onClick={() => setActiveGroup(group)}>{group}</button>)}</div><div className="ref-chips" role="tabpanel" aria-live="polite">{skillGroups[activeGroup].map((skill) => <span className="ref-chip" key={skill}>{skill}</span>)}</div></article>
@@ -34,7 +86,6 @@ export function ProcessSection() {
   const root = useRef(null)
   const heading = useRef(null)
   const track = useRef(null)
-  const viewport = useRef(null)
   const progress = useRef(null)
   useGSAP(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -54,22 +105,26 @@ export function ProcessSection() {
         },
       },
     )
-    const media = gsap.matchMedia()
-    media.add('(min-width: 900px)', () => {
-      const distance = () => Math.max(0, (track.current?.scrollWidth || 0) - window.innerWidth + 80)
-      gsap.to(track.current, { x: () => -distance(), ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1, onUpdate: (self) => gsap.set(progress.current, { scaleX: self.progress }) } })
+    const distance = () => Math.max(0, (track.current?.scrollWidth || 0) - window.innerWidth + 80)
+    gsap.to(track.current, {
+      x: () => -distance(),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: root.current,
+        start: 'top top',
+        end: () => `+=${distance()}`,
+        pin: true,
+        pinSpacing: true,
+        scrub: 0.8,
+        invalidateOnRefresh: true,
+        anticipatePin: 1,
+        onUpdate: (self) => gsap.set(progress.current, { scaleX: self.progress }),
+      },
     })
-    return () => media.revert()
   }, { scope: root })
-  const updateNativeProgress = () => {
-    if (!viewport.current || !progress.current || window.innerWidth >= 900) return
-    const { scrollLeft, scrollWidth, clientWidth } = viewport.current
-    const amount = scrollLeft / Math.max(1, scrollWidth - clientWidth)
-    progress.current.style.transform = `scaleX(${amount})`
-  }
   return <section className="ref-section ref-process" id="process" ref={root}>
     <div className="ref-wrap"><div ref={heading}><SectionTitle number={processContent.section.number} label={processContent.section.label} title={<>{processContent.section.heading[0]} <em>{processContent.section.heading[1]}</em></>} aside={processContent.section.aside} /></div></div>
-    <div className="ref-process-viewport" ref={viewport} onScroll={updateNativeProgress}><div className="ref-process-track" ref={track}>{processContent.steps.map(([title, description], index) => <article className="ref-step" key={title}><span className="ref-step-number">{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{description}</p></div></article>)}</div></div>
+    <div className="ref-process-viewport"><div className="ref-process-track" ref={track}>{processContent.steps.map(([title, description], index) => <article className="ref-step" key={title}><span className="ref-step-number">{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{description}</p></div></article>)}</div></div>
     <div className="ref-progress"><i ref={progress} /></div>
   </section>
 }
@@ -95,7 +150,7 @@ export function CapabilitiesSection() {
         <div className="ref-panel"><h3>{capabilitiesContent.estimator.heading}</h3><p className="ref-muted">{capabilitiesContent.estimator.description}</p>
           {Object.entries(estimatorOptions).map(([group, options]) => <div className="ref-option-group" key={group}><span className="ref-mono ref-muted">{capabilitiesContent.estimator.groups[group]}</span><div className="ref-chips">{options.map(([label, value]) => <button className="ref-chip" key={value} type="button" aria-pressed={pick[group] === value} onClick={() => setPick((old) => ({ ...old, [group]: value }))}>{label}</button>)}</div></div>)}
         </div>
-        <div className="ref-panel ref-roadmap"><span className="ref-mono ref-muted">{capabilitiesContent.estimator.roadmapLabel}</span><ol>{estimateSteps(pick).map((step) => <li key={step}>{step}</li>)}</ol><p className="ref-sum">{labels.type}, {labels.motion.toLowerCase()}, {labels.time.toLowerCase()}.</p><a className="ref-button ref-primary" href={`mailto:${profile.contact.email}?subject=Project%20brief&body=${sendBody}`}>{capabilitiesContent.estimator.sendLabel} <ArrowUpRight size={16} /></a></div>
+        <div className="ref-panel ref-roadmap"><span className="ref-mono ref-muted">{capabilitiesContent.estimator.roadmapLabel}</span><ol>{estimateSteps(pick).map((step) => <li key={step}>{step}</li>)}</ol><p className="ref-sum">{labels.type}, {labels.motion.toLowerCase()}, {labels.time.toLowerCase()}.</p><Button href={`mailto:${profile.contact.email}?subject=Project%20brief&body=${sendBody}`} kind="primary">{capabilitiesContent.estimator.sendLabel} <ArrowUpRight size={16} /></Button></div>
       </div>
     </div>
   </section>
@@ -104,10 +159,16 @@ export function CapabilitiesSection() {
 export function ReferenceFAQ() {
   const [open, setOpen] = useState(0)
   return <section className="ref-section" id="faq"><div className="ref-wrap"><SectionTitle number={faqContent.section.number} label={faqContent.section.label} title={<>{faqContent.section.heading[0]} <em>{faqContent.section.heading[1]}</em></>} />
-    <div className="ref-faq">{faqContent.items.map(([question, answer], index) => <article className="ref-qa" data-open={open === index} key={question}><button type="button" aria-expanded={open === index} onClick={() => setOpen((current) => current === index ? null : index)}><span>{question}</span><i aria-hidden="true" /></button><div className="ref-answer"><div><p>{answer}</p></div></div></article>)}</div>
+    <div className="ref-faq">{faqContent.items.map(([question, answer], index) => <article className="ref-qa grain-card" data-open={open === index} key={question}><button type="button" aria-expanded={open === index} onClick={() => setOpen((current) => current === index ? null : index)}><span>{question}</span><i aria-hidden="true" /></button><div className="ref-answer"><div><p>{answer}</p></div></div></article>)}</div>
   </div></section>
 }
 
 export function ReferencePhysics({ children }) {
-  return <section className="ref-section ref-physics" id="play"><div className="ref-wrap"><div className="ref-physics-heading"><SectionTitle number={physicsContent.section.number} label={physicsContent.section.label} title={<>{physicsContent.section.heading[0]} <em>{physicsContent.section.heading[1]}</em></>} /><button className="ref-button ref-secondary ref-shake" type="button" onClick={() => window.dispatchEvent(new Event('reference-physics-shake'))}>{physicsContent.action} <Sparkles size={15} /></button></div>{children}</div></section>
+  const [gravity, setGravity] = useState(true)
+  const toggleGravity = () => {
+    const next = !gravity
+    setGravity(next)
+    window.dispatchEvent(new CustomEvent('reference-physics-gravity', { detail: { enabled: next } }))
+  }
+  return <section className="ref-section ref-physics" id="play"><div className="ref-wrap"><div className="ref-physics-heading"><SectionTitle number={physicsContent.section.number} label={physicsContent.section.label} title={<>{physicsContent.section.heading[0]} <em>{physicsContent.section.heading[1]}</em></>} /><div className="ref-physics-controls"><Button kind="secondary" className="ref-shake" onClick={() => window.dispatchEvent(new Event('reference-physics-shake'))}>{physicsContent.action} <Sparkles size={15} /></Button><Button kind="secondary" className="ref-gravity" aria-pressed={!gravity} onClick={toggleGravity}>{gravity ? 'Disable gravity' : 'Enable gravity'} <span aria-hidden="true">{gravity ? '↓' : '↔'}</span></Button></div></div>{children}</div></section>
 }

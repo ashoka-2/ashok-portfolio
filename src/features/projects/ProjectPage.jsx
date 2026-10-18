@@ -21,11 +21,7 @@ export default function ProjectPage() {
   useEffect(() => {
     if (!heroSlotRef.current || !slug) return
 
-    const landed = landProjectFlight(slug, heroSlotRef.current)
-    if (!landed) {
-      // Direct navigation without ghost flight
-      gsap.to(heroSlotRef.current, { autoAlpha: 1, duration: 0.4 })
-    }
+    landProjectFlight(slug, heroSlotRef.current)
 
     return () => {
       clearProjectFlight()
@@ -114,7 +110,7 @@ export default function ProjectPage() {
           data-hero-target={project.slug}
           src={project.desktopImage || project.cover?.dark}
           alt={`${project.title} Interface`}
-          className="w-full h-full object-cover detail-hero-slot opacity-0"
+          className="w-full h-full object-cover detail-hero-slot"
         />
         <div className="absolute bottom-4 right-4 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md font-mono text-xs text-white/90 border border-white/10">
           {project.year} · {project.status}
@@ -189,7 +185,7 @@ export default function ProjectPage() {
             {(project.features || []).map((feat, i) => (
               <div
                 key={i}
-                className="flex items-start gap-3.5 p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm"
+                className="grain-card flex items-start gap-3.5 p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm"
               >
                 <CheckCircle2 size={18} className="text-[#10B981] shrink-0 mt-0.5" />
                 <span className="text-sm sm:text-base text-[var(--text-primary)] leading-normal">
@@ -209,7 +205,7 @@ export default function ProjectPage() {
             {project.images.slice(1).map((img, i) => (
               <div
                 key={i}
-                className="rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] bg-[var(--surface-1)]"
+                className="grain-card rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] bg-[var(--surface-1)]"
               >
                 <img src={img.url} alt={img.title || ''} className="w-full h-auto object-cover" />
                 <div className="p-5 border-t border-[var(--border-subtle)]">
@@ -234,7 +230,7 @@ export default function ProjectPage() {
         <Link
           to={`/projects/${nextProject.slug}`}
           data-project-link={nextProject.slug}
-          className="group block p-8 sm:p-14 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] hover:border-[var(--accent-pink)] transition-all relative overflow-hidden"
+          className="grain-card group block p-8 sm:p-14 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] hover:border-[var(--accent-pink)] transition-all relative overflow-hidden"
         >
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>

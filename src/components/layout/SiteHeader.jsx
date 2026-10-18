@@ -14,6 +14,8 @@ export default function SiteHeader() {
   const lastScrollY = useRef(0)
   const location = useLocation()
   const headerRef = useRef(null)
+  const menuButtonRef = useRef(null)
+  const closeButtonRef = useRef(null)
 
   // Scroll detection for hide/show navbar and glass styling
   useEffect(() => {
@@ -42,13 +44,31 @@ export default function SiteHeader() {
     setMenuOpen(false)
   }, [location.pathname])
 
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeButtonRef.current?.focus()
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [menuOpen])
+
   const menuLinks = [
-    { num: '01', label: 'ABOUT', href: '/#about' },
-    { num: '02', label: 'WORK', href: '/#work' },
+    { num: '01', label: 'ABOUT', href: '/about' },
+    { num: '02', label: 'WORK', href: '/projects' },
     { num: '03', label: 'PROCESS', href: '/#process' },
     { num: '04', label: 'SERVICES', href: '/#capabilities' },
     { num: '05', label: 'PLAY', href: '/#play' },
-    { num: '06', label: 'CONTACT', href: '/#contact' },
+    { num: '06', label: 'CONTACT', href: '/contact' },
   ]
 
   return (
@@ -74,7 +94,7 @@ export default function SiteHeader() {
           </Link>
 
           <nav className="ref-top-links" aria-label="Portfolio sections">
-            <a href="/#about">About</a>
+            <a href="/about">About</a>
             <a href="/#work">Work</a>
             <a href="/#process">Process</a>
             <a href="/#capabilities">Services</a>
@@ -83,12 +103,13 @@ export default function SiteHeader() {
 
           {/* Right Actions: Let's Talk Pill + Menu Pill + Pull Cord */}
           <div className="flex items-center gap-3">
-            <a href="/#contact" className="nav-pill cursor-pointer" aria-label="Go to contact section">
+            <a href="/contact" className="nav-pill cursor-pointer" aria-label="Go to contact page">
               <span>LET'S TALK</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-pink)]" />
             </a>
 
             <button
+              ref={menuButtonRef}
               onClick={() => setMenuOpen(!menuOpen)}
               className="nav-pill cursor-pointer"
               aria-expanded={menuOpen}
@@ -108,6 +129,8 @@ export default function SiteHeader() {
       <div
         className={`menu-overlay ${menuOpen ? 'is-open' : ''}`}
         aria-hidden={!menuOpen}
+        inert={!menuOpen}
+        data-lenis-prevent
       >
         {/* Top bar inside menu */}
         <div className="flex items-center justify-between w-full">
@@ -115,6 +138,7 @@ export default function SiteHeader() {
             INDEX NAVIGATION
           </span>
           <button
+            ref={closeButtonRef}
             onClick={() => setMenuOpen(false)}
             className="w-10 h-10 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--accent-pink)] hover:border-[var(--accent-pink)] transition-colors"
             aria-label="Close menu"
@@ -170,7 +194,7 @@ export default function SiteHeader() {
               className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
             >
               <Mail size={15} />
-              <span>{profile.contact.email}</span>
+              <span className="menu-email">{profile.contact.email}</span>
               <ArrowUpRight size={12} />
             </a>
           </div>

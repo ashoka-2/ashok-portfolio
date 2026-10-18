@@ -8,6 +8,7 @@ export default function PhysicsField({ items }) {
   const engineRef = useRef(null)
   const mouseConstraint = useRef(null)
   const gesture = useRef(null)
+  const gravityEnabled = useRef(true)
   useEffect(() => {
     const node = field.current
     if (!node) return
@@ -25,7 +26,7 @@ export default function PhysicsField({ items }) {
     const build = () => {
       const { width, height } = node.getBoundingClientRect()
       const compactLayout = width <= 720
-      engine.gravity.y = compactLayout ? 0.8 : 1.05
+      engine.gravity.y = gravityEnabled.current ? (compactLayout ? 0.8 : 1.05) : 0
       const itemWidth = els[0]?.offsetWidth || 84
       const itemHeight = els[0]?.offsetHeight || 96
       const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 5 : 10))))
@@ -88,8 +89,13 @@ export default function PhysicsField({ items }) {
       Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 24, y: -(8 + Math.random() * 15) })
       Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.3)
     })
+    const setGravity = (event) => {
+      gravityEnabled.current = Boolean(event.detail?.enabled)
+      engine.gravity.y = gravityEnabled.current ? (node.clientWidth <= 720 ? 0.8 : 1.05) : 0
+    }
     window.addEventListener('reference-physics-shake', shake)
-    return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener('reference-physics-shake', shake); Matter.Engine.clear(engine); Matter.Composite.clear(engine.world); bodies.current = []; mouseConstraint.current = null }
+    window.addEventListener('reference-physics-gravity', setGravity)
+    return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener('reference-physics-shake', shake); window.removeEventListener('reference-physics-gravity', setGravity); Matter.Engine.clear(engine); Matter.Composite.clear(engine.world); bodies.current = []; mouseConstraint.current = null }
   }, [items])
   const nudge = (event) => {
     if (mouseConstraint.current?.constraint?.bodyB) return
@@ -121,9 +127,9 @@ export default function PhysicsField({ items }) {
     gesture.current = null
   }
   return <div className="physics-field-viewport">
-    <div className="physics-field" ref={field} style={{ '--physics-field-height': '650px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
+    <div className="physics-field grain-card" ref={field} style={{ '--physics-field-height': '650px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
       <span className="physics-corner">A TOOLBOX, IN MOTION</span>
-      {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} /></span>)}
+      {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} compact /></span>)}
       <span className="physics-floor">DRAG TO DROP · CLICK TO OPEN</span>
     </div>
   </div>

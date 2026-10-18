@@ -81,7 +81,7 @@ export default function ContactOverlay({ isOpen, onClose }) {
         </p>
 
         {/* Quick Email Action Box */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-default)] mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="grain-card p-4 sm:p-5 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-default)] mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="w-10 h-10 rounded-xl bg-[var(--accent-pink)]/15 text-[var(--accent-pink)] flex items-center justify-center shrink-0">
               <Mail size={18} />

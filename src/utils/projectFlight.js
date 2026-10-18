@@ -80,7 +80,7 @@ export function landProjectFlight(slug, targetImg) {
     width: targetRect.width,
     height: targetRect.height,
     borderRadius: targetRadius,
-    duration: 1.2,
+    duration: 0.62,
     ease: 'expo.inOut',
     onComplete: () => {
       ghost.remove()

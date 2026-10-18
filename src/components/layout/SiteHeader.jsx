@@ -5,13 +5,10 @@ import GithubIcon from '../icons/GithubIcon.jsx'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import ThemeToggle from './ThemeToggle.jsx'
-import ContactOverlay from './ContactOverlay.jsx'
-import LocalTime from '../motion/LocalTime.jsx'
 import { profile } from '../../utils/profile.js'
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [contactOpen, setContactOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const lastScrollY = useRef(0)
@@ -43,16 +40,15 @@ export default function SiteHeader() {
   // Close menu upon route navigation
   useEffect(() => {
     setMenuOpen(false)
-    setContactOpen(false)
   }, [location.pathname])
 
   const menuLinks = [
-    { num: '01', label: 'WORK', href: '/#work' },
-    { num: '02', label: 'ABOUT', href: '/#about' },
-    { num: '03', label: 'SERVICES', href: '/#services' },
-    { num: '04', label: 'JOURNEY', href: '/#journey' },
-    { num: '05', label: 'FAQ', href: '/#faq' },
-    { num: '06', label: 'CONTACT', action: () => { setMenuOpen(false); setContactOpen(true) } },
+    { num: '01', label: 'ABOUT', href: '/#about' },
+    { num: '02', label: 'WORK', href: '/#work' },
+    { num: '03', label: 'PROCESS', href: '/#process' },
+    { num: '04', label: 'SERVICES', href: '/#capabilities' },
+    { num: '05', label: 'PLAY', href: '/#play' },
+    { num: '06', label: 'CONTACT', href: '/#contact' },
   ]
 
   return (
@@ -64,8 +60,8 @@ export default function SiteHeader() {
         <div className="page-container nav-inner">
           {/* Logo Mark Left */}
           <Link to="/" className="flex items-center gap-2 group" aria-label="Ashok Kumar Home">
-            <span className="w-9 h-9 rounded-xl bg-[var(--surface-1)] border border-[var(--border-default)] flex items-center justify-center font-display font-black text-sm text-[var(--text-primary)] group-hover:border-[var(--accent-pink)] group-hover:text-[var(--accent-pink)] transition-all shadow-[var(--highlight-top)]">
-              AK
+            <span className="w-9 h-9 rounded-full bg-[var(--text-primary)] border border-[var(--border-default)] flex items-center justify-center font-display text-xl text-[var(--base-bg)] group-hover:rotate-[360deg] transition-all shadow-[var(--highlight-top)]">
+              A
             </span>
             <div className="hidden sm:flex flex-col">
               <span className="font-display font-bold text-xs uppercase tracking-tight text-[var(--text-primary)]">
@@ -77,26 +73,20 @@ export default function SiteHeader() {
             </div>
           </Link>
 
-          {/* Center: Live Availability & Time */}
-          <div className="hidden md:flex items-center">
-            <div className="status-badge">
-              <span className="status-dot" />
-              <span>AVAILABLE FOR SELECT WORK · </span>
-              <LocalTime />
-              <span> IST</span>
-            </div>
-          </div>
+          <nav className="ref-top-links" aria-label="Portfolio sections">
+            <a href="/#about">About</a>
+            <a href="/#work">Work</a>
+            <a href="/#process">Process</a>
+            <a href="/#capabilities">Services</a>
+            <a href="/#play">Play</a>
+          </nav>
 
           {/* Right Actions: Let's Talk Pill + Menu Pill + Pull Cord */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setContactOpen(true)}
-              className="nav-pill cursor-pointer"
-              aria-label="Open contact dialog"
-            >
+            <a href="/#contact" className="nav-pill cursor-pointer" aria-label="Go to contact section">
               <span>LET'S TALK</span>
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-pink)]" />
-            </button>
+            </a>
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -108,13 +98,11 @@ export default function SiteHeader() {
               {menuOpen ? <X size={14} /> : <Menu size={14} />}
             </button>
 
-            {/* Pull-cord Theme Toggle */}
-            <div className="ml-1 flex items-center">
-              <ThemeToggle />
-            </div>
           </div>
         </div>
       </header>
+
+      <ThemeToggle className="theme-cord-fixed" />
 
       {/* Full-Screen Circular Clip-Path Overlay Menu */}
       <div
@@ -193,8 +181,6 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      {/* Full-Screen Contact Overlay */}
-      <ContactOverlay isOpen={contactOpen} onClose={() => setContactOpen(false)} />
     </>
   )
 }

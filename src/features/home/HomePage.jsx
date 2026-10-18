@@ -1,82 +1,68 @@
-import { useRef } from 'react'
-import { ArrowDown, ArrowUpRight, Sparkles } from 'lucide-react'
+import { lazy, Suspense, useRef } from 'react'
+import { ArrowDown, ArrowUpRight } from 'lucide-react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import Button from '../../components/buttons/Button.jsx'
-import Marquee from '../../components/motion/Marquee.jsx'
-import AboutCollage from './AboutCollage.jsx'
 import SelectedWorks from '../projects/SelectedWorks.jsx'
-import ServicesSection from './ServicesSection.jsx'
-import JourneySection from './JourneySection.jsx'
-import TestimonialsSection from './TestimonialsSection.jsx'
-import FAQSection from './FAQSection.jsx'
+import PhysicsField from '../physics/PhysicsField.jsx'
 import { profile } from '../../utils/profile.js'
 import { projects } from '../../utils/projects.js'
-import { portfolioAssets } from '../../lib/assets.js'
+import { techStack } from '../../utils/tech.js'
+import { homePageContent } from '../../utils/pageContent.js'
+import { AboutBento, CapabilitiesSection, ProcessSection, ReferenceFAQ, ReferencePhysics } from './ReferenceSections.jsx'
+
+const HeroModelCanvas = lazy(() => import('./HeroModelCanvas.jsx'))
+
+function Ribbon() {
+  const { ribbonPhrases } = homePageContent
+  return <div className="ref-ribbon" aria-hidden="true"><div className="ref-ribbon-track">{[...ribbonPhrases, ...ribbonPhrases, ...ribbonPhrases].map((phrase, index) => <span key={`${phrase}-${index}`}>{phrase}<i /></span>)}</div></div>
+}
 
 export default function HomePage() {
   const heroRef = useRef(null)
-
+  const { hero, selectedWork } = homePageContent
   useGSAP(() => {
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduceMotion) return
-
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    intro
-      .fromTo('.hero-copy-in', { y: 22, opacity: 0 }, { y: 0, opacity: 1, duration: 0.75, stagger: 0.1 })
-      .fromTo('.hero-name', { y: 35, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'power4.out' }, '-=0.45')
-      .fromTo('.hero-portrait-frame', { clipPath: 'inset(8% 0 8% 0)', opacity: 0.5 }, { clipPath: 'inset(0% 0 0% 0)', opacity: 1, duration: 1.1, ease: 'power3.inOut' }, '-=0.6')
-      .fromTo('.hero-bottomline', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.45')
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.timeline({ defaults: { ease: 'expo.out' } })
+      .fromTo('.ref-hero-copy > *', { y: 25, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.1 })
+      .fromTo('.ref-sticker', { scale: 0, rotation: -18 }, { scale: 1, rotation: (index) => [-8, 6, -4][index], duration: 0.8, stagger: 0.12, ease: 'elastic.out(1,.55)' }, '-=0.5')
   }, { scope: heroRef })
 
-  return (
-    <div className="home-page-container">
-      <section ref={heroRef} id="top" className="hero-section page-container portfolio-hero">
-        <div className="hero-topline">
-          <div className="hero-kicker"><span className="hero-status-dot" /> AVAILABLE FOR SELECT PROJECTS</div>
-          <div className="hero-location">{profile.location.toUpperCase()} <span>·</span> UTC+5:30</div>
-        </div>
-        <div className="hero-main-grid">
-          <div className="hero-editorial">
-            <p className="hero-overline hero-copy-in">SOFTWARE DEVELOPER · AI ENGINEER</p>
-            <h1 className="hero-name" aria-label={profile.name}>{profile.name}<span className="hero-name-period">.</span></h1>
-            <p className="hero-description hero-copy-in">{profile.oneLiner} <span>{profile.statement}</span></p>
-            <div className="hero-actions hero-copy-in">
-              <Button to="#work"><span>Explore selected work</span><ArrowDown size={15} /></Button>
-              <Button href={`mailto:${profile.contact.email}`} kind="secondary"><span>Start a conversation</span><ArrowUpRight size={15} /></Button>
-            </div>
-            <div className="hero-proof hero-copy-in"><span>01 / BUILT WITH INTENT</span><span>{String(projects.length).padStart(2, '0')} SELECTED PROJECTS</span></div>
+  return <div className="ref-home" ref={heroRef}>
+    <header className="ref-hero" id="top">
+      <div className="ref-hero-glow" aria-hidden="true" />
+      <h1 className="ref-sr">{hero.title}</h1>
+      <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas /></Suspense>
+      {hero.stickers.map((sticker, index) => <span className={`ref-sticker ref-sticker-${['one', 'two', 'three'][index]}`} key={sticker}>{sticker}</span>)}
+      <div className="ref-hero-ui">
+        <div className="ref-hero-bottom">
+          <div className="ref-hero-copy">
+            <span className="ref-open-chip"><i />{hero.openLabel}</span>
+            <h2>{hero.title.split('real')[0]}<em>real</em>{hero.title.split('real')[1]}</h2>
+            <p>{hero.description}</p>
           </div>
-          <div className="hero-visual">
-            <figure className="hero-portrait-frame">
-              <img src={portfolioAssets.portraits.hero} alt={`Portrait of ${profile.name}`} className="hero-portrait-img" />
-              <figcaption><span>ASHOK KUMAR</span><span>KERALA, INDIA ↗</span></figcaption>
-            </figure>
+          <div className="ref-hero-actions">
+            <div className="ref-meta">{hero.meta.map((item) => <span key={item}>{item}</span>)}</div>
+            <div className="ref-cta-row"><a className="ref-button ref-primary" href="#work">{hero.primaryAction} <ArrowDown size={16} /></a><a className="ref-button ref-secondary" href="#contact">{hero.secondaryAction} <ArrowUpRight size={16} /></a></div>
           </div>
         </div>
-        <a href="#about" className="hero-scroll-link">SCROLL TO EXPLORE <ArrowDown size={13} /></a>
-      </section>
+      </div>
+      <span className="ref-hero-hint">{hero.hint}</span>
+    </header>
 
-      <Marquee />
+    <Ribbon />
+    <AboutBento />
 
-      <div className="page-container"><AboutCollage /></div>
+    <section className="section-wrap page-container ref-projects" id="work">
+      <div className="section-heading mb-12" data-scroll-reveal>
+        <div><span className="section-kicker">{selectedWork.kicker}</span><h2 className="text-fluid-h2">{selectedWork.heading[0]} <em>{selectedWork.heading[1]}</em></h2><p className="text-[var(--text-secondary)] text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
+        <span className="font-mono text-xs uppercase text-[var(--accent-pink)] tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
+      </div>
+      <SelectedWorks projects={projects} />
+    </section>
 
-      <section className="section-wrap page-container" id="work">
-        <div className="section-heading mb-12" data-scroll-reveal>
-          <div>
-            <span className="section-kicker">02 — SELECTED PROJECTS</span>
-            <h2 className="text-fluid-h2">Ideas, <em>in motion.</em></h2>
-            <p className="text-[var(--text-secondary)] text-base sm:text-lg mt-2 max-w-xl">A collection of systems and experiences built with curiosity, craft, and a bias toward making.</p>
-          </div>
-          <span className="font-mono text-xs uppercase text-[var(--accent-pink)] tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} CASE STUDIES</span>
-        </div>
-        <SelectedWorks projects={projects} />
-      </section>
-
-      <div className="page-container"><ServicesSection /></div>
-      <div className="page-container"><JourneySection /></div>
-      <div className="page-container"><TestimonialsSection /></div>
-      <div className="page-container"><FAQSection /></div>
-    </div>
-  )
+    <ProcessSection />
+    <CapabilitiesSection />
+    <ReferenceFAQ />
+    <ReferencePhysics><PhysicsField items={techStack} /></ReferencePhysics>
+  </div>
 }

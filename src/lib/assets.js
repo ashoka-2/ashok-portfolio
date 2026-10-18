@@ -1,4 +1,7 @@
 export const portfolioAssets = {
+  models: {
+    hero: '/me/ashok3dmodel.glb',
+  },
   portraits: {
     hero: '/images/portraits/portrait-hero-editorial.webp',
     avatar: '/images/portraits/portrait-avatar-editorial.webp',

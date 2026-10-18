@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import gsap from 'gsap'
 import { toggleTheme } from '../../features/preferences/themeSlice.js'
@@ -10,6 +11,7 @@ export default function ThemeToggle({ className = '' }) {
   const [dragging, setDragging] = useState(false)
   const dragStartY = useRef(0)
   const currentPull = useRef(0)
+  const suppressClick = useRef(false)
 
   const handlePointerDown = (e) => {
     setDragging(true)
@@ -33,39 +35,27 @@ export default function ThemeToggle({ className = '' }) {
   }
 
   const triggerThemeTransition = (e) => {
-    const nextMode = mode === 'dark' ? 'light' : 'dark'
-    
-    // Circular clip-path transition
-    const circle = document.createElement('div')
-    const x = e?.clientX || window.innerWidth - 60
-    const y = e?.clientY || 40
-    
-    Object.assign(circle.style, {
-      position: 'fixed',
-      top: '0px',
-      left: '0px',
-      width: '100vw',
-      height: '100vh',
-      pointerEvents: 'none',
-      zIndex: '99998',
-      background: nextMode === 'dark' ? '#090A0F' : '#F4F0EA',
-      clipPath: `circle(0px at ${x}px ${y}px)`,
-      transition: 'clip-path 0.7s cubic-bezier(0.77, 0, 0.175, 1)',
-    })
-    
-    document.body.appendChild(circle)
-    
+    const x = e?.clientX ?? window.innerWidth - 32
+    const y = e?.clientY ?? window.innerHeight / 2
+    document.documentElement.style.setProperty('--theme-click-x', `${x}px`)
+    document.documentElement.style.setProperty('--theme-click-y', `${y}px`)
+
+    if (document.startViewTransition) {
+      document.startViewTransition(() => flushSync(() => dispatch(toggleTheme())))
+      return
+    }
+
+    // Keep a soft expanding blur reveal in browsers without View Transitions.
+    const wave = document.createElement('div')
+    wave.className = 'theme-wave-fallback'
+    wave.style.setProperty('--theme-click-x', `${x}px`)
+    wave.style.setProperty('--theme-click-y', `${y}px`)
+    document.body.appendChild(wave)
     requestAnimationFrame(() => {
-      circle.style.clipPath = `circle(150% at ${x}px ${y}px)`
+      wave.classList.add('is-visible')
+      window.setTimeout(() => flushSync(() => dispatch(toggleTheme())), 220)
+      wave.addEventListener('transitionend', () => wave.remove(), { once: true })
     })
-    
-    setTimeout(() => {
-      dispatch(toggleTheme())
-    }, 280)
-    
-    setTimeout(() => {
-      circle.remove()
-    }, 750)
   }
 
   const handlePointerUp = (e) => {
@@ -74,6 +64,7 @@ export default function ThemeToggle({ className = '' }) {
     setDragging(false)
     
     if (currentPull.current > 32) {
+      suppressClick.current = true
       triggerThemeTransition(e)
     }
 
@@ -89,9 +80,13 @@ export default function ThemeToggle({ className = '' }) {
 
   return (
     <div 
-      className={`pull-cord-wrap ${className}`} 
+      className={`pull-cord-wrap ${className} ${dragging ? 'is-pulling' : ''}`}
       onPointerDown={handlePointerDown} 
       onClick={(e) => {
+        if (suppressClick.current) {
+          suppressClick.current = false
+          return
+        }
         if (currentPull.current <= 5) {
           gsap.fromTo(cordRef.current, 
             { y: 0 }, 
@@ -110,10 +105,11 @@ export default function ThemeToggle({ className = '' }) {
       tabIndex={0}
       aria-label={`Toggle theme (currently ${mode})`}
     >
+      <span className="theme-cord-label" aria-hidden="true">THEME</span>
       <svg 
         className="pull-cord-svg" 
-        width="22" 
-        height="64" 
+        width="30"
+        height="84"
         viewBox="0 0 22 64" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"

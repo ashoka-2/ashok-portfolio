@@ -1,107 +1,50 @@
-import { ArrowUp, ArrowUpRight, Mail, MapPin } from 'lucide-react'
-import GithubIcon from '../icons/GithubIcon.jsx'
+import { useRef, useState } from 'react'
+import { ArrowUpRight, Check, Copy, Mail } from 'lucide-react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
 import { profile } from '../../utils/profile.js'
-import LocalTime from '../motion/LocalTime.jsx'
+import { footerContent } from '../../utils/pageContent.js'
+
+gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 export default function SiteFooter() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const [copied, setCopied] = useState(false)
+  const root = useRef(null)
+  const name = useRef(null)
+  useGSAP(() => {
+    const letters = name.current?.querySelectorAll('.ref-name-char')
+    if (!letters?.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.fromTo(letters, { yPercent: 125, scale: 0.65, rotation: () => gsap.utils.random(-16, 16) }, { yPercent: 0, scale: 1, rotation: 0, duration: 1.15, ease: 'back.out(1.35)', stagger: { each: 0.055, from: 'center' }, scrollTrigger: { trigger: name.current, start: 'top 88%', once: true } })
+  }, { scope: root })
+
+  const copyEmail = async () => {
+    try { await navigator.clipboard.writeText(profile.contact.email) } catch {
+      const field = document.createElement('textarea')
+      field.value = profile.contact.email; field.style.position = 'fixed'; field.style.opacity = '0'
+      document.body.appendChild(field); field.select(); document.execCommand('copy'); field.remove()
+    }
+    setCopied(true); window.setTimeout(() => setCopied(false), 1800)
   }
 
-  return (
-    <footer className="footer-section" id="contact">
-      <div className="page-container flex flex-col justify-between min-h-[70vh]">
-        {/* Top: Section Kicker */}
-        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-6 mb-12">
-          <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-pink)] font-semibold">
-            06 — NEXT STEP
-          </span>
-          <div className="flex items-center gap-2 font-mono text-xs text-[var(--text-tertiary)]">
-            <MapPin size={13} className="text-[var(--accent-amber)]" />
-            <span>KERALA, INDIA · </span>
-            <LocalTime />
-            <span> IST</span>
-          </div>
-        </div>
-
-        {/* Huge Magnetic CTA */}
-        <div className="my-auto py-8">
-          <p className="font-mono text-sm sm:text-base text-[var(--text-secondary)] uppercase tracking-widest mb-4">
-            HAVE A VISION, PRODUCT OR EXPERIMENT?
-          </p>
-          <a
-            href={`mailto:${profile.contact.email}?subject=Let%27s%20build%20something%20%E2%80%94%20Ashok%20Kumar`}
-            className="big-cta-heading inline-block group cursor-pointer"
-            data-cursor="HELLO"
-          >
-            LET'S BUILD<br />
-            <em>SOMETHING.</em>
-            <span className="inline-block ml-4 text-[var(--accent-pink)] transition-transform duration-300 group-hover:translate-x-4 group-hover:-translate-y-4">
-              ↗
-            </span>
-          </a>
-        </div>
-
-        {/* Contact Links & Action Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-t border-[var(--border-subtle)] font-mono text-xs text-[var(--text-secondary)]">
-          {/* Direct Email */}
-          <div>
-            <span className="text-[var(--text-tertiary)] uppercase tracking-wider block mb-2">Direct Mail</span>
-            <a
-              href={`mailto:${profile.contact.email}`}
-              className="text-base sm:text-lg font-semibold text-[var(--text-primary)] hover:text-[var(--accent-pink)] transition-colors flex items-center gap-2"
-            >
-              <Mail size={16} />
-              <span>{profile.contact.email}</span>
-            </a>
-          </div>
-
-          {/* Social Links */}
-          <div>
-            <span className="text-[var(--text-tertiary)] uppercase tracking-wider block mb-2">Connect Elsewhere</span>
-            <div className="flex items-center gap-6">
-              <a
-                href={profile.contact.github}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
-              >
-                <GithubIcon size={15} />
-                <span>GITHUB</span>
-                <ArrowUpRight size={12} />
-              </a>
-              <a
-                href={`mailto:${profile.contact.email}`}
-                className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
-              >
-                <span>EMAIL</span>
-                <ArrowUpRight size={12} />
-              </a>
-            </div>
-          </div>
-
-          {/* Back to top */}
-          <div className="flex md:justify-end items-center">
-            <button
-              onClick={scrollToTop}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[var(--surface-1)] border border-[var(--border-default)] text-xs font-mono font-medium hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink)] transition-all group"
-            >
-              <span>BACK TO TOP</span>
-              <ArrowUp size={14} className="group-hover:-translate-y-1 transition-transform" />
-            </button>
-          </div>
-        </div>
-
-        {/* Two26 style witty closing sign-off & copyright note */}
-        <div className="pt-8 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-[11px] text-[var(--text-tertiary)]">
-          <div>
-            "Okay, that's enough scrolling. Go build something or shoot me an email."
-          </div>
-          <div className="flex items-center gap-2">
-            <span>© 2026 ASHOK KUMAR. HANDMADE DIGITALLY IN KERALA.</span>
-          </div>
+  return <footer className="ref-contact" id="contact" ref={root}>
+    <div className="ref-wrap" id="contactIn">
+      <span className="ref-eyebrow">{footerContent.eyebrow}</span>
+      <h2>{footerContent.heading[0]} <em>{footerContent.heading[1]}</em><br />{footerContent.heading[2]}</h2>
+      <a className="ref-contact-email" href={`mailto:${profile.contact.email}`}><Mail size={19} />{profile.contact.email}</a>
+      <div className="ref-contact-actions">
+        <button className="ref-button ref-primary" onClick={copyEmail} type="button">{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy email'}</button>
+        <a className="ref-button ref-secondary" href={profile.contact.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={15} /></a>
+        <a className="ref-button ref-secondary" href="https://parsuai.vercel.app" target="_blank" rel="noreferrer">Parsu AI <ArrowUpRight size={15} /></a>
+      </div>
+      <div className="ref-name-goo" ref={name} aria-label="Ashok Kumar" role="img">
+        <svg className="ref-goo-filter" aria-hidden="true"><defs><filter id="ref-goo-name"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 18 -7" result="goo"/><feComposite in="SourceGraphic" in2="goo" operator="atop"/></filter></defs></svg>
+        <div className="ref-big-name" style={{ filter: 'url(#ref-goo-name)' }}>
+          <span className="ref-name-desktop" aria-hidden="true">{[...'ASHOK KUMAR'].map((letter, index) => letter === ' ' ? <span className="ref-name-space" key={`space-${index}`} /> : <span className="ref-name-char" key={`${letter}-${index}`}>{letter}</span>)}</span>
+          <span className="ref-name-mobile" aria-hidden="true">{[...'ASHOK'].map((letter, index) => <span className="ref-name-char" key={`${letter}-${index}`}>{letter}</span>)}</span>
         </div>
       </div>
-    </footer>
-  )
+      <div className="ref-foot-meta"><span>{footerContent.note}</span><span>{footerContent.location} · {footerContent.year} {profile.name}</span></div>
+    </div>
+  </footer>
 }

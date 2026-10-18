@@ -1,14 +1,233 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%">
-  <rect width="1600" height="1000" fill="#110A06"/>
-  <rect x="40" y="30" width="1520" height="940" rx="24" fill="#1C120C" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
-  <rect x="40" y="30" width="1520" height="60" rx="24" fill="#251810"/>
-  <text x="170" y="65" fill="#C99778" font-family="system-ui, sans-serif" font-size="14" font-weight="600">ScapeGoat AI Multi-Category Storefront</text>
-  <rect x="80" y="120" width="1440" height="800" rx="18" fill="#160E09"/>
-  <text x="120" y="175" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="26" font-weight="700">Intelligent Retail Discovery Engine</text>
-  <rect x="120" y="210" width="320" height="380" rx="16" fill="#20150F" stroke="#F97316" stroke-width="1"/>
-  <rect x="140" y="230" width="280" height="180" rx="12" fill="#2E1D15"/>
-  <text x="150" y="450" fill="#FFFFFF" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Acoustic Studio Headphones</text>
-  <text x="150" y="485" fill="#F97316" font-family="monospace" font-size="18" font-weight="700">$299.00</text>
-  <rect x="470" y="210" width="320" height="380" rx="16" fill="#20150F"/>
-  <rect x="820" y="210" width="320" height="380" rx="16" fill="#20150F"/>
+  <defs>
+    <linearGradient id="sg-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0c10"/>
+      <stop offset="100%" stop-color="#06070a"/>
+    </linearGradient>
+    <linearGradient id="sg-card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141720"/>
+      <stop offset="100%" stop-color="#0e1017"/>
+    </linearGradient>
+    <linearGradient id="sg-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3566ef"/>
+      <stop offset="100%" stop-color="#608dff"/>
+    </linearGradient>
+    <linearGradient id="sg-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <linearGradient id="sg-amber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="1000" fill="url(#sg-bg)"/>
+  
+  <!-- Subtle Grid Pattern -->
+  <g opacity="0.06" stroke="#ffffff" stroke-width="1">
+    <line x1="0" y1="100" x2="1600" y2="100"/>
+    <line x1="0" y1="250" x2="1600" y2="250"/>
+    <line x1="0" y1="550" x2="1600" y2="550"/>
+    <line x1="0" y1="800" x2="1600" y2="800"/>
+    <line x1="240" y1="0" x2="240" y2="1000"/>
+    <line x1="680" y1="0" x2="680" y2="1000"/>
+    <line x1="1180" y1="0" x2="1180" y2="1000"/>
+  </g>
+
+  <!-- Top Navigation Header -->
+  <rect x="0" y="0" width="1600" height="64" fill="#0d1017" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <circle cx="36" cy="32" r="14" fill="#3566ef"/>
+  <text x="36" y="37" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13" font-weight="800" text-anchor="middle">S</text>
+  <text x="62" y="38" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="16" font-weight="700">ScapeGoat</text>
+  <text x="156" y="38" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">CLOUD OBSERVABILITY // ROOT CAUSE AUTOPILOT</text>
+  
+  <!-- Status Chip -->
+  <rect x="1380" y="18" width="180" height="28" rx="14" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+  <circle cx="1400" cy="32" r="4" fill="#10b981"/>
+  <text x="1412" y="36" fill="#10b981" font-family="'DM Mono', monospace" font-size="11" font-weight="600">CLUSTER: 99.98% HEALTHY</text>
+
+  <!-- Left Sidebar -->
+  <rect x="0" y="64" width="220" height="936" fill="#0d0f14" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <g font-family="system-ui, sans-serif" font-size="13" font-weight="500">
+    <!-- Active Nav Item -->
+    <rect x="16" y="90" width="188" height="38" rx="10" fill="rgba(53,102,239,0.15)" stroke="rgba(53,102,239,0.3)" stroke-width="1"/>
+    <text x="48" y="114" fill="#608dff" font-weight="600">Topology Map</text>
+    <text x="48" y="160" fill="#a0a09e">Incidents (0)</text>
+    <text x="48" y="206" fill="#a0a09e">Root-Cause Logs</text>
+    <text x="48" y="252" fill="#a0a09e">Kubernetes Pods</text>
+    <text x="48" y="298" fill="#a0a09e">Metrics &amp; Traces</text>
+    <text x="48" y="344" fill="#a0a09e">AI Postmortems</text>
+    <text x="48" y="390" fill="#a0a09e">Settings</text>
+  </g>
+
+  <!-- KPI Cards Row -->
+  <g transform="translate(250, 90)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="280" height="100" rx="16" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="20" y="32" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="12">ACTIVE INCIDENTS</text>
+    <text x="20" y="74" fill="#10b981" font-family="system-ui, sans-serif" font-size="34" font-weight="700">0</text>
+    <text x="50" y="72" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="12">All systems nominal</text>
+
+    <!-- Card 2 -->
+    <rect x="306" y="0" width="280" height="100" rx="16" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="326" y="32" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="12">MEAN TIME TO DETECT</text>
+    <text x="326" y="74" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="34" font-weight="700">1.2s</text>
+    <text x="400" y="72" fill="#10b981" font-family="system-ui, sans-serif" font-size="12">↓ 84% via eBPF</text>
+
+    <!-- Card 3 -->
+    <rect x="612" y="0" width="280" height="100" rx="16" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="632" y="32" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="12">RCA ACCURACY</text>
+    <text x="632" y="74" fill="#3566ef" font-family="system-ui, sans-serif" font-size="34" font-weight="700">99.4%</text>
+    <text x="746" y="72" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="12">Causal graph</text>
+
+    <!-- Card 4 -->
+    <rect x="918" y="0" width="390" height="100" rx="16" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="938" y="32" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="12">GLOBAL REQ/SEC</text>
+    <text x="938" y="74" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="34" font-weight="700">42,850</text>
+    <text x="1066" y="72" fill="#608dff" font-family="system-ui, sans-serif" font-size="12">p99: 14.2ms</text>
+  </g>
+
+  <!-- Center: Kubernetes Topology Map -->
+  <g transform="translate(250, 216)">
+    <rect x="0" y="0" width="892" height="480" rx="20" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="24" y="36" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="15" font-weight="600">Microservice Topology &amp; Dependency Graph</text>
+    <text x="24" y="58" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="10">K8S NAMESPACE: PROD-US-EAST // 24 NODES, 118 PODS</text>
+
+    <!-- Network connection paths -->
+    <g stroke="rgba(53,102,239,0.3)" stroke-width="2" fill="none">
+      <path d="M 120 220 L 280 150"/>
+      <path d="M 120 220 L 280 290"/>
+      <path d="M 280 150 L 460 120"/>
+      <path d="M 280 150 L 460 210"/>
+      <path d="M 280 290 L 460 280"/>
+      <path d="M 280 290 L 460 370"/>
+      <path d="M 460 120 L 660 170"/>
+      <path d="M 460 210 L 660 170"/>
+      <path d="M 460 280 L 660 300"/>
+      <path d="M 460 370 L 660 300"/>
+      <path d="M 660 170 L 780 230"/>
+      <path d="M 660 300 L 780 230"/>
+    </g>
+
+    <!-- Node 1: Ingress Gateway -->
+    <g transform="translate(120, 220)">
+      <circle r="36" fill="#0d1017" stroke="#3566ef" stroke-width="2"/>
+      <circle r="42" fill="none" stroke="rgba(53,102,239,0.35)" stroke-width="1"/>
+      <text y="-6" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle">Ingress</text>
+      <text y="10" fill="#10b981" font-family="'DM Mono', monospace" font-size="9" text-anchor="middle">200 OK</text>
+    </g>
+
+    <!-- Node 2: Auth Service -->
+    <g transform="translate(280, 150)">
+      <circle r="30" fill="#0d1017" stroke="#10b981" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Auth-Svc</text>
+      <text y="10" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">12ms</text>
+    </g>
+
+    <!-- Node 3: API Gateway -->
+    <g transform="translate(280, 290)">
+      <circle r="30" fill="#0d1017" stroke="#3566ef" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">API-Router</text>
+      <text y="10" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">8ms</text>
+    </g>
+
+    <!-- Node 4: Billing Svc -->
+    <g transform="translate(460, 120)">
+      <circle r="32" fill="#0d1017" stroke="#10b981" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Billing-Engine</text>
+      <text y="10" fill="#10b981" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">24ms</text>
+    </g>
+
+    <!-- Node 5: Orders Svc -->
+    <g transform="translate(460, 210)">
+      <circle r="30" fill="#0d1017" stroke="#10b981" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Orders-Svc</text>
+      <text y="10" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">18ms</text>
+    </g>
+
+    <!-- Node 6: Search Cluster -->
+    <g transform="translate(460, 280)">
+      <circle r="30" fill="#0d1017" stroke="#608dff" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Vector-DB</text>
+      <text y="10" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">31ms</text>
+    </g>
+
+    <!-- Node 7: Telemetry Ingest -->
+    <g transform="translate(460, 370)">
+      <circle r="30" fill="#0d1017" stroke="#10b981" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Telemetry</text>
+      <text y="10" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">5ms</text>
+    </g>
+
+    <!-- Node 8: Redis Cluster -->
+    <g transform="translate(660, 170)">
+      <circle r="32" fill="#0d1017" stroke="#ef4444" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Redis Cache</text>
+      <text y="10" fill="#ef4444" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">42% Hit</text>
+    </g>
+
+    <!-- Node 9: Postgres Shards -->
+    <g transform="translate(660, 300)">
+      <circle r="32" fill="#0d1017" stroke="#10b981" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">PostgreSQL</text>
+      <text y="10" fill="#10b981" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">14ms</text>
+    </g>
+
+    <!-- Node 10: S3 Bucket / Blob -->
+    <g transform="translate(780, 230)">
+      <circle r="32" fill="#0d1017" stroke="#3566ef" stroke-width="2"/>
+      <text y="-4" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">S3 Storage</text>
+      <text y="10" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="8" text-anchor="middle">180 GB</text>
+    </g>
+  </g>
+
+  <!-- Right: Automated RCA & Incident Drawer -->
+  <g transform="translate(1160, 216)">
+    <rect x="0" y="0" width="400" height="740" rx="20" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="24" y="38" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="16" font-weight="600">AI Root-Cause Diagnostics</text>
+    <text x="24" y="60" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="10">CORRELATION ENGINE // AUTO RESOLUTION</text>
+
+    <!-- Incident item -->
+    <rect x="20" y="80" width="360" height="150" rx="14" fill="#11131a" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+    <rect x="36" y="96" width="84" height="22" rx="11" fill="rgba(16,185,129,0.15)"/>
+    <text x="78" y="111" fill="#10b981" font-family="'DM Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">RESOLVED</text>
+    <text x="130" y="111" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="10">INC-8492 // 14 mins ago</text>
+    <text x="36" y="142" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="13" font-weight="600">Redis Connection Spike on Auth-Svc</text>
+    <text x="36" y="166" fill="#a0a09e" font-family="system-ui, sans-serif" font-size="11">Root Cause: Stale connection pool after rolling node update.</text>
+    <text x="36" y="186" fill="#3566ef" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Mitigation: Auto-scaled pool &amp; drained socket</text>
+
+    <!-- Postmortem Generation -->
+    <rect x="20" y="246" width="360" height="220" rx="14" fill="#11131a" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="36" y="278" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="14" font-weight="600">AI Postmortem Summary</text>
+    <text x="36" y="306" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="11" line-height="1.6">
+      <tspan x="36" dy="0">• Detection: Prometheus anomaly trigger</tspan>
+      <tspan x="36" dy="24">• Duration: 42 seconds to auto-heal</tspan>
+      <tspan x="36" dy="24">• User Impact: 0 failed checkout transactions</tspan>
+      <tspan x="36" dy="24">• Preventive PR: #1042 opened on GitHub</tspan>
+      <tspan x="36" dy="24">• CI/CD Check: eBPF gate verified pass</tspan>
+    </text>
+
+    <!-- Action button -->
+    <rect x="20" y="482" width="360" height="42" rx="21" fill="#3566ef"/>
+    <text x="200" y="508" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle">Export Jira &amp; Slack Report ↗</text>
+  </g>
+
+  <!-- Bottom: Real-Time Prometheus Latency Graph -->
+  <g transform="translate(250, 712)">
+    <rect x="0" y="0" width="892" height="244" rx="20" fill="url(#sg-card)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="24" y="36" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="15" font-weight="600">Cluster Latency &amp; Memory Pressure Stream (Last 60 Minutes)</text>
+    
+    <!-- Sparkline Graph Wave -->
+    <g fill="none">
+      <path d="M 40 180 Q 120 160 200 170 T 360 140 T 520 165 T 680 120 T 840 150" stroke="#3566ef" stroke-width="3"/>
+      <path d="M 40 200 Q 140 190 240 195 T 440 170 T 640 180 T 840 175" stroke="#10b981" stroke-width="2"/>
+    </g>
+    <!-- Axis lines -->
+    <line x1="40" y1="210" x2="850" y2="210" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="40" y="226" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="9">-60m</text>
+    <text x="440" y="226" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="9" text-anchor="middle">-30m</text>
+    <text x="850" y="226" fill="#10b981" font-family="'DM Mono', monospace" font-size="9" text-anchor="end">NOW (14ms)</text>
+  </g>
 </svg>

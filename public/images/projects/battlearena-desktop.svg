@@ -1,7 +1,120 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%">
-  <rect width="1600" height="1000" fill="#120606"/>
-  <rect x="40" y="30" width="1520" height="940" rx="24" fill="#1E0C0C" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
-  <text x="170" y="65" fill="#BF7777" font-family="system-ui, sans-serif" font-size="14" font-weight="600">BattleArena // Frontier Model Reasoning Arena</text>
-  <rect x="80" y="120" width="700" height="800" rx="16" fill="#180A0A" stroke="#EF4444" stroke-width="1"/>
-  <rect x="820" y="120" width="700" height="800" rx="16" fill="#180A0A"/>
+  <defs>
+    <linearGradient id="ba-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0707"/>
+      <stop offset="100%" stop-color="#080404"/>
+    </linearGradient>
+    <linearGradient id="ba-panelA" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#180e0e"/>
+      <stop offset="100%" stop-color="#110a0a"/>
+    </linearGradient>
+    <linearGradient id="ba-panelB" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0e131c"/>
+      <stop offset="100%" stop-color="#090d14"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#ba-bg)"/>
+
+  <!-- Top Arena Bar -->
+  <rect x="0" y="0" width="1600" height="70" fill="#140808" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <circle cx="48" cy="35" r="16" fill="#ef4444"/>
+  <text x="48" y="41" fill="#ffffff" font-family="system-ui, sans-serif" font-size="14" font-weight="900" text-anchor="middle">VS</text>
+  <text x="78" y="41" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="18" font-weight="800">BattleArena</text>
+  <text x="210" y="41" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">FRONTIER MODEL REASONING DUEL // ROUND #1,492</text>
+
+  <!-- Benchmark Category Badges -->
+  <rect x="1200" y="18" width="170" height="34" rx="17" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" stroke-width="1"/>
+  <text x="1285" y="40" fill="#f87171" font-family="'DM Mono', monospace" font-size="11" font-weight="700" text-anchor="middle">COMPLEX REASONING</text>
+  <rect x="1390" y="18" width="170" height="34" rx="17" fill="rgba(53,102,239,0.15)" stroke="rgba(53,102,239,0.3)" stroke-width="1"/>
+  <text x="1475" y="40" fill="#608dff" font-family="'DM Mono', monospace" font-size="11" font-weight="700" text-anchor="middle">BLIND EVALUATION</text>
+
+  <!-- Prompt Banner -->
+  <g transform="translate(60, 95)">
+    <rect x="0" y="0" width="1480" height="90" rx="16" fill="#140c0c" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="32" y="32" fill="#ef4444" font-family="'DM Mono', monospace" font-size="11" font-weight="700">BENCHMARK CHALLENGE PROMPT</text>
+    <text x="32" y="64" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="15" font-weight="600">"Implement an optimal lock-free concurrent ring buffer in Rust with zero allocations and benchmark against crossbeam-channel."</text>
+  </g>
+
+  <!-- Arena Split Duel -->
+  <g transform="translate(60, 210)">
+    <!-- Left: Model A (Claude 3.5 Sonnet) -->
+    <g>
+      <rect x="0" y="0" width="720" height="580" rx="20" fill="url(#ba-panelA)" stroke="rgba(239,68,68,0.35)" stroke-width="1.5"/>
+      <rect x="24" y="24" width="672" height="54" rx="12" fill="#1f1111"/>
+      <circle cx="50" cy="51" r="14" fill="#ef4444"/>
+      <text x="50" y="56" fill="#ffffff" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">A</text>
+      <text x="76" y="48" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Model A (Anthropic Claude 3.5 Sonnet)</text>
+      <text x="76" y="66" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="10">84.2 tok/sec · TTFT: 190ms · ELO: 1284</text>
+      <rect x="580" y="34" width="100" height="32" rx="16" fill="#ef4444"/>
+      <text x="630" y="55" fill="#ffffff" font-family="system-ui, sans-serif" font-size="12" font-weight="700" text-anchor="middle">VOTE A 👍</text>
+
+      <!-- Code generation display -->
+      <g transform="translate(24, 100)">
+        <rect x="0" y="0" width="672" height="450" rx="12" fill="#090505" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <text x="24" y="36" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">use std::sync::atomic::{AtomicUsize, Ordering};</text>
+        <text x="24" y="60" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">use std::cell::UnsafeCell;</text>
+        <text x="24" y="96" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="12">/// Cache-line padded lock-free single-producer ring buffer</text>
+        <text x="24" y="120" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">pub struct RingBuffer&lt;T, const CAP: usize&gt; {</text>
+        <text x="24" y="144" fill="#f87171" font-family="'DM Mono', monospace" font-size="12">    buffer: [UnsafeCell&lt;Option&lt;T&gt;&gt;; CAP],</text>
+        <text x="24" y="168" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">    head: AtomicUsize,</text>
+        <text x="24" y="192" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">    tail: AtomicUsize,</text>
+        <text x="24" y="216" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">}</text>
+        <text x="24" y="252" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="12">impl&lt;T, const CAP: usize&gt; RingBuffer&lt;T, CAP&gt; {</text>
+        <text x="24" y="276" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">    pub fn push(&amp;self, val: T) -&gt; Result&lt;(), T&gt; {</text>
+        <text x="24" y="300" fill="#34d399" font-family="'DM Mono', monospace" font-size="12">        let tail = self.tail.load(Ordering::Relaxed);</text>
+        <text x="24" y="324" fill="#34d399" font-family="'DM Mono', monospace" font-size="12">        if tail - self.head.load(Ordering::Acquire) &gt;= CAP {</text>
+        <text x="24" y="348" fill="#f87171" font-family="'DM Mono', monospace" font-size="12">            return Err(val);</text>
+        <text x="24" y="372" fill="#34d399" font-family="'DM Mono', monospace" font-size="12">        }</text>
+        <text x="24" y="396" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">        // Memory ordering: Release ensures write visibility</text>
+      </g>
+    </g>
+
+    <!-- Right: Model B (OpenAI GPT-4o) -->
+    <g transform="translate(760, 0)">
+      <rect x="0" y="0" width="720" height="580" rx="20" fill="url(#ba-panelB)" stroke="rgba(53,102,239,0.35)" stroke-width="1.5"/>
+      <rect x="24" y="24" width="672" height="54" rx="12" fill="#101624"/>
+      <circle cx="50" cy="51" r="14" fill="#3566ef"/>
+      <text x="50" y="56" fill="#ffffff" font-family="system-ui, sans-serif" font-size="12" font-weight="800" text-anchor="middle">B</text>
+      <text x="76" y="48" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Model B (OpenAI GPT-4o-Latest)</text>
+      <text x="76" y="66" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="10">92.0 tok/sec · TTFT: 170ms · ELO: 1290</text>
+      <rect x="580" y="34" width="100" height="32" rx="16" fill="#3566ef"/>
+      <text x="630" y="55" fill="#ffffff" font-family="system-ui, sans-serif" font-size="12" font-weight="700" text-anchor="middle">VOTE B 👍</text>
+
+      <!-- Code generation display -->
+      <g transform="translate(24, 100)">
+        <rect x="0" y="0" width="672" height="450" rx="12" fill="#06090e" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <text x="24" y="36" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">use core::sync::atomic::{AtomicUsize, Ordering::*};</text>
+        <text x="24" y="60" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">use core::mem::MaybeUninit;</text>
+        <text x="24" y="96" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="12">/// Cacheline-aligned SPSC Lock-free FIFO queue</text>
+        <text x="24" y="120" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">#[repr(align(64))]</text>
+        <text x="24" y="144" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">pub struct SpscRing&lt;T, const N: usize&gt; {</text>
+        <text x="24" y="168" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">    storage: [MaybeUninit&lt;T&gt;; N],</text>
+        <text x="24" y="192" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">    read_pos: AtomicUsize,</text>
+        <text x="24" y="216" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">    write_pos: AtomicUsize,</text>
+        <text x="24" y="240" fill="#f9f9f7" font-family="'DM Mono', monospace" font-size="12">}</text>
+        <text x="24" y="276" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="12">impl&lt;T, const N: usize&gt; SpscRing&lt;T, N&gt; {</text>
+        <text x="24" y="300" fill="#34d399" font-family="'DM Mono', monospace" font-size="12">    pub fn try_push(&amp;mut self, item: T) -&gt; bool {</text>
+        <text x="24" y="324" fill="#34d399" font-family="'DM Mono', monospace" font-size="12">        let w = self.write_pos.load(Relaxed);</text>
+        <text x="24" y="348" fill="#34d399" font-family="'DM Mono', monospace" font-size="12">        if w - self.read_pos.load(Acquire) &gt;= N { return false; }</text>
+        <text x="24" y="372" fill="#608dff" font-family="'DM Mono', monospace" font-size="12">        unsafe { self.storage[w % N].write(item); }</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom Telemetry Comparison Bar -->
+  <g transform="translate(60, 810)">
+    <rect x="0" y="0" width="1480" height="150" rx="16" fill="#110d0d" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="32" y="34" fill="#f9f9f7" font-family="system-ui, sans-serif" font-size="14" font-weight="700">Live Hardware Benchmark Metrics (AMD EPYC 9654 96-Core)</text>
+    <text x="32" y="66" fill="#a0a09e" font-family="'DM Mono', monospace" font-size="12">Throughput: Model A (142M ops/s) vs Model B (158M ops/s)</text>
+    <rect x="32" y="80" width="680" height="14" rx="7" fill="rgba(239,68,68,0.2)"/>
+    <rect x="32" y="80" width="580" height="14" rx="7" fill="#ef4444"/>
+    <text x="730" y="92" fill="#ef4444" font-family="'DM Mono', monospace" font-size="11" font-weight="700">47.4%</text>
+
+    <rect x="790" y="80" width="650" height="14" rx="7" fill="rgba(53,102,239,0.2)"/>
+    <rect x="790" y="80" width="600" height="14" rx="7" fill="#3566ef"/>
+    <text x="1460" y="92" fill="#3566ef" font-family="'DM Mono', monospace" font-size="11" font-weight="700">52.6%</text>
+
+    <text x="32" y="126" fill="#6e6e72" font-family="'DM Mono', monospace" font-size="11">TOTAL EVALUATIONS: 184,920 · HUMAN BLIND PREFERENCE WIN RATE</text>
+  </g>
 </svg>

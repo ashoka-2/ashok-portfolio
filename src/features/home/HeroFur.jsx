@@ -32,7 +32,7 @@ export default function HeroFur() {
 
   return (
     <div
-      className="ref-fur-name"
+      className="ref-fur-name absolute z-[2] top-[32%] left-1/2 flex w-[min(96vw,1280px)] -translate-x-1/2 justify-center overflow-visible opacity-75 drop-shadow-[0_0_18px_color-mix(in_srgb,var(--hero-light-rose)_26%,transparent)] pointer-events-auto touch-none cursor-crosshair max-[520px]:top-[33%] max-[520px]:w-[94vw] max-[520px]:opacity-65 min-[521px]:max-[820px]:top-[31%] min-[521px]:max-[820px]:w-[min(96vw,820px)] min-[821px]:max-[999px]:w-[min(94vw,820px)]"
       title="Move your cursor across the letters to ruffle the fur"
     >
       <Fur

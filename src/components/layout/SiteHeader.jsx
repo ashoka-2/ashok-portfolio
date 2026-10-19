@@ -127,7 +127,7 @@ export default function SiteHeader() {
 
       {/* Full-Screen Circular Clip-Path Overlay Menu */}
       <div
-        className={`menu-overlay ${menuOpen ? 'is-open' : ''}`}
+        className={`menu-overlay fixed inset-0 z-[950] w-screen h-screen h-[100dvh] flex flex-col justify-between overflow-x-hidden overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:var(--border-default)_transparent] bg-base-bg bg-[radial-gradient(80%_60%_at_80%_100%,color-mix(in_srgb,var(--secondary-mesh-1)_60%,transparent),transparent_70%)] p-[clamp(1rem,4vh,3rem)_clamp(1.5rem,6vw,6rem)] gap-[clamp(12px,2vh,24px)] max-[600px]:p-[82px_22px_20px] max-[600px]:justify-start max-[600px]:gap-[clamp(18px,4vh,34px)] max-h-[720px]:p-[clamp(68px,10vh,80px)_clamp(1.5rem,6vw,6rem)_16px] max-h-[720px]:gap-2.5 max-[600px]:max-h-[720px]:pt-[68px] max-[600px]:max-h-[720px]:pb-3.5 [&>*]:shrink-0 ${menuOpen ? 'is-open' : ''}`}
         aria-hidden={!menuOpen}
         inert={!menuOpen}
         data-lenis-prevent
@@ -148,16 +148,17 @@ export default function SiteHeader() {
         </div>
 
         {/* Big Links */}
-        <nav className="menu-links my-auto flex flex-col py-6" aria-label="Overlay main navigation">
+        <nav className="menu-links my-auto flex flex-col justify-center py-[clamp(8px,1.3vh,18px)] max-[600px]:w-full max-[600px]:my-auto max-[600px]:py-2 max-h-[720px]:py-0.5 min-h-0" aria-label="Overlay main navigation">
           {menuLinks.map((link) => {
+            const linkClasses = "menu-link-item group flex items-baseline gap-[clamp(1rem,2.5vw,2.5rem)] max-[600px]:gap-3.5 font-display font-extrabold text-[clamp(1.8rem,7vh,5rem)] max-[600px]:text-[clamp(1.7rem,7.8vw,2.55rem)] max-h-[720px]:text-[clamp(1.5rem,5.1vh,2.65rem)] max-[600px]:max-h-[720px]:text-[clamp(1.45rem,4.8vh,2.15rem)] leading-[0.96] max-[600px]:leading-[0.98] uppercase text-text-primary min-w-0 [overflow-wrap:anywhere] transition-[color,transform,opacity] duration-300 ease-out hover:text-accent-pink hover:translate-x-4"
             if (link.action) {
               return (
                 <button
                   key={link.num}
                   onClick={link.action}
-                  className="menu-link-item text-left bg-transparent border-none p-0 cursor-pointer"
+                  className={`${linkClasses} text-left bg-transparent border-none p-0 cursor-pointer`}
                 >
-                  <span className="menu-link-index">{link.num}</span>
+                  <span className="menu-link-index font-mono text-[clamp(0.9rem,1.5vw,1.3rem)] max-[600px]:min-w-[2.25rem] max-[600px]:text-[0.85rem] text-accent-amber font-medium">{link.num}</span>
                   <span>{link.label}</span>
                 </button>
               )
@@ -167,9 +168,9 @@ export default function SiteHeader() {
                 key={link.num}
                 to={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="menu-link-item"
+                className={linkClasses}
               >
-                <span className="menu-link-index">{link.num}</span>
+                <span className="menu-link-index font-mono text-[clamp(0.9rem,1.5vw,1.3rem)] max-[600px]:min-w-[2.25rem] max-[600px]:text-[0.85rem] text-accent-amber font-medium">{link.num}</span>
                 <span>{link.label}</span>
               </Link>
             )
@@ -177,8 +178,8 @@ export default function SiteHeader() {
         </nav>
 
         {/* Bottom Socials & Microcopy */}
-        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-border-subtle font-mono text-xs text-text-secondary">
-          <div className="flex items-center gap-6">
+        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 max-h-[720px]:pt-3 border-t border-border-subtle font-mono text-xs max-[600px]:text-[10px] text-text-secondary">
+          <div className="flex items-center gap-6 max-[600px]:flex-wrap max-[600px]:gap-[10px_18px]">
             <a
               href={profile.contact.github}
               target="_blank"
@@ -196,7 +197,7 @@ export default function SiteHeader() {
               className="flex items-center gap-1.5 hover:text-accent-pink transition-colors"
             >
               <Mail size={15} />
-              <span className="menu-email">{profile.contact.email}</span>
+              <span className="menu-email [overflow-wrap:anywhere]">{profile.contact.email}</span>
               <ArrowUpRight size={12} />
             </a>
           </div>

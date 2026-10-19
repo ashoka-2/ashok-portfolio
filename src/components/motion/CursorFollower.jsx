@@ -58,5 +58,16 @@ export default function CursorFollower() {
     }
   }, { scope: root })
 
-  return <div className="custom-cursor" ref={root} aria-hidden="true"><span className="cursor-ring"><b className="cursor-label">VIEW</b></span><i className="cursor-dot" /></div>
+  return (
+    <div
+      className="custom-cursor fixed top-0 left-0 pointer-events-none z-[99999] max-[768px]:hidden"
+      ref={root}
+      aria-hidden="true"
+    >
+      <span className="cursor-ring absolute top-0 left-0 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full border-[1.5px] border-accent-pink pointer-events-none transition-[width,height,background-color,border-color] duration-[250ms] ease-out">
+        <b className="cursor-label font-mono text-[9px] font-bold tracking-[0.06em] text-white uppercase opacity-0">VIEW</b>
+      </span>
+      <i className="cursor-dot absolute top-0 left-0 w-1.5 h-1.5 bg-accent-amber rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+    </div>
+  )
 }

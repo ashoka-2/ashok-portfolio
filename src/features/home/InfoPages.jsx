@@ -6,7 +6,6 @@ import Button from '../../components/buttons/Button.jsx'
 import { profile } from '../../utils/profile.js'
 import { gmailComposeUrl } from '../../utils/site.js'
 import { techStack } from '../../utils/tech.js'
-import LocalTime from '../../components/motion/LocalTime.jsx'
 import { portfolioAssets } from '../../lib/assets.js'
 
 export function AboutPage() {

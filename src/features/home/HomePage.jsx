@@ -16,7 +16,18 @@ const HeroModelCanvas = lazy(() => import('./HeroModelCanvas.jsx'))
 
 function Ribbon() {
   const { ribbonPhrases } = homePageContent
-  return <div className="ref-ribbon" aria-hidden="true"><div className="ref-ribbon-track">{[...ribbonPhrases, ...ribbonPhrases, ...ribbonPhrases].map((phrase, index) => <span key={`${phrase}-${index}`}>{phrase}<i /></span>)}</div></div>
+  return (
+    <div className="ref-ribbon relative z-[2] overflow-hidden py-3.5 border-y border-white/12 bg-accent text-white" aria-hidden="true">
+      <div className="ref-ribbon-track flex w-max items-center gap-8 animate-[ref-ribbon-move_32s_linear_infinite] whitespace-nowrap font-[var(--font-bold)] text-[clamp(18px,2.2vw,28px)] font-extrabold tracking-[-0.03em] uppercase">
+        {[...ribbonPhrases, ...ribbonPhrases, ...ribbonPhrases].map((phrase, index) => (
+          <span key={`${phrase}-${index}`} className="flex items-center gap-8">
+            {phrase}
+            <i className="w-2 h-2 rounded-full bg-[#f5e8da]" />
+          </span>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function HomePage() {
@@ -40,9 +51,20 @@ export default function HomePage() {
     heroInteractionRef.current?.begin(event.nativeEvent || event)
   }
   const handleHeroPointerMove = (event) => {
-    const control = getHeroControl(event)
-    if (!control?.classList.contains('hero-model-hit-area')) return
-    heroInteractionRef.current?.hover?.(event.nativeEvent || event)
+    const raw = event.nativeEvent || event
+    heroInteractionRef.current?.hover?.(raw)
+    if (raw.isTrusted) {
+      const furEl = heroRef.current?.querySelector('.ref-hero-fur canvas') || heroRef.current?.querySelector('.ref-hero-fur')
+      if (furEl) {
+        furEl.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: raw.clientX,
+          clientY: raw.clientY,
+          bubbles: true,
+          cancelable: true,
+          pointerType: raw.pointerType || 'mouse',
+        }))
+      }
+    }
   }
   const handleHeroPointerLeave = () => {
     heroInteractionRef.current?.leave?.()
@@ -62,11 +84,25 @@ export default function HomePage() {
       onPointerMoveCapture={handleHeroPointerMove}
       onPointerLeaveCapture={handleHeroPointerLeave}
     >
-      <div className="ref-hero-glow" aria-hidden="true" />
+      <div className="ref-hero-glow absolute z-0 left-1/2 top-[42%] w-[min(58vw,720px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,var(--hero-glow),var(--hero-glow-soft)_42%,transparent_72%)] blur-[20px]" aria-hidden="true" />
       <h1 className="ref-sr">{hero.title}</h1>
       <HeroFur />
-      <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
-      {hero.stickers.map((sticker, index) => <span className={`ref-sticker ref-sticker-${['one', 'two', 'three'][index]}`} key={sticker}>{sticker}</span>)}
+      <Suspense fallback={<div className="ref-model-loading absolute inset-0 grid place-items-center text-text-tertiary font-mono text-xs leading-[1.4] tracking-[0.1em] uppercase">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
+      {hero.stickers.map((sticker, index) => {
+        const stickerStyles = [
+          'left-[7%] top-[30%] max-[820px]:left-[4%] max-[820px]:top-[20%] -rotate-8 bg-[color-mix(in_srgb,var(--text-primary)_95%,transparent)] text-base-bg',
+          'right-[8%] top-[24%] max-[820px]:right-[4%] max-[820px]:top-[15%] rotate-6 bg-accent text-white',
+          'right-[14%] top-[60%] -rotate-4 bg-accent-amber text-base-bg max-[820px]:hidden',
+        ][index] || ''
+        return (
+          <span
+            className={`ref-sticker absolute z-[5] px-3.5 py-2 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.32)] text-[13px] font-medium whitespace-nowrap ${stickerStyles}`}
+            key={sticker}
+          >
+            {sticker}
+          </span>
+        )
+      })}
       <div className="ref-hero-ui absolute inset-0 z-[5] grid grid-rows-[1fr_auto] px-6 pointer-events-none max-[520px]:px-4">
         <div className="ref-hero-bottom mx-auto flex w-[min(100%,1120px)] flex-wrap items-end justify-between gap-6 pb-[72px] max-[999px]:flex-col max-[999px]:items-center max-[999px]:justify-end max-[999px]:gap-[14px] max-[999px]:pb-[82px] max-[999px]:text-center min-[821px]:max-[999px]:gap-[15px]">
           <div className="ref-hero-copy max-w-[620px] max-[820px]:max-w-[min(100%,38ch)] min-[821px]:max-[999px]:max-w-[42ch]">

@@ -124,22 +124,22 @@ function ProjectGallery({ project }) {
 
   return (
     <>
-      <section className="project-visual-story" ref={sectionRef} aria-label={`${project.title} featured image`}>
-      <div className="project-visual-stage" ref={stageRef}>
+      <section className="project-visual-story relative my-[clamp(4rem,9vw,9rem)] mx-[min(-4.5vw,-18px)] mb-24 max-[760px]:my-16 max-[760px]:-mx-[18px]" ref={sectionRef} aria-label={`${project.title} featured image`}>
+      <div className="project-visual-stage relative grid w-full h-[100svh] place-items-center overflow-hidden isolate bg-[radial-gradient(ellipse_at_50%_52%,color-mix(in_srgb,var(--accent)_14%,var(--base-bg)),transparent_54%)] bg-base-bg before:content-[''] before:absolute before:z-0 before:left-1/2 before:top-1/2 before:w-[min(76vw,900px)] before:aspect-square before:rounded-full before:border before:border-[color-mix(in_srgb,var(--text-primary)_9%,transparent)] before:-translate-x-1/2 before:-translate-y-1/2 before:-rotate-[18deg] before:pointer-events-none after:content-[''] after:absolute after:z-0 after:left-1/2 after:top-1/2 after:w-[min(59vw,690px)] after:aspect-square after:rounded-full after:border after:border-[color-mix(in_srgb,var(--accent)_18%,transparent)] after:-translate-x-1/2 after:-translate-y-1/2 after:rotate-[24deg] after:pointer-events-none" ref={stageRef}>
         <button
           type="button"
-          className="project-visual-frame grain-media"
+          className="project-visual-frame grain-media relative z-[1] block w-screen h-[100svh] p-0 overflow-hidden border border-border-default bg-surface-1 cursor-zoom-in origin-center isolate will-change-[transform,filter,border-radius] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-4"
           ref={frameRef}
           onClick={(event) => openImage(0, event.currentTarget)}
           aria-label={`Open ${images[0].title || project.title} image`}
         >
-          <img ref={imageRef} src={images[0].url} alt={images[0].title || `${project.title} project preview`} fetchPriority="high" />
-          <span className="project-visual-overlay">
-            <span className="project-visual-project">{project.index} / {project.title}</span>
-            <span className="project-visual-caption">{images[0].title || 'A closer look at the interface'}</span>
+          <img ref={imageRef} className="block w-full h-full object-contain bg-surface-1 will-change-transform" src={images[0].url} alt={images[0].title || `${project.title} project preview`} fetchPriority="high" />
+          <span className="project-visual-overlay absolute z-[5] inset-[clamp(20px,4vw,58px)] max-[760px]:inset-[18px] flex flex-col justify-between text-white text-left pointer-events-none [text-shadow:0_2px_24px_rgba(0,0,0,0.62)]">
+            <span className="project-visual-project self-start px-[13px] py-[10px] border border-white/25 rounded-full bg-[#0a0a0c]/30 backdrop-blur-md font-mono text-[9px] leading-[1.2] tracking-[0.14em] uppercase">{project.index} / {project.title}</span>
+            <span className="project-visual-caption self-end max-w-[24ch] max-[760px]:max-w-[18ch] font-display font-medium text-[clamp(21px,3vw,42px)] max-[760px]:text-[clamp(22px,7vw,32px)] leading-[1.04] tracking-[-0.025em] text-right">{images[0].title || 'A closer look at the interface'}</span>
           </span>
         </button>
-        <div className="project-visual-scroll-cue" aria-hidden="true"><span>SCROLL TO REVEAL</span><i /></div>
+        <div className="project-visual-scroll-cue absolute z-[3] right-[clamp(18px,4vw,56px)] bottom-[clamp(18px,4vh,42px)] max-[760px]:right-[18px] max-[760px]:bottom-[18px] flex items-center gap-3 text-text-tertiary font-mono text-[9px] max-[760px]:text-[8px] leading-[1.2] tracking-[0.13em]" aria-hidden="true"><span>SCROLL TO REVEAL</span><i className="relative block w-12 h-px overflow-hidden bg-border-default after:content-[''] after:absolute after:inset-0 after:bg-accent-pink after:-translate-x-full after:animate-[project-cue-line_1.8s_ease-in-out_infinite]" /></div>
       </div>
       </section>
 
@@ -176,26 +176,26 @@ function ProjectGallery({ project }) {
       )}
 
       {activeImage && (
-        <div className="project-lightbox" ref={lightboxRef} role="dialog" aria-modal="true" aria-label={`${project.title} image viewer`} onMouseDown={(event) => { if (event.target === event.currentTarget) closeLightbox() }}>
-          <button type="button" className="project-lightbox-close" onClick={closeLightbox} aria-label="Close image viewer">×</button>
-          <button type="button" className="project-lightbox-arrow is-prev" onClick={() => { setActiveIndex((activeIndex - 1 + images.length) % images.length); setZoomed(false) }} aria-label="Previous image">←</button>
-          <div className={`project-lightbox-stage${zoomed ? ' is-zoomed' : ''}`}>
+        <div className="project-lightbox fixed inset-0 z-[100100] flex flex-col items-center justify-center p-[clamp(54px,8vh,82px)_74px_104px] max-[760px]:p-[74px_16px_112px] bg-[#08090c]/95 backdrop-blur-[18px] overscroll-contain" ref={lightboxRef} role="dialog" aria-modal="true" aria-label={`${project.title} image viewer`} onMouseDown={(event) => { if (event.target === event.currentTarget) closeLightbox() }}>
+          <button type="button" className="project-lightbox-close absolute z-[2] top-[22px] right-6 grid place-items-center w-[46px] h-[46px] border border-white/20 rounded-full text-white bg-white/[0.08] backdrop-blur-md text-2xl leading-none transition-[background,transform] duration-200 hover:bg-accent hover:scale-[1.06] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-4" onClick={closeLightbox} aria-label="Close image viewer">×</button>
+          <button type="button" className="project-lightbox-arrow is-prev absolute z-[2] top-1/2 -translate-y-1/2 left-5 max-[760px]:top-auto max-[760px]:bottom-[22px] max-[760px]:left-4 grid place-items-center w-[46px] h-[46px] max-[760px]:w-[38px] max-[760px]:h-[38px] border border-white/20 rounded-full text-white bg-white/[0.08] backdrop-blur-md text-2xl leading-none transition-[background,transform] duration-200 hover:bg-accent hover:scale-[1.06] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-4" onClick={() => { setActiveIndex((activeIndex - 1 + images.length) % images.length); setZoomed(false) }} aria-label="Previous image">←</button>
+          <div className={`project-lightbox-stage grid place-items-center w-full h-full min-h-0 overflow-auto${zoomed ? ' is-zoomed' : ''}`}>
             <img
               key={activeImage.url}
               ref={lightboxImageRef}
               src={activeImage.url}
               alt={activeImage.title || `${project.title} project view`}
               onClick={() => setZoomed((value) => !value)}
-              className={activeImage.aspect === 'mobile' ? 'is-portrait' : ''}
+              className={`block max-w-[min(92vw,1500px)] max-[760px]:max-w-[calc(100vw-32px)] max-h-[calc(100svh-200px)] max-[760px]:max-h-[calc(100svh-210px)] w-auto h-auto object-contain rounded-lg shadow-[0_24px_100px_rgba(0,0,0,0.45)] ${zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'} ${activeImage.aspect === 'mobile' ? 'max-w-[min(92vw,700px)]' : ''}`}
             />
           </div>
-          <button type="button" className="project-lightbox-arrow is-next" onClick={() => { setActiveIndex((activeIndex + 1) % images.length); setZoomed(false) }} aria-label="Next image">→</button>
-          <div className="project-lightbox-footer">
-            <div><strong>{activeImage.title || project.title}</strong>{activeImage.caption && <span>{activeImage.caption}</span>}</div>
-            <button type="button" onClick={() => setZoomed((value) => !value)}>{zoomed ? 'FIT TO SCREEN' : 'ZOOM IMAGE'}</button>
+          <button type="button" className="project-lightbox-arrow is-next absolute z-[2] top-1/2 -translate-y-1/2 right-5 max-[760px]:top-auto max-[760px]:bottom-[22px] max-[760px]:right-4 grid place-items-center w-[46px] h-[46px] max-[760px]:w-[38px] max-[760px]:h-[38px] border border-white/20 rounded-full text-white bg-white/[0.08] backdrop-blur-md text-2xl leading-none transition-[background,transform] duration-200 hover:bg-accent hover:scale-[1.06] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-4" onClick={() => { setActiveIndex((activeIndex + 1) % images.length); setZoomed(false) }} aria-label="Next image">→</button>
+          <div className="project-lightbox-footer absolute left-[clamp(20px,4vw,60px)] right-[clamp(20px,4vw,60px)] bottom-[23px] max-[760px]:left-16 max-[760px]:right-16 max-[760px]:bottom-[27px] flex items-end justify-between max-[760px]:justify-center max-[760px]:text-center gap-5 text-white">
+            <div className="flex flex-col gap-[5px] min-w-0"><strong className="font-display text-sm leading-[1.4] font-semibold">{activeImage.title || project.title}</strong>{activeImage.caption && <span className="max-w-[70ch] text-white/65 font-mono text-[10px] leading-[1.45] max-[760px]:hidden">{activeImage.caption}</span>}</div>
+            <button type="button" className="shrink-0 px-[13px] py-[10px] border border-white/25 rounded-full text-white bg-transparent font-mono text-[9px] leading-none tracking-[0.1em] font-medium max-[760px]:hidden focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-4" onClick={() => setZoomed((value) => !value)}>{zoomed ? 'FIT TO SCREEN' : 'ZOOM IMAGE'}</button>
           </div>
-          {images.length > 1 && <div className="project-lightbox-thumbs" aria-label="Choose an image">
-            {images.map((image, index) => <button type="button" key={image.url} className={index === activeIndex ? 'is-active' : ''} onClick={() => { setActiveIndex(index); setZoomed(false) }} aria-label={`Show image ${index + 1}`}><img src={image.url} alt="" /></button>)}
+          {images.length > 1 && <div className="project-lightbox-thumbs absolute top-[22px] max-[760px]:top-[18px] left-1/2 -translate-x-1/2 flex gap-[7px] max-w-[min(60vw,600px)] max-[760px]:max-w-[68vw] p-[5px] overflow-auto" aria-label="Choose an image">
+            {images.map((image, index) => <button type="button" key={image.url} className={`shrink-0 w-[50px] h-[38px] p-0 overflow-hidden border border-white/20 rounded-[7px] bg-[#222] transition-opacity ${index === activeIndex ? 'border-accent opacity-100 shadow-[0_0_0_1px_var(--accent)]' : 'opacity-60'} focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-4`} onClick={() => { setActiveIndex(index); setZoomed(false) }} aria-label={`Show image ${index + 1}`}><img className="w-full h-full object-cover" src={image.url} alt="" /></button>)}
           </div>}
         </div>
       )}

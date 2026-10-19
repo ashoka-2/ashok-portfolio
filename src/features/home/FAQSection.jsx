@@ -40,9 +40,9 @@ export default function FAQSection() {
     <section className="faq-section section-wrap" id="faq">
       <div className="section-heading mb-12" data-scroll-reveal>
         <div>
-          <span className="section-kicker">05 — CLARITY FIRST</span>
-          <h2 className="text-fluid-h2">
-            Things you might <em>ask.</em>
+          <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">05 — CLARITY FIRST</span>
+          <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-bold">
+            Things you might <em className="text-accent-soft">ask.</em>
           </h2>
           <p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">
             Straightforward answers about how I work, what I build, and how we can collaborate.
@@ -57,10 +57,10 @@ export default function FAQSection() {
         {faqs.map((faq, idx) => {
           const isOpen = openIdx === idx
           return (
-            <div key={idx} className="faq-item grain-card">
+            <div key={idx} className="faq-item grain-card overflow-hidden border-b border-border-subtle">
               <button
                 onClick={() => toggle(idx)}
-                className="faq-trigger cursor-pointer group"
+                className="faq-trigger group flex w-full cursor-pointer items-center justify-between border-0 bg-transparent py-[1.8rem] text-left font-display text-[clamp(1.2rem,2vw,1.6rem)] leading-normal font-semibold text-text-primary transition-colors duration-[250ms] hover:text-accent-pink"
                 aria-expanded={isOpen}
               >
                 <span className="font-display pr-6 text-left group-hover:text-accent-pink transition-colors">
@@ -81,7 +81,7 @@ export default function FAQSection() {
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="faq-content">
+                    <div className="faq-content pb-[1.8rem] text-[1.05rem] leading-[1.7] text-text-secondary">
                       {faq.a}
                     </div>
                   </motion.div>

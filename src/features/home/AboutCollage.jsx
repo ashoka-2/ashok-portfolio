@@ -47,9 +47,9 @@ export default function AboutCollage() {
     <section className="about-section section-wrap" id="about" ref={collageRef}>
       {/* Kicker & Statement */}
       <div className="max-w-4xl mb-12">
-        <span className="section-kicker">01 — A BIT ABOUT ME</span>
-        <h2 className="text-fluid-h2 mb-6">
-          I bridge the gap between <em>curious logic</em> and <em>unapologetic aesthetics.</em>
+        <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">01 — A BIT ABOUT ME</span>
+        <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-bold mb-6">
+          I bridge the gap between <em className="text-accent-soft">curious logic</em> and <em className="text-accent-soft">unapologetic aesthetics.</em>
         </h2>
         <WordReveal
           text="I am Ashok Kumar, a software developer, AI engineer, and creative technologist from Kerala, India. I don't just write functional code — I choreograph digital experiences where performance, clean architecture, and memorable visual craft meet."

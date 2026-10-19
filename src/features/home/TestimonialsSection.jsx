@@ -29,9 +29,9 @@ export default function TestimonialsSection({ items = testimonialsData }) {
     <section className="testimonials-section section-wrap" id="testimonials">
       <div className="section-heading mb-12" data-scroll-reveal>
         <div>
-          <span className="section-kicker">05 — KIND WORDS</span>
-          <h2 className="text-fluid-h2">
-            What collaborators <em>say.</em>
+          <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">05 — KIND WORDS</span>
+          <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-bold">
+            What collaborators <em className="text-accent-soft">say.</em>
           </h2>
         </div>
         <div className="flex items-center gap-2">

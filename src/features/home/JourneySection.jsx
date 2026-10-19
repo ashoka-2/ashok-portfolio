@@ -42,9 +42,9 @@ export default function JourneySection() {
       {/* Heading */}
       <div className="section-heading mb-14" data-scroll-reveal>
         <div>
-          <span className="section-kicker">04 — VERIFIED TIMELINE</span>
-          <h2 className="text-fluid-h2">
-            The <em>journey</em> so far.
+          <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">04 — VERIFIED TIMELINE</span>
+          <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-bold">
+            The <em className="text-accent-soft">journey</em> so far.
           </h2>
           <p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">
             A track record of building, shipping, breaking, and improving software with relentless curiosity.

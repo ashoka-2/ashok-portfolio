@@ -80,9 +80,9 @@ export default function SiteHeader() {
     <>
       <header
         ref={headerRef}
-        className={`site-navbar ${scrolled ? 'nav-scrolled' : ''} ${hidden && !menuOpen ? 'nav-hidden' : ''}`}
+        className={`site-navbar fixed inset-x-0 top-0 z-[900] h-[76px] bg-transparent px-4 pt-3 max-[760px]:px-[10px] ${scrolled ? 'nav-scrolled' : ''} ${hidden && !menuOpen ? 'nav-hidden' : ''}`}
       >
-        <div className="page-container nav-inner">
+        <div className="nav-inner mx-auto flex h-full w-full min-h-[58px] max-w-[1120px] items-center justify-between gap-3 rounded-full border border-border-default bg-[color-mix(in_srgb,var(--surface-1)_76%,transparent)] px-2 py-[6px] backdrop-blur-[18px] backdrop-saturate-[1.25] max-[760px]:mr-auto max-[760px]:ml-0 max-[760px]:w-[calc(100%-74px)] max-[760px]:gap-[6px]">
           {/* Logo Mark Left */}
           <Link to="/" className="navbar-brand-link flex items-center gap-2 group" aria-label="Ashok Kumar Home">
             <span className="w-9 h-9 rounded-full bg-text-primary border border-border-default flex items-center justify-center font-display text-xl text-base-bg group-hover:rotate-[360deg] transition-all shadow-[var(--highlight-top)]">
@@ -93,30 +93,30 @@ export default function SiteHeader() {
             </div>
           </Link>
 
-          <nav className="ref-top-links" aria-label="Portfolio sections">
-            <Link to="/about">About</Link>
-            <Link to="/#work">Work</Link>
-            <Link to="/#process">Process</Link>
-            <Link to="/#capabilities">Services</Link>
-            <Link to="/#play">Play</Link>
+          <nav className="hidden items-center gap-0.5 min-[1000px]:flex max-[999px]:!hidden" aria-label="Portfolio sections">
+            <Link className="rounded-full border border-transparent px-3 py-2.5 text-[13px] font-semibold text-text-secondary transition-[background,color,border-color,transform] duration-200 hover:-translate-y-px hover:border-border-default hover:bg-surface-2 hover:text-text-primary focus-visible:-translate-y-px focus-visible:border-border-default focus-visible:bg-surface-2 focus-visible:text-text-primary" to="/about">About</Link>
+            <Link className="rounded-full border border-transparent px-3 py-2.5 text-[13px] font-semibold text-text-secondary transition-[background,color,border-color,transform] duration-200 hover:-translate-y-px hover:border-border-default hover:bg-surface-2 hover:text-text-primary focus-visible:-translate-y-px focus-visible:border-border-default focus-visible:bg-surface-2 focus-visible:text-text-primary" to="/#work">Work</Link>
+            <Link className="rounded-full border border-transparent px-3 py-2.5 text-[13px] font-semibold text-text-secondary transition-[background,color,border-color,transform] duration-200 hover:-translate-y-px hover:border-border-default hover:bg-surface-2 hover:text-text-primary focus-visible:-translate-y-px focus-visible:border-border-default focus-visible:bg-surface-2 focus-visible:text-text-primary" to="/#process">Process</Link>
+            <Link className="rounded-full border border-transparent px-3 py-2.5 text-[13px] font-semibold text-text-secondary transition-[background,color,border-color,transform] duration-200 hover:-translate-y-px hover:border-border-default hover:bg-surface-2 hover:text-text-primary focus-visible:-translate-y-px focus-visible:border-border-default focus-visible:bg-surface-2 focus-visible:text-text-primary" to="/#capabilities">Services</Link>
+            <Link className="rounded-full border border-transparent px-3 py-2.5 text-[13px] font-semibold text-text-secondary transition-[background,color,border-color,transform] duration-200 hover:-translate-y-px hover:border-border-default hover:bg-surface-2 hover:text-text-primary focus-visible:-translate-y-px focus-visible:border-border-default focus-visible:bg-surface-2 focus-visible:text-text-primary" to="/#play">Play</Link>
           </nav>
 
           {/* Right Actions: Let's Talk Pill + Menu Pill + Pull Cord */}
           <div className="flex items-center gap-3">
-            <Link to="/contact" className="nav-pill cursor-pointer" aria-label="Go to contact page">
-              <span>LET'S TALK</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-accent-pink" />
+            <Link to="/contact" className="nav-pill relative inline-flex min-h-[42px] cursor-pointer items-center gap-2 overflow-hidden rounded-full border border-border-default bg-[color-mix(in_srgb,var(--surface-1)_86%,transparent)] px-4 font-mono text-[0.78rem] tracking-[0.04em] text-text-primary uppercase shadow-[var(--highlight-top)] transition-[transform,background,border-color,box-shadow,color] duration-[250ms] max-[760px]:min-h-[38px] max-[760px]:px-[11px] max-[760px]:text-[10px]" aria-label="Go to contact page">
+              <span className="relative z-[1]">LET'S TALK</span>
+              <span className="relative z-[1] size-1.5 rounded-full bg-accent-pink" />
             </Link>
 
             <button
               ref={menuButtonRef}
               onClick={() => setMenuOpen(!menuOpen)}
-              className="nav-pill cursor-pointer"
+              className="nav-pill relative inline-flex min-h-[42px] cursor-pointer items-center gap-2 overflow-hidden rounded-full border border-border-default bg-[color-mix(in_srgb,var(--surface-1)_86%,transparent)] px-4 font-mono text-[0.78rem] tracking-[0.04em] text-text-primary uppercase shadow-[var(--highlight-top)] transition-[transform,background,border-color,box-shadow,color] duration-[250ms] max-[760px]:min-h-[38px] max-[760px]:px-[11px] max-[760px]:text-[10px]"
               aria-expanded={menuOpen}
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             >
-              <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
-              {menuOpen ? <X size={14} /> : <Menu size={14} />}
+              <span className="relative z-[1]">{menuOpen ? 'CLOSE' : 'MENU'}</span>
+              {menuOpen ? <X className="relative z-[1]" size={14} /> : <Menu className="relative z-[1]" size={14} />}
             </button>
 
           </div>

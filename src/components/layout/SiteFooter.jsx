@@ -59,7 +59,7 @@ export default function SiteFooter() {
   }
 
   return <footer className="ref-contact" id="contact" ref={root}>
-    <div className="ref-wrap" id="contactIn">
+    <div className="relative z-[1] mx-auto w-[min(calc(100%-32px),1120px)] max-[520px]:w-[calc(100%-28px)]" id="contactIn">
       <span className="ref-eyebrow">{footerContent.eyebrow}</span>
       <h2>{footerContent.heading[0]} <em>{footerContent.heading[1]}</em><br />{footerContent.heading[2]}</h2>
       <a className="ref-contact-email" href={gmailComposeUrl(profile.contact.email)} target="_blank" rel="noreferrer"><Mail size={19} />{profile.contact.email}</a>

@@ -144,29 +144,29 @@ function ProjectGallery({ project }) {
       </section>
 
       {images.length > 1 && (
-        <div className="project-gallery-more">
-          <div className="project-gallery-heading">
-            <span className="section-kicker">MORE SCREENS</span>
-            <span className="project-gallery-count">{String(images.length - 1).padStart(2, '0')} VIEWS</span>
+        <div className="mx-auto max-w-[1380px] px-[max(4.5vw,18px)] pt-[clamp(24px,5vw,64px)]">
+          <div className="flex items-center justify-between gap-4 mb-[22px]">
+            <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">MORE SCREENS</span>
+            <span className="font-mono text-[10px] font-medium leading-[1.3] tracking-[0.12em] text-text-tertiary">{String(images.length - 1).padStart(2, '0')} VIEWS</span>
           </div>
-          <div className="project-gallery-grid">
+          <div className="grid grid-cols-2 items-start gap-[clamp(14px,2vw,28px)] max-[760px]:grid-cols-1">
             {images.slice(1).map((image, offset) => {
               const index = offset + 1
               const isPortrait = image.aspect === 'mobile'
               return (
                 <button
                   type="button"
-                  className={`project-gallery-tile grain-card${isPortrait ? ' is-portrait' : ''}`}
+                  className="project-gallery-tile grain-card group relative flex min-w-0 cursor-zoom-in flex-col gap-0 overflow-hidden rounded-3xl border border-border-default bg-surface-1 p-0 text-left text-text-primary"
                   key={image.url}
                   onClick={(event) => openImage(index, event.currentTarget)}
                   aria-label={`Open ${image.title || `${project.title} image ${index + 1}`}`}
                 >
-                  <span className="project-gallery-image-wrap">
-                    <img src={image.url} alt={image.title || `${project.title} project view`} loading="lazy" />
+                  <span className={`group grid min-h-[210px] max-h-[60svh] w-full place-items-center overflow-hidden bg-surface-2 max-[760px]:min-h-[170px] max-[760px]:max-h-[52svh]${isPortrait ? ' min-h-[300px] max-[760px]:min-h-[260px]' : ''}`}>
+                    <img className={`block h-auto max-h-[60svh] w-full max-w-full object-contain transition-transform duration-[650ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.025] max-[760px]:max-h-[52svh]${isPortrait ? ' !h-[min(60svh,700px)] !w-auto max-[760px]:!h-[min(52svh,580px)]' : ''}`} src={image.url} alt={image.title || `${project.title} project view`} loading="lazy" />
                   </span>
-                  <span className="project-gallery-caption">
-                    <strong>{image.title || `View ${String(index + 1).padStart(2, '0')}`}</strong>
-                    {image.caption && <small>{image.caption}</small>}
+                  <span className="flex flex-col gap-1.5 border-t border-border-subtle px-[19px] pt-[17px] pb-5">
+                    <strong className="font-display text-sm leading-[1.35] font-semibold">{image.title || `View ${String(index + 1).padStart(2, '0')}`}</strong>
+                    {image.caption && <small className="font-mono text-[11px] leading-[1.5] text-text-tertiary">{image.caption}</small>}
                   </span>
                 </button>
               )
@@ -230,11 +230,11 @@ export default function ProjectPage() {
 
   if (!project) {
     return (
-      <div className="page-container py-32 text-center">
+      <div className="mx-auto w-full max-w-[1360px] px-page-gutter py-32 text-center">
         <span className="font-mono text-xs uppercase tracking-widest text-accent-pink mb-2 block">
           404 — CASE STUDY NOT FOUND
         </span>
-        <h1 className="text-fluid-h1 font-display font-bold text-text-primary mb-6">
+        <h1 className="text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] tracking-[-0.035em] font-bold font-display font-bold text-text-primary mb-6">
           Project in the lab.
         </h1>
         <Button to="/projects" kind="secondary">
@@ -248,7 +248,7 @@ export default function ProjectPage() {
   const titleChars = project.title.split('')
 
   return (
-    <article className="page-container py-28 relative project-case-study" ref={pageRef} data-page-content>
+    <article className="mx-auto w-full max-w-[1360px] px-page-gutter py-28 relative project-case-study" ref={pageRef} data-page-content>
       {/* Back button */}
       <div className="mb-10">
         <Link
@@ -272,7 +272,7 @@ export default function ProjectPage() {
 
       {/* Split-char Title */}
       <div className="overflow-hidden mb-6">
-        <h1 className="text-fluid-h1 font-display font-extrabold text-text-primary tracking-tight">
+        <h1 className="text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] tracking-[-0.035em] font-bold font-display font-extrabold text-text-primary tracking-tight">
           {titleChars.map((char, i) => (
             <span key={i} className="project-title-char inline-block">
               {char === ' ' ? '\u00A0' : char}
@@ -282,7 +282,7 @@ export default function ProjectPage() {
       </div>
 
       {/* One-liner Tagline */}
-      <p className="text-fluid-body text-text-secondary max-w-3xl mb-12 leading-relaxed">
+      <p className="text-[clamp(0.95rem,1.1vw,1.125rem)] leading-[1.6] text-text-secondary max-w-3xl mb-12 leading-relaxed">
         {project.oneLiner}
       </p>
 
@@ -346,8 +346,8 @@ export default function ProjectPage() {
       {/* Overview & Key Features */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
         <div className="lg:col-span-5">
-          <span className="section-kicker">01 — THE ARCHITECTURE</span>
-          <h2 className="text-fluid-h2 mb-4 font-display font-bold">
+          <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">01 — THE ARCHITECTURE</span>
+          <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-bold mb-4 font-display font-bold">
             Built with intent.
           </h2>
           <p className="text-text-secondary text-base sm:text-lg leading-relaxed">
@@ -356,7 +356,7 @@ export default function ProjectPage() {
         </div>
 
         <div className="lg:col-span-7">
-          <span className="section-kicker">02 — VERIFIED CAPABILITIES</span>
+          <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">02 — VERIFIED CAPABILITIES</span>
           <div className="space-y-4">
             {(project.features || []).map((feat, i) => (
               <div

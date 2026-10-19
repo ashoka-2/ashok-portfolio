@@ -129,7 +129,7 @@ export default function PhysicsField({ items }) {
   return <div className="physics-field-viewport">
     <div className="physics-field grain-card" ref={field} style={{ '--physics-field-height': '650px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
       <span className="physics-corner">A TOOLBOX, IN MOTION</span>
-      {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} compact /></span>)}
+      {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} compact className="!rounded-none border-0 bg-transparent shadow-none" /></span>)}
       <span className="physics-floor">DRAG TO DROP · CLICK TO OPEN</span>
     </div>
   </div>

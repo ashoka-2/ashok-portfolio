@@ -45,9 +45,9 @@ export default function ServicesSection() {
       {/* Section Header */}
       <div className="section-heading mb-14" data-scroll-reveal>
         <div>
-          <span className="section-kicker">03 — CAPABILITIES</span>
-          <h2 className="text-fluid-h2">
-            What I <em>actually</em> do.
+          <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">03 — CAPABILITIES</span>
+          <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-bold">
+            What I <em className="text-accent-soft">actually</em> do.
           </h2>
           <p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">
             No vague buzzwords. Just high-grade code, generative intelligence, and obsessively refined interfaces.
@@ -63,7 +63,7 @@ export default function ServicesSection() {
         {services.map((item, idx) => (
           <div
             key={item.index}
-            className="service-card grain-card group cursor-pointer"
+            className="service-card grain-card group relative cursor-pointer overflow-hidden rounded-3xl border border-border-default bg-surface-1 p-[clamp(32px,3.5vw,51px)] shadow-[var(--shadow-card)] transition-[transform,border-color,box-shadow] duration-[400ms] ease-[cubic-bezier(.16,1,.3,1)] hover:-translate-y-1.5 hover:border-accent-pink hover:shadow-[0_24px_50px_-12px_rgba(91,61,245,0.35)]"
             onPointerEnter={() => setHoveredIdx(idx)}
             onPointerLeave={() => setHoveredIdx(null)}
           >

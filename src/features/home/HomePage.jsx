@@ -56,7 +56,7 @@ export default function HomePage() {
 
   return <div className="ref-home" ref={heroRef}>
     <header
-      className="ref-hero"
+      className="ref-hero relative isolate h-[100svh] min-h-[700px] overflow-clip max-[820px]:min-h-[800px] max-[520px]:h-[max(100svh,800px)] max-[520px]:min-h-[800px] min-[521px]:max-[820px]:h-[max(100svh,820px)] min-[521px]:max-[820px]:min-h-[820px] min-[821px]:max-[999px]:h-[max(100svh,850px)] min-[821px]:max-[999px]:min-h-[850px]"
       id="top"
       onPointerDownCapture={handleHeroPointerDown}
       onPointerMoveCapture={handleHeroPointerMove}
@@ -67,28 +67,28 @@ export default function HomePage() {
       <HeroFur />
       <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
       {hero.stickers.map((sticker, index) => <span className={`ref-sticker ref-sticker-${['one', 'two', 'three'][index]}`} key={sticker}>{sticker}</span>)}
-      <div className="ref-hero-ui">
-        <div className="ref-hero-bottom">
-          <div className="ref-hero-copy">
-            <span className="ref-open-chip"><i />{hero.openLabel}</span>
-            <h2>{hero.title.split('real')[0]}<em>real</em>{hero.title.split('real')[1]}</h2>
-            <p>{hero.description}</p>
+      <div className="ref-hero-ui absolute inset-0 z-[5] grid grid-rows-[1fr_auto] px-6 pointer-events-none max-[520px]:px-4">
+        <div className="ref-hero-bottom mx-auto flex w-[min(100%,1120px)] flex-wrap items-end justify-between gap-6 pb-[72px] max-[999px]:flex-col max-[999px]:items-center max-[999px]:justify-end max-[999px]:gap-[14px] max-[999px]:pb-[82px] max-[999px]:text-center min-[821px]:max-[999px]:gap-[15px]">
+          <div className="ref-hero-copy max-w-[620px] max-[820px]:max-w-[min(100%,38ch)] min-[821px]:max-[999px]:max-w-[42ch]">
+            <span className="ref-open-chip mb-[18px] inline-flex min-h-9 items-center gap-[9px] rounded-full border border-border-default bg-[color-mix(in_srgb,var(--base-bg)_65%,transparent)] px-[14px] text-[13px] text-text-primary backdrop-blur-[10px] max-[820px]:mb-3"><i className="size-2 rounded-full bg-[#6fe3a2] shadow-[0_0_10px_rgba(111,227,162,0.4)]" />{hero.openLabel}</span>
+            <h2 className="m-0 max-w-[13ch] font-[var(--font-bold)] text-[clamp(35px,4.4vw,60px)] leading-[0.98] tracking-[-0.045em] font-extrabold text-text-primary max-[999px]:max-w-none max-[820px]:text-[clamp(30px,7vw,44px)] min-[821px]:max-[999px]:text-[clamp(38px,5.2vw,52px)] max-[520px]:max-w-[12ch]">{hero.title.split('real')[0]}<em className="font-display font-normal text-accent-pink">real</em>{hero.title.split('real')[1]}</h2>
+            <p className="mt-[14px] mb-0 max-w-[35ch] text-[clamp(15px,1.4vw,17px)] leading-[1.5] text-text-secondary max-[820px]:mx-auto max-[820px]:max-w-[34ch] min-[821px]:max-[999px]:mx-auto">{hero.description}</p>
           </div>
-          <div className="ref-hero-actions">
-            <div className="ref-meta">{hero.meta.map((item) => <span key={item}>{item}</span>)}</div>
-            <div className="ref-cta-row"><Button href="#work" kind="primary">{hero.primaryAction} <ArrowDown size={16} /></Button><Button href="#contact" kind="secondary">{hero.secondaryAction} <ArrowUpRight size={16} /></Button></div>
+          <div className="ref-hero-actions grid justify-items-end gap-[14px] max-[999px]:justify-items-center max-[999px]:gap-[10px]">
+            <div className="ref-meta flex flex-wrap justify-end gap-2 max-[999px]:justify-center">{hero.meta.map((item) => <span className="inline-flex min-h-[34px] items-center rounded-full border border-border-default bg-[color-mix(in_srgb,var(--base-bg)_64%,transparent)] px-[13px] font-display text-[13px] font-normal text-text-primary backdrop-blur-lg max-[520px]:min-h-[31px] max-[520px]:px-[10px] max-[520px]:text-xs" key={item}>{item}</span>)}</div>
+            <div className="ref-cta-row flex flex-wrap justify-end gap-2 max-[999px]:justify-center max-[520px]:gap-2"><Button href="#work" kind="primary">{hero.primaryAction} <ArrowDown size={16} /></Button><Button href="#contact" kind="secondary">{hero.secondaryAction} <ArrowUpRight size={16} /></Button></div>
           </div>
         </div>
       </div>
-      <span className="ref-hero-hint">{hero.hint}</span>
+      <span className="ref-hero-hint pointer-events-none absolute z-[6] bottom-[22px] left-1/2 -translate-x-1/2 font-mono text-[11px] leading-[1.3] tracking-[0.1em] text-text-tertiary uppercase max-[520px]:hidden">{hero.hint}</span>
     </header>
 
     <Ribbon />
     <AboutBento />
 
-    <section className="section-wrap page-container ref-projects" id="work">
-      <div className="section-heading mb-12" data-scroll-reveal>
-        <div><span className="section-kicker">{selectedWork.kicker}</span><h2 className="text-fluid-h2">{selectedWork.heading[0]} <em>{selectedWork.heading[1]}</em></h2><p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
+    <section className="section-wrap mx-auto w-full max-w-[1360px] px-page-gutter relative z-[2] pt-[88px] pb-[96px] bg-base-bg max-[820px]:py-[68px]" id="work">
+      <div className="section-heading mb-12 items-end" data-scroll-reveal>
+        <div><span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">{selectedWork.kicker}</span><h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-[var(--font-bold)] font-extrabold">{selectedWork.heading[0]} <em className="text-accent-soft">{selectedWork.heading[1]}</em></h2><p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
         <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
       </div>
       <SelectedWorks projects={projects} />

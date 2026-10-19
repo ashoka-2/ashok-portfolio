@@ -923,18 +923,18 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
 .ref-physics .tech-lamp-logo {
   position: absolute;
   z-index: 2;
-  top: 53.5%;
+  top: 48.5%;
   left: 50%;
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   place-items: center;
   background: transparent;
   transform: translate(-50%, -50%);
 }
 .ref-physics .tech-lamp-logo svg {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.22));
 }
 .ref-physics .tech-lamp-label {

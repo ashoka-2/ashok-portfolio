@@ -185,7 +185,7 @@ export default function HeroModelCanvas({ interactionRef }) {
 
   return (
     <>
-      <div className="hero-model-canvas" ref={wrapper}>
+      <div className="hero-model-canvas absolute inset-0 z-[3] pointer-events-none" ref={wrapper}>
         <ModelErrorBoundary>
           <Canvas onCreated={onCanvasCreated} dpr={[1, 1.35]} frameloop={!rendering ? 'never' : reduceMotion ? 'demand' : 'always'} camera={{ position: [0, 0, 5.6], fov: 35 }} gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }}>
             <ambientLight intensity={1.2} />
@@ -200,10 +200,11 @@ export default function HeroModelCanvas({ interactionRef }) {
         </ModelErrorBoundary>
       </div>
       <div
-        className="hero-model-hit-area"
+        className="hero-model-hit-area absolute z-[4] top-[9%] left-1/2 h-[67%] w-[min(58vw,560px)] -translate-x-1/2 outline-none cursor-grab active:cursor-grabbing touch-none pointer-events-auto max-[520px]:top-[17%] max-[520px]:h-[55%] max-[520px]:w-[min(90vw,440px)] min-[521px]:max-[820px]:top-[12%] min-[521px]:max-[820px]:h-[62%] min-[521px]:max-[820px]:w-[min(76vw,620px)] min-[821px]:max-[999px]:top-[12%] min-[821px]:max-[999px]:h-[58%] min-[821px]:max-[999px]:w-[min(58vw,520px)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--hero-light-rose)_78%,transparent)] focus-visible:-outline-offset-8 focus-visible:rounded-[45%]"
         role="button"
         tabIndex={0}
         aria-label="Drag to rotate Ashok’s 3D portrait, or use arrow keys"
+        onPointerDown={(event) => interactionRef?.current?.begin?.(event.nativeEvent || event)}
         onPointerLeave={() => interactionRef?.current?.leave?.()}
         onKeyDown={rotateByKeyboard}
       />

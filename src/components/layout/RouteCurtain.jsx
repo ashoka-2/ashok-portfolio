@@ -141,11 +141,14 @@ export default function RouteCurtain() {
   }, [location.key])
 
   return (
-    <div className="route-curtain" ref={root} aria-hidden="true">
-      <div className="route-curtain-panels" ref={panels}>
-        <i /><i /><i /><i />
+    <div className="route-curtain fixed inset-0 w-screen h-screen z-[99990] pointer-events-none flex" ref={root} aria-hidden="true">
+      <div className="route-curtain-panels absolute inset-0 flex w-full h-full" ref={panels}>
+        <i className="flex-1 h-full bg-base-bg origin-bottom [transform:scaleY(0)]" />
+        <i className="flex-1 h-full bg-surface-1 origin-bottom [transform:scaleY(0)]" />
+        <i className="flex-1 h-full bg-surface-2 origin-bottom [transform:scaleY(0)]" />
+        <i className="flex-1 h-full bg-base-bg origin-bottom [transform:scaleY(0)]" />
       </div>
-      <span className="route-curtain-title" ref={title}>ASHOK KUMAR</span>
+      <span className="route-curtain-title absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[clamp(2rem,5vw,4.5rem)] font-extrabold uppercase text-white tracking-[0.05em] opacity-0 z-10 pointer-events-none" ref={title}>ASHOK KUMAR</span>
     </div>
   )
 }

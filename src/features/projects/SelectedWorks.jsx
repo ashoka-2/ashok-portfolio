@@ -82,7 +82,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
 
       {/* Mode A: Two26-Style Hover List (Default) */}
       {viewMode === 'list' && (
-        <div className="works-hover-list" onPointerLeave={() => setActiveProject(null)}>
+        <div className="works-hover-list flex flex-col" onPointerLeave={() => setActiveProject(null)}>
           {projects.map((project, idx) => {
             const isHovered = activeProject?.slug === project.slug
             return (
@@ -91,17 +91,17 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
                 to={`/projects/${project.slug}`}
                 data-project-title={project.title}
                 data-cursor="VIEW"
-                className="works-hover-row group"
+                className="works-hover-row group relative grid grid-cols-[80px_1fr_auto_120px] items-baseline gap-6 border-b border-border-subtle py-[clamp(1.5rem,2.8vw,2.6rem)] transition-all duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer hover:px-3.5 hover:border-b-accent-pink max-[820px]:grid-cols-[48px_1fr_auto]"
                 onPointerEnter={() => setActiveProject(project)}
               >
                 {/* Index */}
-                <span className="row-index font-mono">
+                <span className="row-index font-mono text-[clamp(0.95rem,1.2vw,1.15rem)] font-medium text-text-tertiary">
                   {project.index || `0${idx + 1}`}
                 </span>
 
                 {/* Title */}
                 <div className="flex flex-col">
-                  <span className="row-title">
+                  <span className="row-title font-display text-[clamp(1.8rem,3.8vw,4rem)] font-bold tracking-[-0.03em] text-text-primary transition-[transform,color] duration-[350ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-2 group-hover:text-accent-pink">
                     {project.title}
                   </span>
                   <span className="md:hidden font-mono text-xs text-text-tertiary mt-1">
@@ -111,7 +111,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
 
                 {/* Category Tags */}
                 <div className="hidden md:flex items-center gap-2">
-                  <span className="row-category">
+                  <span className="row-category font-mono text-[0.82rem] uppercase tracking-[0.05em] text-text-secondary">
                     {Array.isArray(project.category) ? project.category.join(' / ') : project.category}
                   </span>
                   <span className="row-arrow transition-transform text-text-tertiary group-hover:text-accent-pink group-hover:translate-x-1 group-hover:-translate-y-1">
@@ -120,7 +120,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
                 </div>
 
                 {/* Year */}
-                <span className="row-year font-mono">
+                <span className="row-year font-mono text-[0.85rem] text-right text-text-tertiary max-[820px]:hidden">
                   {project.year}
                 </span>
 
@@ -145,7 +145,9 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
       {/* Floating Media Preview Window (Follows Cursor on Hover) */}
       <div
         ref={previewRef}
-        className={`floating-work-preview ${activeProject ? 'is-visible' : ''}`}
+        className={`floating-work-preview fixed w-[380px] h-[240px] rounded-2xl overflow-hidden pointer-events-none z-[800] shadow-[0_25px_60px_-12px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.15)] origin-center -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform] duration-300 max-[820px]:!hidden ${
+          activeProject ? 'opacity-100 scale-100 is-visible' : 'opacity-0 scale-[0.85]'
+        }`}
         aria-hidden="true"
       >
         {activeProject && (

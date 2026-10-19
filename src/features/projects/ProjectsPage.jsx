@@ -21,7 +21,7 @@ export default function ProjectsPage() {
       })
 
   return (
-    <div className="page-container py-28 relative projects-index-page" data-page-content>
+    <div className="mx-auto w-full max-w-[1360px] px-page-gutter py-28 relative projects-index-page" data-page-content>
       {/* Back button */}
       <div className="mb-10">
         <Link
@@ -35,11 +35,11 @@ export default function ProjectsPage() {
 
       {/* Header */}
       <div className="max-w-3xl mb-12">
-        <span className="section-kicker">02 / PROJECT ARCHIVE · {String(projects.length).padStart(2, '0')} BUILDS</span>
-        <h1 className="text-fluid-h1 font-display font-black text-text-primary mb-4">
+        <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">02 / PROJECT ARCHIVE · {String(projects.length).padStart(2, '0')} BUILDS</span>
+        <h1 className="text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] tracking-[-0.035em] font-bold font-display font-black text-text-primary mb-4">
           Things I've <em>shipped.</em>
         </h1>
-        <p className="text-fluid-body text-text-secondary leading-relaxed">
+        <p className="text-[clamp(0.95rem,1.1vw,1.125rem)] leading-[1.6] text-text-secondary leading-relaxed">
           From autonomous multi-model agent workspaces and Kubernetes cloud sandboxes to real-time WebSockets and audio-reactive frequency canvases.
         </p>
       </div>

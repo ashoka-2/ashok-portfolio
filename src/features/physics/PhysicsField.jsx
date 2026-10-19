@@ -35,27 +35,33 @@ export default function PhysicsField({ items }) {
     const build = () => {
       const { width, height } = node.getBoundingClientRect()
       const compactLayout = width <= 720
-      engine.gravity.y = gravityEnabled.current ? (compactLayout ? 0.85 : 1.05) : 0
-      const itemWidth = els[0]?.offsetWidth || (compactLayout ? 50 : 82)
-      const itemHeight = els[0]?.offsetHeight || (compactLayout ? 60 : 98)
-      const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 3 : 10))))
+      engine.gravity.y = gravityEnabled.current ? (compactLayout ? 0.95 : 1.05) : 0
+      const itemWidth = els[0]?.offsetWidth || (compactLayout ? 46 : 82)
+      const itemHeight = els[0]?.offsetHeight || (compactLayout ? 55 : 98)
+      const compactGutter = 4
+      const columns = compactLayout
+        ? Math.min(6, Math.max(4, Math.floor((width - 16) / (itemWidth + compactGutter))))
+        : Math.max(1, Math.floor(width / (itemWidth + 10)))
       const rows = Math.ceil(els.length / columns)
       const neededHeight = compactLayout
-        ? Math.min(340, Math.max(290, rows * (itemHeight + 4) + 30))
+        ? Math.min(320, Math.max(270, rows * 40 + 46))
         : Math.max(420, rows * 73 + 50)
       if (Math.abs(height - neededHeight) > 1) node.style.setProperty('--physics-field-height', `${neededHeight}px`)
       walls.forEach((wall) => Matter.Composite.remove(engine.world, wall))
       walls = [
-        Matter.Bodies.rectangle(width / 2, height + 45, width + 100, 90, { isStatic: true }),
-        Matter.Bodies.rectangle(-45, height / 2, 90, height * 2, { isStatic: true }),
-        Matter.Bodies.rectangle(width + 45, height / 2, 90, height * 2, { isStatic: true }),
+        Matter.Bodies.rectangle(width / 2, height + 300, width + 1200, 600, { isStatic: true, friction: 0.1 }),
+        Matter.Bodies.rectangle(-200, height / 2, 400, height * 6, { isStatic: true }),
+        Matter.Bodies.rectangle(width + 200, height / 2, 400, height * 6, { isStatic: true }),
       ]
       Matter.Composite.add(engine.world, walls)
       if (bodies.current.length) {
         bodies.current.forEach((body, index) => {
+          const el = body.plugin.el || els[index]
+          const halfH = (el?.offsetHeight || (compactLayout ? 55 : 98)) / 2
+          const maxY = height - halfH - 2
           Matter.Body.setPosition(body, {
-            x: Math.min(width - 28, Math.max(28, body.position.x)),
-            y: Math.min(height - 32, Math.max(32, body.position.y)),
+            x: Math.min(width - 24, Math.max(24, body.position.x)),
+            y: Math.min(maxY, Math.max(28, body.position.y)),
           })
           if (els[index]) { body.plugin.el = els[index] }
         })
@@ -63,33 +69,105 @@ export default function PhysicsField({ items }) {
     }
     const width = node.clientWidth
     const compactLayout = width <= 720
-    const itemWidth = els[0]?.offsetWidth || (compactLayout ? 50 : 82)
-    const itemHeight = els[0]?.offsetHeight || (compactLayout ? 60 : 98)
-    const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 3 : 10))))
+    const itemWidth = els[0]?.offsetWidth || (compactLayout ? 46 : 82)
+    const itemHeight = els[0]?.offsetHeight || (compactLayout ? 55 : 98)
+    const compactGutter = 4
+    const columns = compactLayout
+      ? Math.min(6, Math.max(4, Math.floor((width - 16) / (itemWidth + compactGutter))))
+      : Math.max(1, Math.floor(width / (itemWidth + 10)))
     const rows = Math.ceil(els.length / columns)
     const neededHeight = compactLayout
-      ? Math.min(340, Math.max(290, rows * (itemHeight + 4) + 30))
+      ? Math.min(320, Math.max(270, rows * 40 + 46))
       : Math.max(420, rows * 73 + 50)
-    const compactRowStep = compactLayout ? Math.min(48, (neededHeight - 36) / Math.max(rows, 1)) : 73
+    const totalWidth = columns * (itemWidth + compactGutter)
+    const startX = compactLayout
+      ? Math.max(itemWidth / 2 + 8, (width - totalWidth) / 2 + itemWidth / 2)
+      : 44
+    const compactRowStep = compactLayout ? Math.min(38, (neededHeight - 44) / Math.max(rows, 1)) : 73
     bodies.current = els.map((el, index) => {
-      const w = compactLayout ? (el.offsetWidth || 50) : Math.max(66, el.offsetWidth || 82)
-      const h = compactLayout ? (el.offsetHeight || 60) : Math.max(66, el.offsetHeight || 98)
-      const x = compactLayout ? ((index % columns) + 0.5) * (width / columns) : 44 + (index % columns) * (width / columns)
+      const w = compactLayout ? (el.offsetWidth || 46) : Math.max(66, el.offsetWidth || 82)
+      const h = compactLayout ? (el.offsetHeight || 55) : Math.max(66, el.offsetHeight || 98)
+      const col = index % columns
+      const row = Math.floor(index / columns)
+      const x = compactLayout
+        ? startX + col * (itemWidth + compactGutter)
+        : 44 + col * (width / columns)
       const y = compactLayout
-        ? 14 + Math.floor(index / columns) * compactRowStep + h / 2
-        : 30 + Math.floor(index / columns) * 73
-      const body = Matter.Bodies.rectangle(x, y, w * (compactLayout ? 0.78 : 0.84), h * (compactLayout ? 0.78 : 0.84), { restitution: compactLayout ? 0.45 : 0.65, friction: 0.04, frictionAir: 0.009, chamfer: { radius: compactLayout ? 8 : 14 } })
+        ? 12 + row * (compactRowStep || 36) + h / 2
+        : 30 + row * 73
+      const body = Matter.Bodies.rectangle(
+        x,
+        y,
+        w * (compactLayout ? 0.72 : 0.84),
+        h * (compactLayout ? 0.72 : 0.84),
+        {
+          restitution: compactLayout ? 0.35 : 0.65,
+          friction: compactLayout ? 0.05 : 0.04,
+          frictionAir: compactLayout ? 0.012 : 0.009,
+          chamfer: { radius: compactLayout ? 6 : 14 }
+        }
+      )
       body.plugin.el = el
       return body
     })
     Matter.Composite.add(engine.world, bodies.current)
     build()
+
+    const constrainDragAndFloor = () => {
+      const { width, height } = node.getBoundingClientRect()
+      const compactLayout = width <= 720
+      if (drag.constraint.bodyB) {
+        const body = drag.constraint.bodyB
+        const el = body.plugin.el
+        const halfH = (el?.offsetHeight || (compactLayout ? 55 : 98)) / 2
+        const maxY = height - halfH - 2
+        if (mouse.position.y > maxY) {
+          mouse.position.y = maxY
+        }
+        if (drag.constraint.pointA && drag.constraint.pointA.y > maxY) {
+          drag.constraint.pointA.y = maxY
+        }
+        if (body.position.y > maxY) {
+          Matter.Body.setPosition(body, { x: body.position.x, y: maxY })
+          if (body.velocity.y > 0) Matter.Body.setVelocity(body, { x: body.velocity.x, y: 0 })
+        }
+        if (mouse.position.y > height + 50) {
+          drag.constraint.bodyB = null
+        }
+      }
+    }
+    Matter.Events.on(engine, 'beforeUpdate', constrainDragAndFloor)
+
     let frame
     const tick = () => {
       Matter.Engine.update(engine, 1000 / 60)
+      const { width, height } = node.getBoundingClientRect()
+      const compactLayout = width <= 720
       bodies.current.forEach((body) => {
         const el = body.plugin.el
-        if (el) el.style.transform = `translate3d(${body.position.x - el.offsetWidth / 2}px, ${body.position.y - el.offsetHeight / 2}px, 0) rotate(${body.angle}rad)`
+        const halfH = (el?.offsetHeight || (compactLayout ? 55 : 98)) / 2
+        const halfW = (el?.offsetWidth || (compactLayout ? 46 : 82)) / 2
+        const maxY = height - halfH - 2
+        if (body.position.y > maxY) {
+          Matter.Body.setPosition(body, { x: body.position.x, y: maxY })
+          if (body.velocity.y > 0) {
+            Matter.Body.setVelocity(body, { x: body.velocity.x, y: 0 })
+          }
+        }
+        if (body.position.x < halfW) {
+          Matter.Body.setPosition(body, { x: halfW, y: body.position.y })
+          if (body.velocity.x < 0) {
+            Matter.Body.setVelocity(body, { x: 0, y: body.velocity.y })
+          }
+        } else if (body.position.x > width - halfW) {
+          Matter.Body.setPosition(body, { x: width - halfW, y: body.position.y })
+          if (body.velocity.x > 0) {
+            Matter.Body.setVelocity(body, { x: 0, y: body.velocity.y })
+          }
+        }
+        if (el) {
+          el.style.transform = `translate3d(${body.position.x - el.offsetWidth / 2}px, ${body.position.y - el.offsetHeight / 2}px, 0) rotate(${body.angle}rad)`
+        }
       })
       frame = requestAnimationFrame(tick)
     }
@@ -109,6 +187,7 @@ export default function PhysicsField({ items }) {
     return () => {
       cancelAnimationFrame(frame)
       resize.disconnect()
+      Matter.Events.off(engine, 'beforeUpdate', constrainDragAndFloor)
       node.removeEventListener('touchmove', handleTouchMove)
       window.removeEventListener('reference-physics-shake', shake)
       window.removeEventListener('reference-physics-gravity', setGravity)

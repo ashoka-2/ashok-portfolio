@@ -846,30 +846,51 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
 }
 .ref-physics .physics-field {
   position: relative;
-  min-height: 420px;
-  height: var(--physics-field-height, 540px);
+  min-height: 400px;
+  height: var(--physics-field-height, 480px);
   overflow: hidden;
   touch-action: pan-y;
   user-select: none;
-  border: 1px solid rgba(111, 155, 224, 0.3);
+  border: 1px solid var(--border-default);
   border-radius: var(--ref-card-radius);
-  background:
+  background-color: var(--surface-1);
+  background-image:
     radial-gradient(
-      ellipse at 55% 55%,
-      rgba(56, 103, 190, 0.12),
-      transparent 52%
+      ellipse at 50% 50%,
+      color-mix(in srgb, var(--accent) 12%, transparent),
+      transparent 65%
     ),
     repeating-linear-gradient(
       0deg,
       transparent 0 46px,
-      rgba(198, 214, 255, 0.035) 47px
+      color-mix(in srgb, var(--text-primary) 3.5%, transparent) 47px
     ),
     repeating-linear-gradient(
       90deg,
       transparent 0 46px,
-      rgba(198, 214, 255, 0.035) 47px
-    ),
-    #0b1220;
+      color-mix(in srgb, var(--text-primary) 3.5%, transparent) 47px
+    );
+}
+[data-theme="light"] .ref-physics .physics-field {
+  background-color: var(--surface-2);
+  border-color: var(--border-default);
+}
+.ref-physics .physics-field::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .ref-physics .physics-field::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 .ref-physics .physics-corner,
 .ref-physics .physics-floor {
@@ -975,7 +996,32 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   }
 
   .ref-physics .physics-field {
-    min-height: 500px;
+    min-height: 320px;
+    height: var(--physics-field-height, 340px);
+    max-height: 360px;
+  }
+  .ref-physics .physics-item,
+  .ref-physics .tech-lamp {
+    width: 52px;
+    height: 63px;
+  }
+  .ref-physics .tech-lamp-logo {
+    width: 25px;
+    height: 25px;
+  }
+  .ref-physics .tech-lamp-logo svg {
+    width: 17px;
+    height: 17px;
+  }
+  .ref-physics .physics-floor {
+    right: 14px;
+    bottom: 10px;
+    font-size: 8px;
+  }
+  .ref-physics .physics-corner {
+    top: 12px;
+    left: 14px;
+    font-size: 8px;
   }
 }
 @media (max-width: 520px) {
@@ -985,11 +1031,32 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
     font-size: 13px;
   }
   .ref-physics .physics-field {
-    min-height: 560px;
+    min-height: 300px;
+    height: var(--physics-field-height, 320px);
+    max-height: 340px;
+  }
+  .ref-physics .physics-item,
+  .ref-physics .tech-lamp {
+    width: 48px;
+    height: 58px;
+  }
+  .ref-physics .tech-lamp-logo {
+    width: 23px;
+    height: 23px;
+  }
+  .ref-physics .tech-lamp-logo svg {
+    width: 16px;
+    height: 16px;
   }
   .ref-physics .physics-floor {
-    right: 14px;
-    font-size: 9px;
+    right: 12px;
+    bottom: 8px;
+    font-size: 7.5px;
+  }
+  .ref-physics .physics-corner {
+    top: 10px;
+    left: 12px;
+    font-size: 7.5px;
   }
 }
 

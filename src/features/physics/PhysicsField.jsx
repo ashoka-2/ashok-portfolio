@@ -22,17 +22,26 @@ export default function PhysicsField({ items }) {
     const drag = Matter.MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.18, damping: 0.1, render: { visible: false } } })
     mouseConstraint.current = drag
     Matter.Composite.add(engine.world, drag)
+
+    const handleTouchMove = (e) => {
+      // Only prevent native page scroll if the user is actively dragging a physics body
+      if (drag.constraint.bodyB && e.cancelable) {
+        e.preventDefault()
+      }
+    }
+    node.addEventListener('touchmove', handleTouchMove, { passive: false })
+
     let walls = []
     const build = () => {
       const { width, height } = node.getBoundingClientRect()
       const compactLayout = width <= 720
-      engine.gravity.y = gravityEnabled.current ? (compactLayout ? 0.8 : 1.05) : 0
-      const itemWidth = els[0]?.offsetWidth || 84
-      const itemHeight = els[0]?.offsetHeight || 96
-      const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 5 : 10))))
+      engine.gravity.y = gravityEnabled.current ? (compactLayout ? 0.85 : 1.05) : 0
+      const itemWidth = els[0]?.offsetWidth || (compactLayout ? 50 : 82)
+      const itemHeight = els[0]?.offsetHeight || (compactLayout ? 60 : 98)
+      const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 3 : 10))))
       const rows = Math.ceil(els.length / columns)
       const neededHeight = compactLayout
-        ? Math.max(500, rows * (itemHeight + 6) + 64)
+        ? Math.min(340, Math.max(290, rows * (itemHeight + 4) + 30))
         : Math.max(420, rows * 73 + 50)
       if (Math.abs(height - neededHeight) > 1) node.style.setProperty('--physics-field-height', `${neededHeight}px`)
       walls.forEach((wall) => Matter.Composite.remove(engine.world, wall))
@@ -45,8 +54,8 @@ export default function PhysicsField({ items }) {
       if (bodies.current.length) {
         bodies.current.forEach((body, index) => {
           Matter.Body.setPosition(body, {
-            x: Math.min(width - 40, Math.max(40, body.position.x)),
-            y: Math.min(height - 48, Math.max(48, body.position.y)),
+            x: Math.min(width - 28, Math.max(28, body.position.x)),
+            y: Math.min(height - 32, Math.max(32, body.position.y)),
           })
           if (els[index]) { body.plugin.el = els[index] }
         })
@@ -54,20 +63,22 @@ export default function PhysicsField({ items }) {
     }
     const width = node.clientWidth
     const compactLayout = width <= 720
-    const itemWidth = els[0]?.offsetWidth || 84
-    const itemHeight = els[0]?.offsetHeight || 96
-    const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 5 : 10))))
+    const itemWidth = els[0]?.offsetWidth || (compactLayout ? 50 : 82)
+    const itemHeight = els[0]?.offsetHeight || (compactLayout ? 60 : 98)
+    const columns = Math.max(1, Math.floor(width / (itemWidth + (compactLayout ? 3 : 10))))
     const rows = Math.ceil(els.length / columns)
-    const neededHeight = compactLayout ? Math.max(500, rows * (itemHeight + 6) + 64) : 0
-    const compactRowStep = compactLayout ? (neededHeight - 64) / Math.max(rows, 1) : 73
+    const neededHeight = compactLayout
+      ? Math.min(340, Math.max(290, rows * (itemHeight + 4) + 30))
+      : Math.max(420, rows * 73 + 50)
+    const compactRowStep = compactLayout ? Math.min(48, (neededHeight - 36) / Math.max(rows, 1)) : 73
     bodies.current = els.map((el, index) => {
-      const w = compactLayout ? el.offsetWidth : Math.max(66, el.offsetWidth)
-      const h = compactLayout ? el.offsetHeight : Math.max(66, el.offsetHeight)
+      const w = compactLayout ? (el.offsetWidth || 50) : Math.max(66, el.offsetWidth || 82)
+      const h = compactLayout ? (el.offsetHeight || 60) : Math.max(66, el.offsetHeight || 98)
       const x = compactLayout ? ((index % columns) + 0.5) * (width / columns) : 44 + (index % columns) * (width / columns)
       const y = compactLayout
-        ? 32 + Math.floor(index / columns) * compactRowStep + itemHeight / 2
+        ? 14 + Math.floor(index / columns) * compactRowStep + h / 2
         : 30 + Math.floor(index / columns) * 73
-      const body = Matter.Bodies.rectangle(x, y, w * (compactLayout ? 0.86 : 0.77), h * (compactLayout ? 0.86 : 0.76), { restitution: 0.7, friction: 0.035, frictionAir: 0.008, chamfer: { radius: 14 } })
+      const body = Matter.Bodies.rectangle(x, y, w * (compactLayout ? 0.78 : 0.84), h * (compactLayout ? 0.78 : 0.84), { restitution: compactLayout ? 0.45 : 0.65, friction: 0.04, frictionAir: 0.009, chamfer: { radius: compactLayout ? 8 : 14 } })
       body.plugin.el = el
       return body
     })
@@ -95,9 +106,20 @@ export default function PhysicsField({ items }) {
     }
     window.addEventListener('reference-physics-shake', shake)
     window.addEventListener('reference-physics-gravity', setGravity)
-    return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener('reference-physics-shake', shake); window.removeEventListener('reference-physics-gravity', setGravity); Matter.Engine.clear(engine); Matter.Composite.clear(engine.world); bodies.current = []; mouseConstraint.current = null }
+    return () => {
+      cancelAnimationFrame(frame)
+      resize.disconnect()
+      node.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('reference-physics-shake', shake)
+      window.removeEventListener('reference-physics-gravity', setGravity)
+      Matter.Engine.clear(engine)
+      Matter.Composite.clear(engine.world)
+      bodies.current = []
+      mouseConstraint.current = null
+    }
   }, [items])
   const nudge = (event) => {
+    if (event.pointerType === 'touch') return
     if (mouseConstraint.current?.constraint?.bodyB) return
     const bounds = field.current.getBoundingClientRect()
     const x = event.clientX - bounds.left
@@ -127,7 +149,7 @@ export default function PhysicsField({ items }) {
     gesture.current = null
   }
   return <div className="physics-field-viewport">
-    <div className="physics-field grain-card" ref={field} style={{ '--physics-field-height': '650px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
+    <div className="physics-field" ref={field} style={{ '--physics-field-height': '460px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
       <span className="physics-corner">A TOOLBOX, IN MOTION</span>
       {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} compact className="!rounded-none border-0 bg-transparent shadow-none" /></span>)}
       <span className="physics-floor">DRAG TO DROP · CLICK TO OPEN</span>

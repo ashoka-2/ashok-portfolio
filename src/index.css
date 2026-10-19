@@ -253,18 +253,19 @@ button {
   mix-blend-mode: overlay;
 }
 
-.custom-cursor.is-active .cursor-ring {
-  width: 84px;
-  height: 84px;
-  background-color: rgba(255, 72, 164, 0.88);
-  border-color: transparent;
-  backdrop-filter: blur(4px);
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99999;
 }
-.custom-cursor.is-active .cursor-label {
-  opacity: 1;
-}
-.custom-cursor.is-active .cursor-dot {
-  opacity: 0;
+.cursor-goo-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  filter: url("#cursor-goo");
 }
 
 /* ==========================================================================
@@ -283,6 +284,27 @@ button {
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
   height: 68px;
+}
+.site-navbar .nav-inner {
+  position: relative;
+  isolation: isolate;
+}
+.site-navbar .nav-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .site-navbar .nav-inner::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 
 .site-navbar.nav-hidden {
@@ -398,13 +420,19 @@ body {
 .project-card-modern::after {
   content: "";
   position: absolute;
-  z-index: 0;
+  z-index: 1;
   inset: 0;
   pointer-events: none;
-  background: var(--text-primary);
-  filter: url(#noiseFilter);
-  opacity: 0.075;
-  mix-blend-mode: soft-light;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .project-card-modern::after {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 
 /* Scroll-scrubbed, single-card project story. The shell stays fixed in place;
@@ -742,13 +770,21 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
 .ref-panel::before {
   content: "";
   position: absolute;
-  z-index: 0;
+  z-index: 1;
   inset: 0;
   pointer-events: none;
-  background: var(--text-primary);
-  filter: url(#noiseFilter);
-  opacity: 0.07;
-  mix-blend-mode: soft-light;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .ref-cap-card::before,
+[data-theme="light"] .ref-step::before,
+[data-theme="light"] .ref-panel::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 .ref-cap-card::after {
   content: "";
@@ -887,7 +923,7 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
 .ref-physics .tech-lamp-logo {
   position: absolute;
   z-index: 2;
-  top: 48%;
+  top: 53.5%;
   left: 50%;
   display: grid;
   width: 42px;
@@ -957,12 +993,27 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   }
 }
 
-/* Consistent fine grain on raised surfaces; transparent SVG lets theme colors show through. */
+/* Consistent fine tactile grain on all cards and raised surfaces */
 .grain-card {
-  background-image: url("/images/grain-tile.svg");
+  position: relative;
+  isolation: isolate;
+}
+.grain-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
   background-repeat: repeat;
-  background-size: 180px 180px;
-  background-blend-mode: soft-light;
+  background-size: 140px 140px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .grain-card::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 .grain-media {
   position: relative;
@@ -974,10 +1025,16 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   z-index: 4;
   inset: 0;
   pointer-events: none;
-  background: var(--text-primary);
-  filter: url(#noiseFilter);
-  opacity: 0.085;
-  mix-blend-mode: soft-light;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+}
+[data-theme="light"] .grain-media::after {
+  opacity: 0.08;
+  mix-blend-mode: multiply;
 }
 .grain-media > img {
   position: relative;
@@ -1029,12 +1086,7 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
       70% 90% at 90% 50%,
       color-mix(in srgb, var(--tech-accent) 15%, var(--surface-1)),
       transparent 70%
-    ),
-    url("/images/grain-tile.svg");
-  background-size:
-    auto,
-    180px 180px;
-  background-blend-mode: normal, soft-light;
+    );
 }
 .tech-practice-card.grain-card {
   background-image:
@@ -1042,12 +1094,7 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
       90% 100% at 100% 100%,
       color-mix(in srgb, var(--tech-accent) 11%, transparent),
       transparent 75%
-    ),
-    url("/images/grain-tile.svg");
-  background-size:
-    auto,
-    180px 180px;
-  background-blend-mode: normal, soft-light;
+    );
 }
 
 /* Three shared action styles. Every route can use Button with primary, secondary, or tertiary. */
@@ -1178,10 +1225,16 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   z-index: 1;
   inset: 0;
   pointer-events: none;
-  background-image: url("/images/grain-tile.svg");
-  background-size: 180px 180px;
-  mix-blend-mode: soft-light;
-  opacity: 0.2;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+}
+[data-theme="light"] .about-portrait-card::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 .contact-portrait-card::after {
   content: "";
@@ -1196,10 +1249,16 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   z-index: 1;
   inset: 0;
   pointer-events: none;
-  background-image: url("/images/grain-tile.svg");
-  background-size: 180px 180px;
-  mix-blend-mode: soft-light;
-  opacity: 0.18;
+  border-radius: inherit;
+  background-image: url("/images/grain-noise.png");
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+}
+[data-theme="light"] .contact-portrait-card::before {
+  opacity: 0.09;
+  mix-blend-mode: multiply;
 }
 
 /* Hide scrollbar chrome while retaining native wheel, touch, keyboard and Lenis scrolling. */

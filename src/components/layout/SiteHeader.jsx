@@ -132,8 +132,11 @@ export default function SiteHeader() {
         inert={!menuOpen}
         data-lenis-prevent
       >
+        {/* Film grain texture on menu overlay */}
+        <div className="menu-grain pointer-events-none absolute inset-0 z-0 bg-[url('/images/grain-noise.png')] bg-repeat [background-size:140px_140px] opacity-[0.16] mix-blend-overlay [data-theme=light]:opacity-[0.09] [data-theme=light]:mix-blend-multiply" aria-hidden="true" />
+
         {/* Top bar inside menu */}
-        <div className="flex items-center justify-between w-full">
+        <div className="relative z-[1] flex items-center justify-between w-full">
           <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary">
             INDEX NAVIGATION
           </span>
@@ -148,7 +151,7 @@ export default function SiteHeader() {
         </div>
 
         {/* Big Links */}
-        <nav className="menu-links my-auto flex flex-col justify-center py-[clamp(8px,1.3vh,18px)] max-[600px]:w-full max-[600px]:my-auto max-[600px]:py-2 max-h-[720px]:py-0.5 min-h-0" aria-label="Overlay main navigation">
+        <nav className="menu-links relative z-[1] my-auto flex flex-col justify-center py-[clamp(8px,1.3vh,18px)] max-[600px]:w-full max-[600px]:my-auto max-[600px]:py-2 max-h-[720px]:py-0.5 min-h-0" aria-label="Overlay main navigation">
           {menuLinks.map((link) => {
             const linkClasses = "menu-link-item group flex items-baseline gap-[clamp(1rem,2.5vw,2.5rem)] max-[600px]:gap-3.5 font-display font-extrabold text-[clamp(1.8rem,7vh,5rem)] max-[600px]:text-[clamp(1.7rem,7.8vw,2.55rem)] max-h-[720px]:text-[clamp(1.5rem,5.1vh,2.65rem)] max-[600px]:max-h-[720px]:text-[clamp(1.45rem,4.8vh,2.15rem)] leading-[0.96] max-[600px]:leading-[0.98] uppercase text-text-primary min-w-0 [overflow-wrap:anywhere] transition-[color,transform,opacity] duration-300 ease-out hover:text-accent-pink hover:translate-x-4"
             if (link.action) {
@@ -178,7 +181,7 @@ export default function SiteHeader() {
         </nav>
 
         {/* Bottom Socials & Microcopy */}
-        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 max-h-[720px]:pt-3 border-t border-border-subtle font-mono text-xs max-[600px]:text-[10px] text-text-secondary">
+        <div className="relative z-[1] w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 max-h-[720px]:pt-3 border-t border-border-subtle font-mono text-xs max-[600px]:text-[10px] text-text-secondary">
           <div className="flex items-center gap-6 max-[600px]:flex-wrap max-[600px]:gap-[10px_18px]">
             <a
               href={profile.contact.github}

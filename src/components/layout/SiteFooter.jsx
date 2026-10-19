@@ -59,6 +59,8 @@ export default function SiteFooter() {
   }
 
   return <footer className="ref-contact relative overflow-hidden py-24 pb-8 bg-[linear-gradient(180deg,var(--base-bg),color-mix(in_srgb,var(--secondary-mesh-1)_42%,var(--base-bg))_70%,color-mix(in_srgb,var(--accent)_20%,var(--base-bg)))] max-[820px]:pt-[74px]" id="contact" ref={root}>
+    {/* Film grain noise overlay on footer */}
+    <div className="footer-grain pointer-events-none absolute inset-0 z-0 bg-[url('/images/grain-noise.png')] bg-repeat [background-size:140px_140px] opacity-[0.16] mix-blend-overlay [data-theme=light]:opacity-[0.09] [data-theme=light]:mix-blend-multiply" aria-hidden="true" />
     <div className="relative z-[1] mx-auto w-[min(calc(100%-32px),1120px)] max-[520px]:w-[calc(100%-28px)]" id="contactIn">
       <span className="ref-eyebrow font-mono text-xs uppercase tracking-[0.05em] text-text-tertiary block mb-3">{footerContent.eyebrow}</span>
       <h2 className="m-0 max-w-[14ch] font-[var(--font-bold)] text-[clamp(38px,5.2vw,68px)] leading-[0.98] tracking-[-0.045em] font-extrabold">{footerContent.heading[0]} <em className="font-display font-normal text-accent-pink">{footerContent.heading[1]}</em><br />{footerContent.heading[2]}</h2>

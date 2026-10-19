@@ -59,7 +59,7 @@ export default function ProjectStack({ projects }) {
   return (
     <section className="project-story-shell relative" ref={shell} aria-label="Featured projects, scroll to browse">
       <div className="project-story-sticky sticky top-[12vh] max-[760px]:top-[10vh] h-[76vh] h-[76svh] max-[760px]:h-[78vh] max-[760px]:h-[78svh] max-h-[760px] min-h-[480px] max-[760px]:min-h-[520px]">
-        <div className="project-story-card relative w-[min(100%,1120px)] h-full mx-auto overflow-hidden border border-border-default rounded-[28px] max-[760px]:rounded-[22px] bg-surface-1 shadow-[var(--shadow-card)] isolate">
+        <div className="project-story-card grain-card relative w-[min(100%,1120px)] h-full mx-auto overflow-hidden border border-border-default rounded-[28px] max-[760px]:rounded-[22px] bg-surface-1 shadow-[var(--shadow-card)] isolate">
           <div className="project-story-count absolute z-20 top-[22px] right-6 max-[760px]:top-3.5 max-[760px]:right-[15px] max-[760px]:p-[8px_10px] max-[760px]:border max-[760px]:border-white/15 max-[760px]:rounded-full max-[760px]:bg-[#121212]/70 max-[760px]:text-white max-[760px]:backdrop-blur-md text-text-tertiary font-mono text-[11px] font-medium leading-none tracking-[0.08em]" ref={countRef}>{`01 / ${String(projects.length).padStart(2, '0')}`}</div>
           {projects.map((project, index) => {
             const image = project.desktopImage || project.images?.[0]?.url || project.images?.[0] || '/images/projects/parsu-desktop.svg'
@@ -73,7 +73,7 @@ export default function ProjectStack({ projects }) {
                 ref={(node) => { panelsRef.current[index] = node }}
                 to={`/projects/${project.slug}`}
                 data-project-title={project.title}
-                className="project-story-panel absolute inset-0 grid grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] max-[760px]:grid-cols-1 max-[760px]:grid-rows-[minmax(0,0.85fr)_minmax(0,1.15fr)] overflow-hidden text-text-primary no-underline bg-surface-1 [clip-path:circle(0%_at_72%_50%)] first-of-type:[clip-path:circle(150%_at_50%_50%)] aria-[hidden=true]:pointer-events-none [&>*]:relative [&>*]:z-[1] after:content-[''] after:absolute after:z-[2] after:inset-0 after:pointer-events-none after:bg-text-primary after:[filter:url(#noiseFilter)] after:opacity-[0.075] after:mix-blend-soft-light"
+                className="project-story-panel absolute inset-0 grid grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] max-[760px]:grid-cols-1 max-[760px]:grid-rows-[minmax(0,0.85fr)_minmax(0,1.15fr)] overflow-hidden text-text-primary no-underline bg-surface-1 [clip-path:circle(0%_at_72%_50%)] first-of-type:[clip-path:circle(150%_at_50%_50%)] aria-[hidden=true]:pointer-events-none [&>*]:relative [&>*]:z-[1] after:content-[''] after:absolute after:z-[2] after:inset-0 after:pointer-events-none after:rounded-[inherit] after:bg-[url('/images/grain-noise.png')] after:bg-repeat after:[background-size:140px_140px] after:opacity-[0.16] after:mix-blend-overlay [data-theme=light]:after:opacity-[0.09] [data-theme=light]:after:mix-blend-multiply"
                 data-story-panel
                 aria-label={`View ${project.title} case study`}
                 aria-hidden={index !== 0}

@@ -19,7 +19,7 @@ export function AboutBento() {
   const [activeGroup, setActiveGroup] = useState('Frontend')
   const count = useMemo(() => ({ projects: projects.length, tools: techStack.length }), [])
   const { skillGroups, openTo, labels } = aboutContent
-  const bentoCard = 'relative flex min-h-[220px] flex-col gap-[14px] overflow-hidden rounded-[var(--ref-card-radius)] border border-border-subtle bg-surface-1 p-6 max-[759px]:min-h-[200px] max-[759px]:p-[18px] max-[520px]:p-5'
+  const bentoCard = 'grain-card relative flex min-h-[220px] flex-col gap-[14px] overflow-hidden rounded-[var(--ref-card-radius)] border border-border-subtle bg-surface-1 p-6 max-[759px]:min-h-[200px] max-[759px]:p-[18px] max-[520px]:p-5'
   useGSAP(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const words = intro.current?.querySelectorAll('[data-about-word]')

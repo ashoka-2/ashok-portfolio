@@ -88,6 +88,8 @@ export default function HomePage() {
       <h1 className="ref-sr">{hero.title}</h1>
       <HeroFur />
       <Suspense fallback={<div className="ref-model-loading absolute inset-0 grid place-items-center text-text-tertiary font-mono text-xs leading-[1.4] tracking-[0.1em] uppercase">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
+      {/* Film grain noise overlay over hero canvas and background */}
+      <div className="ref-hero-grain pointer-events-none absolute inset-0 z-[4] bg-[url('/images/grain-noise.png')] bg-repeat [background-size:140px_140px] opacity-[0.16] mix-blend-overlay [data-theme=light]:opacity-[0.09] [data-theme=light]:mix-blend-multiply" aria-hidden="true" />
       {hero.stickers.map((sticker, index) => {
         const stickerStyles = [
           'left-[7%] top-[30%] max-[820px]:left-[4%] max-[820px]:top-[20%] -rotate-8 bg-[color-mix(in_srgb,var(--text-primary)_95%,transparent)] text-base-bg',

@@ -89,7 +89,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
               <Link
                 key={project.slug}
                 to={`/projects/${project.slug}`}
-                data-project-link={project.slug}
+                data-project-title={project.title}
                 data-cursor="VIEW"
                 className="works-hover-row group"
                 onPointerEnter={() => setActiveProject(project)}

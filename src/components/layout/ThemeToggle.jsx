@@ -12,8 +12,12 @@ export default function ThemeToggle({ className = '' }) {
   const releasePending = useRef(false)
 
   const applyThemeTransition = () => {
-    document.documentElement.style.setProperty('--theme-click-x', `${window.innerWidth - 32}px`)
-    document.documentElement.style.setProperty('--theme-click-y', '176px')
+    const knob = document.querySelector('.theme-cord-navbar .pullcord-knob')
+    const knobRect = knob?.getBoundingClientRect()
+    const originX = knobRect ? knobRect.left + knobRect.width / 2 : window.innerWidth - 32
+    const originY = knobRect ? knobRect.top + knobRect.height / 2 : 176
+    document.documentElement.style.setProperty('--theme-click-x', `${originX}px`)
+    document.documentElement.style.setProperty('--theme-click-y', `${originY}px`)
 
     if (document.startViewTransition) {
       document.startViewTransition(() => flushSync(() => dispatch(toggleTheme())))
@@ -23,8 +27,8 @@ export default function ThemeToggle({ className = '' }) {
     // Keep the same expanding blur transition where View Transitions are unavailable.
     const wave = document.createElement('div')
     wave.className = 'theme-wave-fallback'
-    wave.style.setProperty('--theme-click-x', `${window.innerWidth - 32}px`)
-    wave.style.setProperty('--theme-click-y', '176px')
+    wave.style.setProperty('--theme-click-x', `${originX}px`)
+    wave.style.setProperty('--theme-click-y', `${originY}px`)
     document.body.appendChild(wave)
     requestAnimationFrame(() => {
       wave.classList.add('is-visible')

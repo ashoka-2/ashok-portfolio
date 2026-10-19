@@ -20,6 +20,7 @@ export default function ProjectCard({ project, index = 0, stacked = false }) {
       className={`project-card project-card-modern grain-card${stacked ? ' project-card-stacked' : ''}`}
       style={{ '--project-accent': 'var(--accent)' }}
       to={`/projects/${project.slug}`}
+      data-project-title={project.title}
       data-scroll-reveal={!stacked || undefined}
       data-stack-card={stacked ? '' : undefined}
     >

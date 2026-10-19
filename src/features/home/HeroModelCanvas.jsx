@@ -1,6 +1,6 @@
 import { Component, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, Html, OrbitControls, useGLTF } from '@react-three/drei'
+import { Float, Html, useGLTF } from '@react-three/drei'
 import { portfolioAssets } from '../../lib/assets.js'
 
 function Model({ pointer, motion }) {
@@ -29,15 +29,42 @@ function Model({ pointer, motion }) {
     if (!root.current) return
     if (!motion) return
     const t = state.clock.elapsedTime
-    // Keep its forward-facing yaw fixed; pointer movement only adds a small tilt.
-    root.current.rotation.x += (pointer.current.y * 0.025 - root.current.rotation.x) * Math.min(delta * 2, 1)
+    // Pointer values are only updated by ray hits on the model's own meshes.
+    // The base yaw keeps the portrait facing forward while hover adds a subtle look.
+    const active = pointer.current.active
+    const ease = Math.min(delta * 2.4, 1)
+    root.current.rotation.x += ((active ? -pointer.current.y * 0.085 : 0) - root.current.rotation.x) * ease
+    root.current.rotation.y += ((-Math.PI / 2 + (active ? pointer.current.x * 0.13 : 0)) - root.current.rotation.y) * ease
     root.current.position.y = -0.06 + Math.sin(t * 0.7) * 0.045
   })
+
+  const updatePointer = (event) => {
+    event.stopPropagation()
+    const mobile = size.width < 760
+    const modelCenterX = mobile ? 0 : 0.36
+    const modelCenterY = mobile ? 0.28 : -0.02
+    pointer.current = {
+      active: true,
+      x: Math.max(-1, Math.min(1, (event.pointer.x - modelCenterX) * 1.7)),
+      y: Math.max(-1, Math.min(1, (event.pointer.y - modelCenterY) * 1.7)),
+    }
+  }
+  const releasePointer = (event) => {
+    event.stopPropagation()
+    pointer.current.active = false
+  }
 
   return (
     <group ref={root} rotation={[0, -Math.PI / 2, 0]}>
       <Float speed={motion ? 0.75 : 0} rotationIntensity={0} floatIntensity={motion ? 0.14 : 0}>
-        <primitive object={model} scale={size.width < 760 ? 2.3 : 2.8} position={[0, size.width < 760 ? 0.16 : -0.08, 0]} />
+        <primitive
+          object={model}
+          scale={size.width < 760 ? 2.3 : 2.8}
+          position={[0, size.width < 760 ? 0.16 : -0.08, 0]}
+          onPointerOver={updatePointer}
+          onPointerMove={updatePointer}
+          onPointerOut={releasePointer}
+        />
       </Float>
     </group>
   )
@@ -76,25 +103,16 @@ export default function HeroModelCanvas() {
         ring: styles.getPropertyValue('--hero-light-ring').trim() || '#ffffff',
       })
     }
-    const onPointer = (event) => {
-      const rect = node.getBoundingClientRect()
-      pointer.current = {
-        x: Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width - 0.5) * 2)),
-        y: Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height - 0.5) * 2)),
-      }
-    }
     document.addEventListener('visibilitychange', onVisibility)
     readTheme()
     const themeObserver = new MutationObserver(readTheme)
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
     window.addEventListener('portfolio-theme-change', readTheme)
-    window.addEventListener('pointermove', onPointer, { passive: true })
     return () => {
       observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       themeObserver.disconnect()
       window.removeEventListener('portfolio-theme-change', readTheme)
-      window.removeEventListener('pointermove', onPointer)
     }
   }, [])
 
@@ -109,7 +127,6 @@ export default function HeroModelCanvas() {
             <directionalLight position={[-3, 1, 3]} intensity={1.65} color={lights.rose} />
             <pointLight position={[0, -1.5, 2]} intensity={0.8} distance={5} color={lights.deepRose} />
             <pointLight position={[2, 1, -2]} intensity={1.3} distance={6} color={lights.warm} />
-            <OrbitControls enableZoom={false} enablePan={false} enableDamping dampingFactor={0.08} rotateSpeed={0.55} minPolarAngle={Math.PI * 0.28} maxPolarAngle={Math.PI * 0.72} />
             <Suspense fallback={<Html center><span className="hero-model-loading">LOADING 3D PORTRAIT</span></Html>}>
               <Model pointer={pointer} motion={!reduceMotion} />
             </Suspense>

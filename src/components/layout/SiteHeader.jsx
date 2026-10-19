@@ -5,6 +5,7 @@ import GithubIcon from '../icons/GithubIcon.jsx'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import ThemeToggle from './ThemeToggle.jsx'
+import NavbarFurName from './NavbarFurName.jsx'
 import { profile } from '../../utils/profile.js'
 import { gmailComposeUrl } from '../../utils/site.js'
 
@@ -83,17 +84,12 @@ export default function SiteHeader() {
       >
         <div className="page-container nav-inner">
           {/* Logo Mark Left */}
-          <Link to="/" className="flex items-center gap-2 group" aria-label="Ashok Kumar Home">
+          <Link to="/" className="navbar-brand-link flex items-center gap-2 group" aria-label="Ashok Kumar Home">
             <span className="w-9 h-9 rounded-full bg-[var(--text-primary)] border border-[var(--border-default)] flex items-center justify-center font-display text-xl text-[var(--base-bg)] group-hover:rotate-[360deg] transition-all shadow-[var(--highlight-top)]">
               A
             </span>
             <div className="hidden sm:flex flex-col">
-              <span className="font-display font-bold text-xs uppercase tracking-tight text-[var(--text-primary)]">
-                ASHOK KUMAR
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--text-tertiary)]">
-                CREATIVE TECH
-              </span>
+              <NavbarFurName />
             </div>
           </Link>
 

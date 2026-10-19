@@ -72,6 +72,7 @@ export default function ProjectStack({ projects }) {
                 key={project.slug}
                 ref={(node) => { panelsRef.current[index] = node }}
                 to={`/projects/${project.slug}`}
+                data-project-title={project.title}
                 className="project-story-panel"
                 data-story-panel
                 aria-label={`View ${project.title} case study`}

@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-import { startProjectFlight } from '../../utils/projectFlight.js'
 
 export default function RouteCurtain() {
   const root = useRef(null)
@@ -78,24 +77,12 @@ export default function RouteCurtain() {
         return
       }
 
-      // Forward project click with flight
-      const projectSlug = anchor.dataset.projectLink
-      const projectTitle = anchor.querySelector('.card-title, .next-title, .project-meta h3, .project-next-content h2')?.textContent.trim()
-      if (projectSlug && startProjectFlight(projectSlug, anchor)) {
-        sessionStorage.setItem('portfolio-project-scroll', String(window.scrollY))
-        pending.current = true
-        transitionType.current = 'flight'
-        const pageContent = document.querySelector('.motion-page [data-page-content]') || document.querySelector('.motion-page')
-        gsap.to(pageContent, {
-          autoAlpha: 0,
-          duration: 0.3,
-          ease: 'power2.out',
-          onComplete: () => navigate(next),
-        })
-        return
-      }
-
-      const label = projectTitle || anchor.textContent.trim().replace(/\s+/g, ' ')
+      // Keep transition typography focused on the destination title, never the
+      // card's description, metadata, or full combined text content.
+      const projectTitle = anchor.dataset.projectTitle
+        || anchor.querySelector('.project-title-text, .card-title, .next-title, h1, h2, h3')?.textContent.trim()
+        || anchor.getAttribute('aria-label')
+      const label = projectTitle || 'ASHOK KUMAR'
       coverRoute(next, label, backState)
     })
 

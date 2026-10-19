@@ -12,7 +12,7 @@ const NotFoundPage = lazy(() => import('../features/home/InfoPages.jsx').then((m
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-mono text-xs text-[var(--text-tertiary)]" role="status">LOADING…</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-mono text-xs text-text-tertiary" role="status">LOADING…</div>}>
       <Routes>
         <Route path="/" element={<PageMotion><HomePage /></PageMotion>} />
         {/* Support both /work and /projects */}

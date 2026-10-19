@@ -31,9 +31,9 @@ export default function AboutCollage() {
   }, { scope: collageRef })
 
   const traits = [
-    { text: 'Allergic to generic UIs', icon: <Terminal size={14} className="text-[var(--accent-pink)]" /> },
-    { text: 'LangChain & Shaders Whisperer', icon: <Sparkles size={14} className="text-[var(--secondary-mesh-2)]" /> },
-    { text: 'Spends 2 hours fixing 1px margins', icon: <Code size={14} className="text-[var(--accent-amber)]" /> },
+    { text: 'Allergic to generic UIs', icon: <Terminal size={14} className="text-accent-pink" /> },
+    { text: 'LangChain & Shaders Whisperer', icon: <Sparkles size={14} className="text-secondary-mesh-2" /> },
+    { text: 'Spends 2 hours fixing 1px margins', icon: <Code size={14} className="text-accent-amber" /> },
   ]
 
   const stats = [
@@ -61,7 +61,7 @@ export default function AboutCollage() {
         {traits.map((trait, idx) => (
           <span
             key={idx}
-            className="grain-card inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface-1)] border border-[var(--border-default)] font-mono text-xs text-[var(--text-primary)] shadow-sm hover:border-[var(--accent-pink)] transition-colors"
+            className="grain-card inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-1 border border-border-default font-mono text-xs text-text-primary shadow-sm hover:border-accent-pink transition-colors"
           >
             {trait.icon}
             <span>{trait.text}</span>
@@ -72,7 +72,7 @@ export default function AboutCollage() {
       {/* Offset Media Collage (5-6 images) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 mb-16 items-center">
         {/* Image 1: Studio Portrait */}
-        <div className="collage-card grain-media grain-card col-span-2 row-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[var(--surface-1)] relative group">
+        <div className="collage-card grain-media grain-card col-span-2 row-span-2 rounded-2xl overflow-hidden border border-border-default shadow-[var(--shadow-card)] aspect-square bg-surface-1 relative group">
           <img
             src={portfolioAssets.portraits.about}
             alt="Ashok Kumar in a warm, softly lit creative studio portrait"
@@ -84,7 +84,7 @@ export default function AboutCollage() {
         </div>
 
         {/* Image 2: Creative Tech Workspace */}
-        <div className="collage-card grain-media grain-card col-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/3] bg-[var(--surface-1)] relative group">
+        <div className="collage-card grain-media grain-card col-span-2 rounded-2xl overflow-hidden border border-border-default shadow-[var(--shadow-card)] aspect-[4/3] bg-surface-1 relative group">
           <img
             src={portfolioAssets.portraits.working}
             alt="Ashok Kumar reviewing interface concepts at his workbench"
@@ -96,7 +96,7 @@ export default function AboutCollage() {
         </div>
 
         {/* Image 3: 3D Fluid Glass Orb */}
-        <div className="collage-card grain-media grain-card col-span-2 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[var(--surface-1)] relative group">
+        <div className="collage-card grain-media grain-card col-span-2 rounded-2xl overflow-hidden border border-border-default shadow-[var(--shadow-card)] aspect-square bg-surface-1 relative group">
           <img
             src={portfolioAssets.visuals.glassStudy}
             alt="Sculptural glass and chrome form lit in violet, cyan, coral, and chartreuse"
@@ -108,26 +108,26 @@ export default function AboutCollage() {
         </div>
 
         {/* Image 4: Vector Body Illustration */}
-        <div className="collage-card grain-media grain-card col-span-2 md:col-span-1 rounded-2xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-square bg-[var(--surface-1)] relative group">
+        <div className="collage-card grain-media grain-card col-span-2 md:col-span-1 rounded-2xl overflow-hidden border border-border-default shadow-[var(--shadow-card)] aspect-square bg-surface-1 relative group">
           <div className="flex h-full flex-col justify-between p-6 sm:p-8">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)]">CURRENTLY EXPLORING</span>
-            <p className="font-display text-2xl sm:text-3xl text-[var(--text-primary)] leading-tight">{profile.focusAreas.slice(0, 3).join(' · ')}</p>
-            <span className="font-mono text-[10px] text-[var(--accent-pink)]">KERALA, INDIA ↗</span>
+            <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary">CURRENTLY EXPLORING</span>
+            <p className="font-display text-2xl sm:text-3xl text-text-primary leading-tight">{profile.focusAreas.slice(0, 3).join(' · ')}</p>
+            <span className="font-mono text-[10px] text-accent-pink">KERALA, INDIA ↗</span>
           </div>
         </div>
       </div>
 
       {/* Truthful Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10 border-t border-[var(--border-subtle)] font-mono">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10 border-t border-border-subtle font-mono">
         {stats.map((stat, idx) => (
           <div key={idx} className="flex flex-col">
-            <span className="text-xs uppercase text-[var(--text-tertiary)] tracking-widest mb-1">
+            <span className="text-xs uppercase text-text-tertiary tracking-widest mb-1">
               {stat.label}
             </span>
-            <span className="text-base sm:text-lg font-bold text-[var(--text-primary)] font-display">
+            <span className="text-base sm:text-lg font-bold text-text-primary font-display">
               {stat.value}
             </span>
-            <span className="text-xs text-[var(--text-secondary)] mt-0.5">
+            <span className="text-xs text-text-secondary mt-0.5">
               {stat.sub}
             </span>
           </div>

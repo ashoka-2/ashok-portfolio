@@ -231,10 +231,10 @@ export default function ProjectPage() {
   if (!project) {
     return (
       <div className="page-container py-32 text-center">
-        <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-pink)] mb-2 block">
+        <span className="font-mono text-xs uppercase tracking-widest text-accent-pink mb-2 block">
           404 — CASE STUDY NOT FOUND
         </span>
-        <h1 className="text-fluid-h1 font-display font-bold text-[var(--text-primary)] mb-6">
+        <h1 className="text-fluid-h1 font-display font-bold text-text-primary mb-6">
           Project in the lab.
         </h1>
         <Button to="/projects" kind="secondary">
@@ -254,7 +254,7 @@ export default function ProjectPage() {
         <Link
           to="/#work"
           data-project-back={project.slug}
-          className="inline-flex items-center gap-2 font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--accent-pink)] transition-colors py-2 group"
+          className="inline-flex items-center gap-2 font-mono text-xs text-text-secondary hover:text-accent-pink transition-colors py-2 group"
         >
           <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
           <span>BACK TO SELECTED WORKS</span>
@@ -262,8 +262,8 @@ export default function ProjectPage() {
       </div>
 
       {/* Header index & Category */}
-      <div className="flex items-center gap-3 font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-wider mb-2">
-        <span className="text-[var(--accent-pink)] font-bold">{project.index}</span>
+      <div className="flex items-center gap-3 font-mono text-xs text-text-tertiary uppercase tracking-wider mb-2">
+        <span className="text-accent-pink font-bold">{project.index}</span>
         <span>/</span>
         <span>{Array.isArray(project.category) ? project.category.join(' · ') : project.category}</span>
         <span>/</span>
@@ -272,7 +272,7 @@ export default function ProjectPage() {
 
       {/* Split-char Title */}
       <div className="overflow-hidden mb-6">
-        <h1 className="text-fluid-h1 font-display font-extrabold text-[var(--text-primary)] tracking-tight">
+        <h1 className="text-fluid-h1 font-display font-extrabold text-text-primary tracking-tight">
           {titleChars.map((char, i) => (
             <span key={i} className="project-title-char inline-block">
               {char === ' ' ? '\u00A0' : char}
@@ -282,33 +282,33 @@ export default function ProjectPage() {
       </div>
 
       {/* One-liner Tagline */}
-      <p className="text-fluid-body text-[var(--text-secondary)] max-w-3xl mb-12 leading-relaxed">
+      <p className="text-fluid-body text-text-secondary max-w-3xl mb-12 leading-relaxed">
         {project.oneLiner}
       </p>
 
       {/* Meta Row: Role, Stack, Links */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-8 py-10 border-y border-[var(--border-subtle)] font-mono text-xs mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-8 py-10 border-y border-border-subtle font-mono text-xs mb-16">
         <div className="project-meta-item">
-          <span className="text-[var(--text-tertiary)] uppercase tracking-widest block mb-2">MY ROLE</span>
-          <span className="font-display text-base font-bold text-[var(--text-primary)] block">
+          <span className="text-text-tertiary uppercase tracking-widest block mb-2">MY ROLE</span>
+          <span className="font-display text-base font-bold text-text-primary block">
             {project.role}
           </span>
         </div>
 
         <div className="project-meta-item">
-          <span className="text-[var(--text-tertiary)] uppercase tracking-widest block mb-2">STATUS</span>
-          <span className="font-display text-base font-bold text-[var(--text-primary)] block">
+          <span className="text-text-tertiary uppercase tracking-widest block mb-2">STATUS</span>
+          <span className="font-display text-base font-bold text-text-primary block">
             {project.status}
           </span>
         </div>
 
         <div className="project-meta-item md:col-span-2">
-          <span className="text-[var(--text-tertiary)] uppercase tracking-widest block mb-2">TECH STACK</span>
+          <span className="text-text-tertiary uppercase tracking-widest block mb-2">TECH STACK</span>
           <div className="flex flex-wrap gap-2">
             {(project.stack || []).map((tech, i) => (
               <span
                 key={i}
-                className="px-2.5 py-1 rounded-full bg-[var(--surface-2)] border border-[var(--border-subtle)] text-[var(--text-secondary)]"
+                className="px-2.5 py-1 rounded-full bg-surface-2 border border-border-subtle text-text-secondary"
               >
                 {tech}
               </span>
@@ -322,7 +322,7 @@ export default function ProjectPage() {
               href={project.links.github}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border-default)] text-[var(--text-primary)] hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink)] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-2 border border-border-default text-text-primary hover:border-accent-pink hover:text-accent-pink transition-colors"
             >
               <GithubIcon size={14} />
               <span>SOURCE CODE</span>
@@ -334,7 +334,7 @@ export default function ProjectPage() {
               href={project.links.live}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-[var(--base-bg)] font-semibold hover:brightness-110 transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-base-bg font-semibold hover:brightness-110 transition-all shadow-md"
             >
               <span>LIVE SITE</span>
               <ExternalLink size={14} />
@@ -350,7 +350,7 @@ export default function ProjectPage() {
           <h2 className="text-fluid-h2 mb-4 font-display font-bold">
             Built with intent.
           </h2>
-          <p className="text-[var(--text-secondary)] text-base sm:text-lg leading-relaxed">
+          <p className="text-text-secondary text-base sm:text-lg leading-relaxed">
             {project.overview}
           </p>
         </div>
@@ -361,10 +361,10 @@ export default function ProjectPage() {
             {(project.features || []).map((feat, i) => (
               <div
                 key={i}
-                className="grain-card flex items-start gap-3.5 p-4 rounded-2xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm"
+                className="grain-card flex items-start gap-3.5 p-4 rounded-2xl bg-surface-1 border border-border-default shadow-sm"
               >
                 <CheckCircle2 size={18} className="text-[#10B981] shrink-0 mt-0.5" />
-                <span className="text-sm sm:text-base text-[var(--text-primary)] leading-normal">
+                <span className="text-sm sm:text-base text-text-primary leading-normal">
                   {feat}
                 </span>
               </div>
@@ -377,29 +377,29 @@ export default function ProjectPage() {
       <ProjectGallery project={project} />
 
       {/* Next case study */}
-      <div className="pt-16 border-t border-[var(--border-subtle)]">
-        <span className="font-mono text-xs text-[var(--text-tertiary)] uppercase tracking-widest block mb-4">
+      <div className="pt-16 border-t border-border-subtle">
+        <span className="font-mono text-xs text-text-tertiary uppercase tracking-widest block mb-4">
           UP NEXT
         </span>
         <Link
           to={`/projects/${nextProject.slug}`}
           data-project-title={nextProject.title}
-          className="grain-card group block p-8 sm:p-14 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] hover:border-[var(--accent-pink)] transition-all relative overflow-hidden"
+          className="grain-card group block p-8 sm:p-14 rounded-3xl bg-surface-1 border border-border-default shadow-[var(--shadow-card)] hover:border-accent-pink transition-all relative overflow-hidden"
         >
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <span className="font-mono text-xs text-[var(--accent-amber)] font-bold block mb-1">
+              <span className="font-mono text-xs text-accent-amber font-bold block mb-1">
                 {nextProject.index} / {Array.isArray(nextProject.category) ? nextProject.category[0] : nextProject.category}
               </span>
-              <h2 className="next-title font-display text-3xl sm:text-5xl font-extrabold text-[var(--text-primary)] group-hover:text-[var(--accent-pink)] transition-colors">
+              <h2 className="next-title font-display text-3xl sm:text-5xl font-extrabold text-text-primary group-hover:text-accent-pink transition-colors">
                 {nextProject.title}
               </h2>
-              <p className="text-sm text-[var(--text-secondary)] mt-2 max-w-xl">
+              <p className="text-sm text-text-secondary mt-2 max-w-xl">
                 {nextProject.oneLiner}
               </p>
             </div>
 
-            <div className="w-14 h-14 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-primary)] group-hover:bg-[var(--accent-pink)] group-hover:border-transparent group-hover:text-[var(--base-bg)] transition-all shadow-md shrink-0">
+            <div className="w-14 h-14 rounded-full border border-border-default flex items-center justify-center text-text-primary group-hover:bg-accent-pink group-hover:border-transparent group-hover:text-base-bg transition-all shadow-md shrink-0">
               <ArrowUpRight size={26} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </div>
           </div>

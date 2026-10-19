@@ -44,22 +44,22 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
   return (
     <div className="selected-works-wrap relative" ref={listRef}>
       {/* View Switcher: Two26 List vs Stacked Cards */}
-      <div className="flex items-center justify-between mb-10 pb-4 border-b border-[var(--border-subtle)]">
+      <div className="flex items-center justify-between mb-10 pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[var(--accent-pink)]" />
-          <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)]">
+          <span className="w-2 h-2 rounded-full bg-accent-pink" />
+          <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary">
             DISPLAY ARCHIVE ({projects.length})
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 p-1 rounded-full bg-[var(--surface-1)] border border-[var(--border-default)]">
+        <div className="flex items-center gap-1.5 p-1 rounded-full bg-surface-1 border border-border-default">
           <button
             onClick={() => setViewMode('list')}
             aria-pressed={viewMode === 'list'}
             className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
               viewMode === 'list'
-                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-[var(--base-bg)] shadow-sm font-semibold'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-base-bg shadow-sm font-semibold'
+                : 'text-text-secondary hover:text-text-primary'
             }`}
           >
             <List size={13} />
@@ -70,8 +70,8 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
             aria-pressed={viewMode === 'grid'}
             className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
               viewMode === 'grid'
-                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-[var(--base-bg)] shadow-sm font-semibold'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                ? 'bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-base-bg shadow-sm font-semibold'
+                : 'text-text-secondary hover:text-text-primary'
             }`}
           >
             <Layers size={13} />
@@ -104,7 +104,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
                   <span className="row-title">
                     {project.title}
                   </span>
-                  <span className="md:hidden font-mono text-xs text-[var(--text-tertiary)] mt-1">
+                  <span className="md:hidden font-mono text-xs text-text-tertiary mt-1">
                     {Array.isArray(project.category) ? project.category[0] : project.category} · {project.year}
                   </span>
                 </div>
@@ -114,7 +114,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
                   <span className="row-category">
                     {Array.isArray(project.category) ? project.category.join(' / ') : project.category}
                   </span>
-                  <span className="row-arrow transition-transform text-[var(--text-tertiary)] group-hover:text-[var(--accent-pink)] group-hover:translate-x-1 group-hover:-translate-y-1">
+                  <span className="row-arrow transition-transform text-text-tertiary group-hover:text-accent-pink group-hover:translate-x-1 group-hover:-translate-y-1">
                     <ArrowUpRight size={22} />
                   </span>
                 </div>
@@ -149,7 +149,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
         aria-hidden="true"
       >
         {activeProject && (
-          <div className="w-full h-full relative overflow-hidden bg-[var(--surface-1)]">
+          <div className="w-full h-full relative overflow-hidden bg-surface-1">
             <img
               src={activeProject.desktopImage || activeProject.cover?.dark}
               alt=""
@@ -157,7 +157,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--base-bg)]/80 via-transparent to-transparent flex items-end p-4">
               <div>
-                <span className="font-mono text-[10px] uppercase text-[var(--accent-pink)] font-semibold">
+                <span className="font-mono text-[10px] uppercase text-accent-pink font-semibold">
                   {activeProject.index} · CLICK TO EXPLORE
                 </span>
                 <div className="font-display text-lg font-bold text-white">

@@ -44,11 +44,11 @@ export default function FAQSection() {
           <h2 className="text-fluid-h2">
             Things you might <em>ask.</em>
           </h2>
-          <p className="text-[var(--text-secondary)] text-base sm:text-lg mt-2 max-w-xl">
+          <p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">
             Straightforward answers about how I work, what I build, and how we can collaborate.
           </p>
         </div>
-        <span className="font-mono text-xs uppercase text-[var(--accent-pink)] tracking-widest hidden md:inline-block">
+        <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">
           FAQS & WORK ETHIC
         </span>
       </div>
@@ -63,10 +63,10 @@ export default function FAQSection() {
                 className="faq-trigger cursor-pointer group"
                 aria-expanded={isOpen}
               >
-                <span className="font-display pr-6 text-left group-hover:text-[var(--accent-pink)] transition-colors">
+                <span className="font-display pr-6 text-left group-hover:text-accent-pink transition-colors">
                   {faq.q}
                 </span>
-                <span className="w-8 h-8 rounded-full border border-[var(--border-default)] flex items-center justify-center shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--accent-pink)] group-hover:border-[var(--accent-pink)] transition-colors">
+                <span className="w-8 h-8 rounded-full border border-border-default flex items-center justify-center shrink-0 text-text-tertiary group-hover:text-accent-pink group-hover:border-accent-pink transition-colors">
                   {isOpen ? <Minus size={15} /> : <Plus size={15} />}
                 </span>
               </button>

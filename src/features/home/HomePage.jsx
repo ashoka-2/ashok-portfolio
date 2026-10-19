@@ -88,8 +88,8 @@ export default function HomePage() {
 
     <section className="section-wrap page-container ref-projects" id="work">
       <div className="section-heading mb-12" data-scroll-reveal>
-        <div><span className="section-kicker">{selectedWork.kicker}</span><h2 className="text-fluid-h2">{selectedWork.heading[0]} <em>{selectedWork.heading[1]}</em></h2><p className="text-[var(--text-secondary)] text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
-        <span className="font-mono text-xs uppercase text-[var(--accent-pink)] tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
+        <div><span className="section-kicker">{selectedWork.kicker}</span><h2 className="text-fluid-h2">{selectedWork.heading[0]} <em>{selectedWork.heading[1]}</em></h2><p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
+        <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
       </div>
       <SelectedWorks projects={projects} />
     </section>

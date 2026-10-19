@@ -21,6 +21,7 @@ function Ribbon() {
 
 export default function HomePage() {
   const heroRef = useRef(null)
+  const heroInteractionRef = useRef(null)
   const { hero, selectedWork } = homePageContent
   useGSAP(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -33,8 +34,8 @@ export default function HomePage() {
     <header className="ref-hero" id="top">
       <div className="ref-hero-glow" aria-hidden="true" />
       <h1 className="ref-sr">{hero.title}</h1>
-      <HeroFur />
-      <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas /></Suspense>
+      <HeroFur interactionRef={heroInteractionRef} />
+      <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
       {hero.stickers.map((sticker, index) => <span className={`ref-sticker ref-sticker-${['one', 'two', 'three'][index]}`} key={sticker}>{sticker}</span>)}
       <div className="ref-hero-ui">
         <div className="ref-hero-bottom">

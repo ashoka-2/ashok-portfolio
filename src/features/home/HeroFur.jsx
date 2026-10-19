@@ -31,17 +31,20 @@ export default function HeroFur() {
   }, [])
 
   return (
-    <div className="ref-fur-name" aria-hidden="true">
+    <div
+      className="ref-fur-name"
+      title="Move your cursor across the letters to ruffle the fur"
+    >
       <Fur
         text={mobile ? 'ASHOK' : 'ASHOK KUMAR'}
         color={color}
-        fluff={0.62}
-        density={0.62}
+        fluff={0.82}
+        density={0.92}
         mess={0.34}
         seed={29}
-        pettable={false}
+        pettable
         className="ref-hero-fur"
-        style={{ width: mobile ? 'min(88vw, 500px)' : 'min(91vw, 1180px)', aspectRatio: mobile ? '5 / 1' : '9 / 1' }}
+        style={{ width: mobile ? 'min(94vw, 560px)' : 'min(96vw, 1280px)', aspectRatio: mobile ? '4.7 / 1' : '8.4 / 1' }}
       />
     </div>
   )

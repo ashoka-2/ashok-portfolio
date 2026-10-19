@@ -5,6 +5,7 @@ import GithubIcon from '../icons/GithubIcon.jsx'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import ThemeToggle from './ThemeToggle.jsx'
+import NavbarFurName from './NavbarFurName.jsx'
 import { profile } from '../../utils/profile.js'
 import { gmailComposeUrl } from '../../utils/site.js'
 
@@ -83,17 +84,12 @@ export default function SiteHeader() {
       >
         <div className="page-container nav-inner">
           {/* Logo Mark Left */}
-          <Link to="/" className="flex items-center gap-2 group" aria-label="Ashok Kumar Home">
-            <span className="w-9 h-9 rounded-full bg-[var(--text-primary)] border border-[var(--border-default)] flex items-center justify-center font-display text-xl text-[var(--base-bg)] group-hover:rotate-[360deg] transition-all shadow-[var(--highlight-top)]">
+          <Link to="/" className="navbar-brand-link flex items-center gap-2 group" aria-label="Ashok Kumar Home">
+            <span className="w-9 h-9 rounded-full bg-text-primary border border-border-default flex items-center justify-center font-display text-xl text-base-bg group-hover:rotate-[360deg] transition-all shadow-[var(--highlight-top)]">
               A
             </span>
             <div className="hidden sm:flex flex-col">
-              <span className="font-display font-bold text-xs uppercase tracking-tight text-[var(--text-primary)]">
-                ASHOK KUMAR
-              </span>
-              <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--text-tertiary)]">
-                CREATIVE TECH
-              </span>
+              <NavbarFurName />
             </div>
           </Link>
 
@@ -109,7 +105,7 @@ export default function SiteHeader() {
           <div className="flex items-center gap-3">
             <Link to="/contact" className="nav-pill cursor-pointer" aria-label="Go to contact page">
               <span>LET'S TALK</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-pink)]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-pink" />
             </Link>
 
             <button
@@ -127,7 +123,7 @@ export default function SiteHeader() {
         </div>
       </header>
 
-      <ThemeToggle className="theme-cord-navbar" />
+      <ThemeToggle className="theme-cord-navbar" isHidden={hidden && !menuOpen} />
 
       {/* Full-Screen Circular Clip-Path Overlay Menu */}
       <div
@@ -138,13 +134,13 @@ export default function SiteHeader() {
       >
         {/* Top bar inside menu */}
         <div className="flex items-center justify-between w-full">
-          <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)]">
+          <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary">
             INDEX NAVIGATION
           </span>
           <button
             ref={closeButtonRef}
             onClick={() => setMenuOpen(false)}
-            className="w-10 h-10 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--accent-pink)] hover:border-[var(--accent-pink)] transition-colors"
+            className="w-10 h-10 rounded-full border border-border-default flex items-center justify-center text-text-secondary hover:text-accent-pink hover:border-accent-pink transition-colors"
             aria-label="Close menu"
           >
             <X size={20} />
@@ -181,13 +177,13 @@ export default function SiteHeader() {
         </nav>
 
         {/* Bottom Socials & Microcopy */}
-        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-[var(--border-subtle)] font-mono text-xs text-[var(--text-secondary)]">
+        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-border-subtle font-mono text-xs text-text-secondary">
           <div className="flex items-center gap-6">
             <a
               href={profile.contact.github}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
+              className="flex items-center gap-1.5 hover:text-accent-pink transition-colors"
             >
               <GithubIcon size={15} />
               <span>GITHUB</span>
@@ -197,7 +193,7 @@ export default function SiteHeader() {
               href={gmailComposeUrl(profile.contact.email)}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 hover:text-[var(--accent-pink)] transition-colors"
+              className="flex items-center gap-1.5 hover:text-accent-pink transition-colors"
             >
               <Mail size={15} />
               <span className="menu-email">{profile.contact.email}</span>
@@ -205,7 +201,7 @@ export default function SiteHeader() {
             </a>
           </div>
 
-          <div className="text-[var(--text-tertiary)]">
+          <div className="text-text-tertiary">
             KERALA, INDIA · 2026
           </div>
         </div>

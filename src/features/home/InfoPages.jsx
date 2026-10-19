@@ -15,7 +15,7 @@ export function AboutPage() {
       <div className="mb-10">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--accent-pink)] transition-colors py-2 group"
+          className="inline-flex items-center gap-2 font-mono text-xs text-text-secondary hover:text-accent-pink transition-colors py-2 group"
         >
           <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
           <span>BACK TO HOME</span>
@@ -24,18 +24,18 @@ export function AboutPage() {
 
       <div className="max-w-4xl mb-14">
         <span className="section-kicker">01 — BIOGRAPHY & CRAFT</span>
-        <h1 className="text-fluid-h1 font-display font-extrabold text-[var(--text-primary)] mb-6">
+        <h1 className="text-fluid-h1 font-display font-extrabold text-text-primary mb-6">
           Curiosity is the engine.<br />
           <em>Craft is the vehicle.</em>
         </h1>
-        <p className="text-fluid-body text-[var(--text-secondary)] leading-relaxed">{profile.statement}</p>
+        <p className="text-fluid-body text-text-secondary leading-relaxed">{profile.statement}</p>
         <div className="mt-5 flex flex-wrap gap-2">{profile.roleList.map((role) => <span className="grain-card about-role-chip" key={role}>{role}</span>)}</div>
       </div>
 
       {/* Two-column layout with photo & philosophy */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20 items-start">
         <div className="lg:col-span-5">
-          <div className="grain-card rounded-3xl overflow-hidden border border-[var(--border-default)] shadow-[var(--shadow-card)] aspect-[4/5] bg-[var(--surface-1)] relative about-portrait-card">
+          <div className="grain-card rounded-3xl overflow-hidden border border-border-default shadow-[var(--shadow-card)] aspect-[4/5] bg-surface-1 relative about-portrait-card">
             <img
               src={portfolioAssets.portraits.professional}
               alt="Professional portrait of Ashok Kumar"
@@ -48,42 +48,42 @@ export function AboutPage() {
         </div>
 
         <div className="lg:col-span-7 space-y-8">
-          <div className="grain-card p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-pink)] block mb-2 font-semibold">
+          <div className="grain-card p-8 rounded-3xl bg-surface-1 border border-border-default shadow-sm">
+            <span className="font-mono text-xs uppercase tracking-widest text-accent-pink block mb-2 font-semibold">
               MY PHILOSOPHY
             </span>
-            <h3 className="font-display text-2xl font-bold text-[var(--text-primary)] mb-3">
+            <h3 className="font-display text-2xl font-bold text-text-primary mb-3">
               {profile.philosophy}
             </h3>
-            <p className="text-[var(--text-secondary)] text-sm leading-relaxed">
+            <p className="text-text-secondary text-sm leading-relaxed">
               Software shouldn't merely work; it should feel intentional, calibrated to human perception, and engineered to endure.
             </p>
           </div>
 
-          <div className="grain-card p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-amber)] block mb-2 font-semibold">
+          <div className="grain-card p-8 rounded-3xl bg-surface-1 border border-border-default shadow-sm">
+            <span className="font-mono text-xs uppercase tracking-widest text-accent-amber block mb-2 font-semibold">
               ACADEMIC FOUNDATION
             </span>
-            <h3 className="font-display text-2xl font-bold text-[var(--text-primary)] mb-1">
+            <h3 className="font-display text-2xl font-bold text-text-primary mb-1">
               {profile.education.degree}
             </h3>
-            <p className="text-sm font-mono text-[var(--text-secondary)] mb-2">
+            <p className="text-sm font-mono text-text-secondary mb-2">
               {profile.education.institution} · {profile.education.campus}
             </p>
-            <span className="inline-block px-3 py-1 rounded-full bg-[var(--surface-2)] text-xs font-mono text-[var(--text-tertiary)]">
+            <span className="inline-block px-3 py-1 rounded-full bg-surface-2 text-xs font-mono text-text-tertiary">
               {profile.education.period}
             </span>
           </div>
 
-          <div className="grain-card p-8 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-sm">
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--secondary-mesh-2)] block mb-3 font-semibold">
+          <div className="grain-card p-8 rounded-3xl bg-surface-1 border border-border-default shadow-sm">
+            <span className="font-mono text-xs uppercase tracking-widest text-secondary-mesh-2 block mb-3 font-semibold">
               AREAS OF ACTIVE EXPLORATION
             </span>
             <div className="flex flex-wrap gap-2">
               {profile.focusAreas.map((area, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1.5 rounded-full bg-[var(--surface-2)] border border-[var(--border-subtle)] text-xs font-mono text-[var(--text-secondary)]"
+                  className="px-3 py-1.5 rounded-full bg-surface-2 border border-border-subtle text-xs font-mono text-text-secondary"
                 >
                   {area}
                 </span>
@@ -93,7 +93,7 @@ export function AboutPage() {
         </div>
       </div>
       <div className="about-page-cta">
-        <p className="text-[var(--text-secondary)]">Curious about building something together?</p>
+        <p className="text-text-secondary">Curious about building something together?</p>
         <div className="flex flex-wrap gap-3"><Button to="/contact" kind="primary">Start a conversation <ArrowUpRight size={16} /></Button><Button to="/projects" kind="secondary">Explore selected work <ArrowUpRight size={16} /></Button></div>
       </div>
     </div>
@@ -126,7 +126,7 @@ export function ContactPage() {
       <div className="mb-10">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--accent-pink)] transition-colors py-2 group"
+          className="inline-flex items-center gap-2 font-mono text-xs text-text-secondary hover:text-accent-pink transition-colors py-2 group"
         >
           <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
           <span>BACK TO HOME</span>
@@ -135,23 +135,23 @@ export function ContactPage() {
 
       <div className="max-w-3xl mb-10">
         <span className="section-kicker">INITIATE CONTACT</span>
-        <h1 className="text-fluid-h1 font-display font-black text-[var(--text-primary)] mb-6">
+        <h1 className="text-fluid-h1 font-display font-black text-text-primary mb-6">
           Let's talk about<br />
           <em>what's next.</em>
         </h1>
-        <p className="text-fluid-body text-[var(--text-secondary)] leading-relaxed">
+        <p className="text-fluid-body text-text-secondary leading-relaxed">
           Whether you have a specific project inquiry, need autonomous AI integration, or want to collaborate on high-end creative web engineering — my inbox is open.
         </p>
       </div>
 
       <div className="contact-page-grid">
-      <div className="grain-card contact-details-card p-8 sm:p-12 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)]">
-        <div className="flex items-center justify-between mb-8 pb-6 border-b border-[var(--border-subtle)]">
+      <div className="grain-card contact-details-card p-8 sm:p-12 rounded-3xl bg-surface-1 border border-border-default shadow-[var(--shadow-card)]">
+        <div className="flex items-center justify-between mb-8 pb-6 border-b border-border-subtle">
           <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)] block mb-1">
+            <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary block mb-1">
               DIRECT EMAIL
             </span>
-            <div className="contact-email-address font-mono text-lg sm:text-xl font-bold text-[var(--text-primary)]">
+            <div className="contact-email-address font-mono text-lg sm:text-xl font-bold text-text-primary">
               {profile.contact.email}
             </div>
           </div>
@@ -188,13 +188,13 @@ export function ContactPage() {
 export function NotFoundPage() {
   return (
     <div className="page-container py-36 text-center" data-page-content>
-      <span className="font-mono text-xs uppercase tracking-widest text-[var(--accent-pink)] mb-3 block">
+      <span className="font-mono text-xs uppercase tracking-widest text-accent-pink mb-3 block">
         ERROR 404 · PAGE UNMAPPED
       </span>
-      <h1 className="text-fluid-hero font-display font-black text-[var(--text-primary)] mb-4 leading-none">
+      <h1 className="text-fluid-hero font-display font-black text-text-primary mb-4 leading-none">
         VOID.
       </h1>
-      <p className="text-fluid-body text-[var(--text-secondary)] max-w-md mx-auto mb-10">
+      <p className="text-fluid-body text-text-secondary max-w-md mx-auto mb-10">
         You've wandered outside the grid. No worries, the rest of the site is very much alive.
       </p>
       <Button to="/" kind="primary">

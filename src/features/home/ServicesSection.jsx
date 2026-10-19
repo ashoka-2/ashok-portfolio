@@ -12,7 +12,7 @@ export default function ServicesSection() {
       tagline: 'Fast, type-safe, resilient applications from database to DOM.',
       description: 'Architecting robust web systems with React 19, Vite, Next.js, Django, Node.js, and relational/document databases. Obsessed with clean state patterns, sub-100ms API latency, and offline-first durability.',
       skills: ['React 19', 'Next.js', 'TypeScript', 'Node.js', 'Django / Python', 'PostgreSQL / MongoDB', 'REST & WebSockets'],
-      icon: <Code2 size={24} className="text-[var(--accent-pink)]" />,
+      icon: <Code2 size={24} className="text-accent-pink" />,
     },
     {
       index: '02',
@@ -20,7 +20,7 @@ export default function ServicesSection() {
       tagline: 'Multi-model orchestration, tool calling & live web grounding.',
       description: 'Building autonomous agent loops with LangChain, Gemini API, Claude 3.5 Sonnet, and Tavily internet grounding. Specializing in BYOK encryption, voice agents, and multi-platform automation.',
       skills: ['LangChain', 'Gemini & Claude APIs', 'Tavily Search Grounding', 'Computer Vision POS', 'Tool Calling', 'AES-256 BYOK'],
-      icon: <Bot size={24} className="text-[var(--secondary-mesh-2)]" />,
+      icon: <Bot size={24} className="text-secondary-mesh-2" />,
     },
     {
       index: '03',
@@ -28,7 +28,7 @@ export default function ServicesSection() {
       tagline: 'Awwwards-level craft with GSAP, Three.js & custom GLSL shaders.',
       description: 'Translating boutique agency aesthetics into buttery 60fps web experiences. Fluid shader caustics, Lenis smooth scrolling, masked typography, and Flutter-style shared element hero transitions.',
       skills: ['GSAP (ScrollTrigger, Flip)', 'Three.js / GLSL Shaders', 'Lenis Scroll', 'Framer Motion', 'Micro-interactions'],
-      icon: <Sparkles size={24} className="text-[var(--accent-amber)]" />,
+      icon: <Sparkles size={24} className="text-accent-amber" />,
     },
     {
       index: '04',
@@ -49,11 +49,11 @@ export default function ServicesSection() {
           <h2 className="text-fluid-h2">
             What I <em>actually</em> do.
           </h2>
-          <p className="text-[var(--text-secondary)] text-base sm:text-lg mt-2 max-w-xl">
+          <p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">
             No vague buzzwords. Just high-grade code, generative intelligence, and obsessively refined interfaces.
           </p>
         </div>
-        <span className="font-mono text-xs uppercase text-[var(--accent-pink)] tracking-widest hidden md:inline-block">
+        <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">
           FOUR CORE DISCIPLINES
         </span>
       </div>
@@ -69,31 +69,31 @@ export default function ServicesSection() {
           >
             {/* Top row: Number index and icon */}
             <div className="flex items-center justify-between mb-6">
-              <span className="font-mono text-2xl font-bold text-[var(--text-tertiary)] group-hover:text-[var(--accent-pink)] transition-colors">
+              <span className="font-mono text-2xl font-bold text-text-tertiary group-hover:text-accent-pink transition-colors">
                 {item.index}
               </span>
-              <div className="w-12 h-12 rounded-2xl bg-[var(--surface-2)] border border-[var(--border-default)] flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-surface-2 border border-border-default flex items-center justify-center group-hover:scale-110 transition-transform">
                 {item.icon}
               </div>
             </div>
 
             {/* Service Title & Tagline */}
-            <h3 className="font-display text-2xl sm:text-3xl font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-pink)] transition-colors mb-2">
+            <h3 className="font-display text-2xl sm:text-3xl font-bold text-text-primary group-hover:text-accent-pink transition-colors mb-2">
               {item.title}
             </h3>
-            <p className="font-mono text-xs text-[var(--accent-amber)] uppercase tracking-wider mb-4">
+            <p className="font-mono text-xs text-accent-amber uppercase tracking-wider mb-4">
               {item.tagline}
             </p>
-            <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed mb-6">
+            <p className="text-text-secondary text-sm sm:text-base leading-relaxed mb-6">
               {item.description}
             </p>
 
             {/* Tech chips */}
-            <div className="flex flex-wrap gap-2 pt-4 border-t border-[var(--border-subtle)]">
+            <div className="flex flex-wrap gap-2 pt-4 border-t border-border-subtle">
               {item.skills.map((skill, sIdx) => (
                 <span
                   key={sIdx}
-                  className="font-mono text-[11px] px-2.5 py-1 rounded-full bg-[var(--surface-2)] border border-[var(--border-subtle)] text-[var(--text-secondary)] group-hover:border-[var(--accent-pink)]/30 transition-colors"
+                  className="font-mono text-[11px] px-2.5 py-1 rounded-full bg-surface-2 border border-border-subtle text-text-secondary group-hover:border-accent-pink/30 transition-colors"
                 >
                   {skill}
                 </span>
@@ -104,15 +104,15 @@ export default function ServicesSection() {
       </div>
 
       {/* Tech Stack Horizontal Strip */}
-      <div className="mt-16 pt-8 border-t border-[var(--border-subtle)] flex flex-col gap-4">
-        <span className="font-mono text-xs uppercase tracking-widest text-[var(--text-tertiary)]">
+      <div className="mt-16 pt-8 border-t border-border-subtle flex flex-col gap-4">
+        <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary">
           VERIFIED TECH STACK
         </span>
         <div className="flex flex-wrap gap-2.5">
           {techStack.map((tech) => (
             <span
               key={tech.id}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--surface-1)] border border-[var(--border-default)] text-xs font-mono text-[var(--text-primary)] hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink)] transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-1 border border-border-default text-xs font-mono text-text-primary hover:border-accent-pink hover:text-accent-pink transition-colors"
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tech.accent || 'var(--accent-pink)' }} />
               <span>{tech.label}</span>

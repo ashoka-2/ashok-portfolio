@@ -127,7 +127,7 @@ export default function Preloader() {
       {/* Top bar info */}
       <div className="relative z-10 flex items-center justify-between text-white/50 font-mono text-xs uppercase tracking-wider">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[var(--accent-pink)] animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-accent-pink animate-ping" />
           <span>INITIALIZING WORKSPACE</span>
         </div>
           <span>KERALA, IN · {new Date().getFullYear()}</span>
@@ -136,13 +136,13 @@ export default function Preloader() {
       {/* Center display: huge counter + letter stacking */}
       <div className="loader-center relative z-10 flex flex-col items-center justify-center my-auto text-center">
         {/* Animated mascot / glitch pixel emblem */}
-        <div className="loader-mascot w-12 h-12 mb-6 rounded-2xl border border-[var(--accent-pink)]/40 bg-[var(--surface-1)] flex items-center justify-center shadow-[0_0_25px_rgba(123,97,255,0.35)]">
-          <span className="font-mono text-lg font-bold text-[var(--accent-pink)]">AK</span>
+        <div className="loader-mascot w-12 h-12 mb-6 rounded-2xl border border-accent-pink/40 bg-surface-1 flex items-center justify-center shadow-[0_0_25px_rgba(123,97,255,0.35)]">
+          <span className="font-mono text-lg font-bold text-accent-pink">AK</span>
         </div>
 
         {/* Huge Counter 0-100 */}
         <div className="font-display font-black text-white text-[ clamp(4.5rem,15vw,11rem) ] tracking-tighter leading-none mb-3">
-          {String(percent).padStart(3, '0')}<span className="text-[var(--accent-pink)] text-[0.45em]">%</span>
+          {String(percent).padStart(3, '0')}<span className="text-accent-pink text-[0.45em]">%</span>
         </div>
 
         {/* Name characters stacking */}

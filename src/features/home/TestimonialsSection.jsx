@@ -37,14 +37,14 @@ export default function TestimonialsSection({ items = testimonialsData }) {
         <div className="flex items-center gap-2">
           <button
             onClick={prev}
-            className="w-10 h-10 rounded-full border border-[var(--border-default)] flex items-center justify-center hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink)] transition-colors"
+            className="w-10 h-10 rounded-full border border-border-default flex items-center justify-center hover:border-accent-pink hover:text-accent-pink transition-colors"
             aria-label="Previous testimonial"
           >
             <ChevronLeft size={18} />
           </button>
           <button
             onClick={next}
-            className="w-10 h-10 rounded-full border border-[var(--border-default)] flex items-center justify-center hover:border-[var(--accent-pink)] hover:text-[var(--accent-pink)] transition-colors"
+            className="w-10 h-10 rounded-full border border-border-default flex items-center justify-center hover:border-accent-pink hover:text-accent-pink transition-colors"
             aria-label="Next testimonial"
           >
             <ChevronRight size={18} />
@@ -52,9 +52,9 @@ export default function TestimonialsSection({ items = testimonialsData }) {
         </div>
       </div>
 
-      <div className="grain-card p-8 sm:p-12 rounded-3xl bg-[var(--surface-1)] border border-[var(--border-default)] shadow-[var(--shadow-card)] relative">
-        <Quote size={40} className="text-[var(--accent-pink)]/30 mb-6" />
-        <p className="font-display text-xl sm:text-2xl lg:text-3xl font-medium leading-relaxed text-[var(--text-primary)] mb-8">
+      <div className="grain-card p-8 sm:p-12 rounded-3xl bg-surface-1 border border-border-default shadow-[var(--shadow-card)] relative">
+        <Quote size={40} className="text-accent-pink/30 mb-6" />
+        <p className="font-display text-xl sm:text-2xl lg:text-3xl font-medium leading-relaxed text-text-primary mb-8">
           "{current.quote}"
         </p>
         <div className="flex items-center gap-4">
@@ -62,8 +62,8 @@ export default function TestimonialsSection({ items = testimonialsData }) {
             <img src={current.avatar} alt={current.author} className="w-12 h-12 rounded-full object-cover" />
           )}
           <div>
-            <div className="font-display font-bold text-base text-[var(--text-primary)]">{current.author}</div>
-            <div className="font-mono text-xs text-[var(--text-tertiary)]">{current.role}</div>
+            <div className="font-display font-bold text-base text-text-primary">{current.author}</div>
+            <div className="font-mono text-xs text-text-tertiary">{current.role}</div>
           </div>
         </div>
       </div>

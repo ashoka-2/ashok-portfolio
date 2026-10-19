@@ -21,7 +21,32 @@ function Ribbon() {
 
 export default function HomePage() {
   const heroRef = useRef(null)
+  const heroInteractionRef = useRef(null)
   const { hero, selectedWork } = homePageContent
+  const getHeroControl = (event) => {
+    const target = event.target?.nodeType === 1 ? event.target : event.target?.parentElement
+    if (target?.closest?.('a, button, input, textarea, select')) return null
+    const controls = heroRef.current?.querySelectorAll('.ref-fur-name, .hero-model-hit-area') || []
+    return [...controls].find((node) => {
+      const rect = node.getBoundingClientRect()
+      return event.clientX >= rect.left && event.clientX <= rect.right
+        && event.clientY >= rect.top && event.clientY <= rect.bottom
+    }) || null
+  }
+  const handleHeroPointerDown = (event) => {
+    const control = getHeroControl(event)
+    if (!control?.classList.contains('hero-model-hit-area')) return
+    event.preventDefault()
+    heroInteractionRef.current?.begin(event.nativeEvent || event)
+  }
+  const handleHeroPointerMove = (event) => {
+    const control = getHeroControl(event)
+    if (!control?.classList.contains('hero-model-hit-area')) return
+    heroInteractionRef.current?.hover?.(event.nativeEvent || event)
+  }
+  const handleHeroPointerLeave = () => {
+    heroInteractionRef.current?.leave?.()
+  }
   useGSAP(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     gsap.timeline({ defaults: { ease: 'expo.out' } })
@@ -30,11 +55,17 @@ export default function HomePage() {
   }, { scope: heroRef })
 
   return <div className="ref-home" ref={heroRef}>
-    <header className="ref-hero" id="top">
+    <header
+      className="ref-hero"
+      id="top"
+      onPointerDownCapture={handleHeroPointerDown}
+      onPointerMoveCapture={handleHeroPointerMove}
+      onPointerLeaveCapture={handleHeroPointerLeave}
+    >
       <div className="ref-hero-glow" aria-hidden="true" />
       <h1 className="ref-sr">{hero.title}</h1>
       <HeroFur />
-      <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas /></Suspense>
+      <Suspense fallback={<div className="ref-model-loading">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
       {hero.stickers.map((sticker, index) => <span className={`ref-sticker ref-sticker-${['one', 'two', 'three'][index]}`} key={sticker}>{sticker}</span>)}
       <div className="ref-hero-ui">
         <div className="ref-hero-bottom">
@@ -57,8 +88,8 @@ export default function HomePage() {
 
     <section className="section-wrap page-container ref-projects" id="work">
       <div className="section-heading mb-12" data-scroll-reveal>
-        <div><span className="section-kicker">{selectedWork.kicker}</span><h2 className="text-fluid-h2">{selectedWork.heading[0]} <em>{selectedWork.heading[1]}</em></h2><p className="text-[var(--text-secondary)] text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
-        <span className="font-mono text-xs uppercase text-[var(--accent-pink)] tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
+        <div><span className="section-kicker">{selectedWork.kicker}</span><h2 className="text-fluid-h2">{selectedWork.heading[0]} <em>{selectedWork.heading[1]}</em></h2><p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
+        <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
       </div>
       <SelectedWorks projects={projects} />
     </section>

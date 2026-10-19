@@ -10,7 +10,7 @@ function readThemeColor() {
     || '#e57ba2'
 }
 
-export default function HeroFur({ interactionRef }) {
+export default function HeroFur() {
   const [mobile, setMobile] = useState(() => window.matchMedia(mobileQuery).matches)
   const [color, setColor] = useState(readThemeColor)
 
@@ -33,8 +33,7 @@ export default function HeroFur({ interactionRef }) {
   return (
     <div
       className="ref-fur-name"
-      onPointerDown={(event) => interactionRef?.current?.begin(event.nativeEvent || event)}
-      title="Drag to pet the fur"
+      title="Move your cursor across the letters to ruffle the fur"
     >
       <Fur
         text={mobile ? 'ASHOK' : 'ASHOK KUMAR'}

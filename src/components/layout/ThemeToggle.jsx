@@ -5,7 +5,7 @@ import { PullCord } from 'pullcord'
 import 'pullcord/pullcord.css'
 import { toggleTheme } from '../../features/preferences/themeSlice.js'
 
-export default function ThemeToggle({ className = '' }) {
+export default function ThemeToggle({ className = '', isHidden = false }) {
   const mode = useSelector((state) => state.theme.mode)
   const dispatch = useDispatch()
   const pointerDown = useRef(false)
@@ -68,7 +68,7 @@ export default function ThemeToggle({ className = '' }) {
 
   return (
     <PullCord
-      className={className}
+      className={`${className}${isHidden ? ' nav-hidden' : ''}`}
       onPull={onPull}
       pulled={mode === 'light'}
       ariaLabel={`Toggle theme (currently ${mode})`}

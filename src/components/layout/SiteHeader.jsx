@@ -123,7 +123,7 @@ export default function SiteHeader() {
         </div>
       </header>
 
-      <ThemeToggle className="theme-cord-navbar" />
+      <ThemeToggle className="theme-cord-navbar" isHidden={hidden && !menuOpen} />
 
       {/* Full-Screen Circular Clip-Path Overlay Menu */}
       <div

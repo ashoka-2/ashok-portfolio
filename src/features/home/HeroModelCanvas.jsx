@@ -29,7 +29,7 @@ function Model({ drag, motion }) {
   useFrame((state, delta) => {
     if (!root.current) return
     const frameDelta = Math.min(delta, 0.05)
-    const ease = 1 - Math.exp(-9 * frameDelta)
+    const ease = 1 - Math.exp(-12 * frameDelta)
     const targetX = drag.current.pitch
     const targetY = -Math.PI / 2 + drag.current.yaw
     root.current.rotation.x += (targetX - root.current.rotation.x) * ease
@@ -66,6 +66,7 @@ class ModelErrorBoundary extends Component {
 
 export default function HeroModelCanvas({ interactionRef }) {
   const wrapper = useRef(null)
+  const invalidateRef = useRef(null)
   const drag = useRef({ active: false, pointerId: null, lastX: 0, lastY: 0, yaw: 0, pitch: 0 })
   const [visible, setVisible] = useState(false)
   const [pageVisible, setPageVisible] = useState(() => document.visibilityState === 'visible')
@@ -102,13 +103,30 @@ export default function HeroModelCanvas({ interactionRef }) {
   }, [])
 
   useEffect(() => {
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
+    const aimFromPointer = (event) => {
+      if (drag.current.active || event.pointerType === 'touch') return
+      const bounds = wrapper.current?.getBoundingClientRect()
+      if (!bounds || !bounds.width || !bounds.height) return
+      const x = clamp((event.clientX - bounds.left) / bounds.width, 0, 1) * 2 - 1
+      const y = clamp((event.clientY - bounds.top) / bounds.height, 0, 1) * 2 - 1
+      drag.current.yaw = x * 0.9
+      drag.current.pitch = -y * 0.5
+      invalidateRef.current?.()
+    }
+    const leave = () => {
+      if (drag.current.active) return
+      drag.current.yaw = 0
+      drag.current.pitch = 0
+      invalidateRef.current?.()
+    }
     const begin = (event) => {
       if (event.button !== undefined && event.button !== 0) return
       drag.current.active = true
       drag.current.pointerId = event.pointerId ?? null
       drag.current.lastX = event.clientX
       drag.current.lastY = event.clientY
-      interactionRef.current?.invalidate?.()
+      invalidateRef.current?.()
     }
     const move = (event) => {
       const current = drag.current
@@ -119,9 +137,9 @@ export default function HeroModelCanvas({ interactionRef }) {
       const dy = event.clientY - current.lastY
       current.lastX = event.clientX
       current.lastY = event.clientY
-      current.yaw = Math.max(-1.25, Math.min(1.25, current.yaw + (dx / bounds.width) * 3.8))
-      current.pitch = Math.max(-0.72, Math.min(0.72, current.pitch + (dy / bounds.height) * 3.1))
-      interactionRef.current?.invalidate?.()
+      current.yaw = clamp(current.yaw + (dx / bounds.width) * 5.4, -Math.PI, Math.PI)
+      current.pitch = clamp(current.pitch + (dy / bounds.height) * 4.2, -1.15, 1.15)
+      invalidateRef.current?.()
     }
     const end = (event) => {
       const current = drag.current
@@ -130,12 +148,12 @@ export default function HeroModelCanvas({ interactionRef }) {
       current.pointerId = null
     }
     const nudge = (yaw, pitch) => {
-      drag.current.yaw = Math.max(-1.25, Math.min(1.25, drag.current.yaw + yaw))
-      drag.current.pitch = Math.max(-0.72, Math.min(0.72, drag.current.pitch + pitch))
-      interactionRef.current?.invalidate?.()
+      drag.current.yaw = clamp(drag.current.yaw + yaw, -Math.PI, Math.PI)
+      drag.current.pitch = clamp(drag.current.pitch + pitch, -1.15, 1.15)
+      invalidateRef.current?.()
     }
 
-    if (interactionRef) interactionRef.current = { begin, nudge, invalidate: interactionRef.current?.invalidate }
+    if (interactionRef) interactionRef.current = { begin, nudge, hover: aimFromPointer, leave }
     window.addEventListener('pointermove', move, { passive: true })
     window.addEventListener('pointerup', end)
     window.addEventListener('pointercancel', end)
@@ -148,11 +166,13 @@ export default function HeroModelCanvas({ interactionRef }) {
   }, [interactionRef])
 
   const rendering = visible && pageVisible
-  const beginDrag = (event) => {
-    if (event.button !== undefined && event.button !== 0) return
-    event.preventDefault()
-    interactionRef?.current?.begin(event.nativeEvent || event)
+  const onCanvasCreated = ({ invalidate }) => {
+    invalidateRef.current = invalidate
+    if (rendering) invalidate()
   }
+  useEffect(() => {
+    if (rendering) invalidateRef.current?.()
+  }, [rendering])
   const rotateByKeyboard = (event) => {
     const directions = {
       ArrowLeft: [-0.18, 0], ArrowRight: [0.18, 0], ArrowUp: [0, -0.14], ArrowDown: [0, 0.14],
@@ -167,8 +187,7 @@ export default function HeroModelCanvas({ interactionRef }) {
     <>
       <div className="hero-model-canvas" ref={wrapper}>
         <ModelErrorBoundary>
-          <Canvas dpr={[1, 1.35]} frameloop={!rendering ? 'never' : reduceMotion ? 'demand' : 'always'} camera={{ position: [0, 0, 5.6], fov: 35 }} gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }}>
-            <CanvasVisibility active={rendering} interactionRef={interactionRef} />
+          <Canvas onCreated={onCanvasCreated} dpr={[1, 1.35]} frameloop={!rendering ? 'never' : reduceMotion ? 'demand' : 'always'} camera={{ position: [0, 0, 5.6], fov: 35 }} gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }}>
             <ambientLight intensity={1.2} />
             <directionalLight position={[3, 4, 5]} intensity={2.4} color={lights.ivory} />
             <directionalLight position={[-3, 1, 3]} intensity={1.65} color={lights.rose} />
@@ -185,7 +204,7 @@ export default function HeroModelCanvas({ interactionRef }) {
         role="button"
         tabIndex={0}
         aria-label="Drag to rotate Ashok’s 3D portrait, or use arrow keys"
-        onPointerDown={beginDrag}
+        onPointerLeave={() => interactionRef?.current?.leave?.()}
         onKeyDown={rotateByKeyboard}
       />
     </>
@@ -193,12 +212,3 @@ export default function HeroModelCanvas({ interactionRef }) {
 }
 
 useGLTF.preload(portfolioAssets.models.hero)
-
-function CanvasVisibility({ active, interactionRef }) {
-  const invalidate = useThree((state) => state.invalidate)
-  useEffect(() => {
-    if (interactionRef?.current) interactionRef.current.invalidate = invalidate
-    if (active) invalidate()
-  }, [active, invalidate, interactionRef])
-  return null
-}

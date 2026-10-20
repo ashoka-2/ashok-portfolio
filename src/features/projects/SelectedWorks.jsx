@@ -2,7 +2,12 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Layers, List } from 'lucide-react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import ProjectStack from './ProjectStack.jsx'
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+}
 
 export default function SelectedWorks({ projects, initialView = 'list' }) {
   const [activeProject, setActiveProject] = useState(null)
@@ -11,6 +16,13 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
   const listRef = useRef(null)
   const mousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
   const previewPos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 70)
+    return () => clearTimeout(timer)
+  }, [viewMode])
 
   useEffect(() => {
     let animId
@@ -47,7 +59,7 @@ export default function SelectedWorks({ projects, initialView = 'list' }) {
       <div className="flex items-center justify-between mb-10 pb-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-accent-pink" />
-          <span className="font-mono text-xs uppercase tracking-widest text-text-tertiary">
+          <span className="font-mono text-xs uppercase tracking-widest text-text-secondary font-medium">
             DISPLAY ARCHIVE ({projects.length})
           </span>
         </div>

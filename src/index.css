@@ -383,7 +383,7 @@ body {
 .projects-index-page h1 em,
 .about-page h1 em,
 .contact-page h1 em {
-  color: var(--accent-soft);
+  color: var(--accent-pink);
   background: none;
 }
 .project-case-study .rounded-2xl,

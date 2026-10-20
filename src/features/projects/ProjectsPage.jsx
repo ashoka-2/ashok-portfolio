@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { projects } from '../../utils/projects.js'
+import Button from '../../components/buttons/Button.jsx'
 import SelectedWorks from './SelectedWorks.jsx'
 
 export default function ProjectsPage() {
@@ -24,18 +24,19 @@ export default function ProjectsPage() {
     <div className="mx-auto w-full max-w-[1360px] px-page-gutter py-28 relative projects-index-page" data-page-content>
       {/* Back button */}
       <div className="mb-10">
-        <Link
+        <Button
           to="/"
-          className="inline-flex items-center gap-2 font-mono text-xs text-text-secondary hover:text-accent-pink transition-colors py-2 group"
+          kind="secondary"
+          className="!min-h-[38px] !h-[38px] !px-4 !text-xs font-mono !gap-2"
         >
-          <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={14} />
           <span>BACK TO HOME</span>
-        </Link>
+        </Button>
       </div>
 
       {/* Header */}
       <div className="max-w-3xl mb-12">
-        <span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">02 / PROJECT ARCHIVE · {String(projects.length).padStart(2, '0')} BUILDS</span>
+        <span className="text-accent-pink font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">02 / PROJECT ARCHIVE · {String(projects.length).padStart(2, '0')} BUILDS</span>
         <h1 className="text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] tracking-[-0.035em] font-bold font-display font-black text-text-primary mb-4">
           Things I've <em>shipped.</em>
         </h1>
@@ -51,10 +52,10 @@ export default function ProjectsPage() {
             key={cat}
             onClick={() => setFilter(cat)}
             aria-pressed={filter === cat}
-            className={`px-3.5 py-1.5 rounded-full font-mono text-xs transition-all ${
+            className={`ref-button !min-h-[36px] !h-[36px] !px-4 font-mono text-xs ${
               filter === cat
-                ? 'bg-accent-pink text-base-bg font-bold shadow-md'
-                : 'bg-surface-1 border border-border-default text-text-secondary hover:border-accent-pink hover:text-text-primary'
+                ? 'ref-primary !text-white'
+                : 'ref-secondary !text-text-secondary'
             }`}
           >
             {cat}

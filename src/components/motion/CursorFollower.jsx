@@ -209,23 +209,18 @@ export default function CursorFollower() {
         >
           {/* Lagging Viscous Fluid Body Wrapper */}
           <div className="cursor-trail-wrap absolute top-0 left-0 pointer-events-none">
-            <span className="cursor-trail-blob block w-9 h-9 rounded-full bg-accent-pink shadow-[0_0_18px_rgba(255,45,120,0.7)]" />
+            <span className="cursor-trail-blob block w-9 h-9 rounded-full bg-accent shadow-[0_0_18px_rgba(56,189,248,0.7)]" />
           </div>
 
           {/* Intermediate Bridge Droplet Wrapper */}
           <div className="cursor-mid-wrap absolute top-0 left-0 pointer-events-none">
-            <span className="block w-5 h-5 rounded-full bg-accent-pink/90" />
+            <span className="block w-5 h-5 rounded-full bg-accent/90" />
           </div>
 
           {/* Rapid Front Lead Droplet Wrapper */}
           <div className="cursor-lead-wrap absolute top-0 left-0 pointer-events-none">
-            <span className="block w-4 h-4 rounded-full bg-accent-pink shadow-[0_0_10px_rgba(255,45,120,0.9)]" />
+            <span className="block w-4 h-4 rounded-full bg-accent shadow-[0_0_10px_rgba(112,204,255,0.85)]" />
           </div>
-        </div>
-
-        {/* Sharp High-Precision Center Pointer Nucleus (Unfiltered for pixel accuracy) */}
-        <div className="cursor-lead-wrap absolute top-0 left-0 pointer-events-none">
-          <span className="block w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#ffffff]" />
         </div>
 
         {/* Crisp Text Label Overlay (Unfiltered so typography stays 100% sharp) */}

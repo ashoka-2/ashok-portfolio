@@ -124,12 +124,20 @@ export default function HomePage() {
     <Ribbon />
     <AboutBento />
 
-    <section className="section-wrap mx-auto w-full max-w-[1360px] px-page-gutter relative z-[2] pt-[88px] pb-[96px] bg-base-bg max-[820px]:py-[68px]" id="work">
-      <div className="section-heading mb-12 items-end" data-scroll-reveal>
-        <div><span className="text-accent-soft font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">{selectedWork.kicker}</span><h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-[var(--font-bold)] font-extrabold">{selectedWork.heading[0]} <em className="text-accent-soft">{selectedWork.heading[1]}</em></h2><p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p></div>
-        <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
+    <section className="section-wrap w-full relative z-[2] pt-[88px] pb-[96px] bg-base-bg max-[820px]:py-[68px]" id="work">
+      <div className="mx-auto w-full max-w-[1360px] px-page-gutter">
+        <div className="section-heading mb-12 items-end" data-scroll-reveal>
+          <div>
+            <span className="text-accent-pink font-mono font-medium text-[11px] leading-[1.5] tracking-[0.11em] uppercase">{selectedWork.kicker}</span>
+            <h2 className="text-[clamp(1.85rem,4vw,3.8rem)] leading-[1.05] tracking-[-0.025em] font-[var(--font-bold)] font-extrabold text-text-primary">
+              {selectedWork.heading[0]} <em className="text-accent-pink font-display font-normal not-italic">{selectedWork.heading[1]}</em>
+            </h2>
+            <p className="text-text-secondary text-base sm:text-lg mt-2 max-w-xl">{selectedWork.description}</p>
+          </div>
+          <span className="font-mono text-xs uppercase text-accent-pink tracking-widest hidden md:inline-block">{String(projects.length).padStart(2, '0')} {selectedWork.countLabel}</span>
+        </div>
+        <SelectedWorks projects={projects} />
       </div>
-      <SelectedWorks projects={projects} />
     </section>
 
     <ProcessSection />

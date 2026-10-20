@@ -148,7 +148,7 @@ export default function RouteCurtain() {
         <i className="flex-1 h-full bg-surface-2 origin-bottom [transform:scaleY(0)]" />
         <i className="flex-1 h-full bg-base-bg origin-bottom [transform:scaleY(0)]" />
       </div>
-      <span className="route-curtain-title absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[clamp(2rem,5vw,4.5rem)] font-extrabold uppercase text-white tracking-[0.05em] opacity-0 z-10 pointer-events-none" ref={title}>ASHOK KUMAR</span>
+      <span className="route-curtain-title absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[clamp(2rem,5vw,4.5rem)] font-extrabold uppercase text-text-primary tracking-[0.05em] opacity-0 z-10 pointer-events-none" ref={title}>ASHOK KUMAR</span>
     </div>
   )
 }

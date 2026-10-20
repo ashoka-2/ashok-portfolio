@@ -251,14 +251,15 @@ export default function ProjectPage() {
     <article className="mx-auto w-full max-w-[1360px] px-page-gutter py-28 relative project-case-study" ref={pageRef} data-page-content>
       {/* Back button */}
       <div className="mb-10">
-        <Link
+        <Button
           to="/#work"
+          kind="secondary"
           data-project-back={project.slug}
-          className="inline-flex items-center gap-2 font-mono text-xs text-text-secondary hover:text-accent-pink transition-colors py-2 group"
+          className="!min-h-[38px] !h-[38px] !px-4 !text-xs font-mono !gap-2"
         >
-          <ArrowLeft size={15} className="group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft size={14} />
           <span>BACK TO SELECTED WORKS</span>
-        </Link>
+        </Button>
       </div>
 
       {/* Header index & Category */}
@@ -318,27 +319,29 @@ export default function ProjectPage() {
 
         <div className="project-meta-item flex flex-col md:items-end justify-center gap-3">
           {project.links?.github && (
-            <a
+            <Button
               href={project.links.github}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-2 border border-border-default text-text-primary hover:border-accent-pink hover:text-accent-pink transition-colors"
+              kind="secondary"
+              className="!min-h-[38px] !h-[38px] !px-4 !text-xs font-mono !gap-2"
             >
               <GithubIcon size={14} />
               <span>SOURCE CODE</span>
               <ArrowUpRight size={13} />
-            </a>
+            </Button>
           )}
           {project.links?.live && (
-            <a
+            <Button
               href={project.links.live}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[var(--accent-pink)] to-[var(--secondary-mesh-2)] text-base-bg font-semibold hover:brightness-110 transition-all shadow-md"
+              kind="primary"
+              className="!min-h-[38px] !h-[38px] !px-4 !text-xs font-mono !gap-2"
             >
               <span>LIVE SITE</span>
               <ExternalLink size={14} />
-            </a>
+            </Button>
           )}
         </div>
       </div>

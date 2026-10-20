@@ -7,7 +7,7 @@ const mobileQuery = '(max-width: 520px)'
 function readThemeColor() {
   return getComputedStyle(document.documentElement).getPropertyValue('--hero-light-rose').trim()
     || getComputedStyle(document.documentElement).getPropertyValue('--accent-pink').trim()
-    || '#e57ba2'
+    || '#70ccff'
 }
 
 export default function HeroFur() {

@@ -21,6 +21,7 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-accent-pink: var(--accent-pink);
+  --color-accent-blue: var(--accent-pink);
   --color-accent-coral: var(--accent-coral);
   --color-accent-amber: var(--accent-amber);
   --color-border-subtle: var(--border-subtle);
@@ -39,46 +40,46 @@
   --pullcord-right: 0px;
   --pullcord-z: 910;
   --pullcord-ink: color-mix(in srgb, var(--text-tertiary) 72%, transparent);
-  --base-bg: #12080c;
-  --base-bg-rgb: 18, 8, 12;
-  --surface-1: #1c0d14;
-  --surface-2: #291320;
-  --surface-3: #351a29;
-  --surface-glass: rgba(28, 13, 20, 0.78);
-  --surface-glass-border: rgba(245, 232, 218, 0.12);
-  --text-primary: #f5e8da;
-  --text-secondary: #cdb6ae;
-  --text-tertiary: #b9a19b;
-  --text-muted: #8b716d;
-  --secondary-mesh-1: #7a1840;
-  --secondary-mesh-2: #9b2853;
-  --secondary-mesh-3: #e57ba2;
-  --accent-pink: #e57ba2;
-  --accent-coral: #b8275f;
-  --accent-amber: #d0a991;
-  --accent: #b8275f;
-  --accent-hover: #cf3d72;
-  --accent-soft: rgba(229, 123, 162, 0.2);
-  --accent-border: rgba(229, 123, 162, 0.32);
-  --border-subtle: rgba(245, 232, 218, 0.09);
-  --border-default: rgba(245, 232, 218, 0.14);
-  --border-hover: rgba(245, 232, 218, 0.25);
-  --border-strong: rgba(255, 255, 255, 0.32);
-  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --shadow-card: 0 22px 60px -28px rgba(0, 0, 0, 0.68);
-  --shadow-glow: 0 0 46px rgba(184, 39, 95, 0.22);
+  --base-bg: #090d14;
+  --base-bg-rgb: 9, 13, 20;
+  --surface-1: #101722;
+  --surface-2: #16202e;
+  --surface-3: #1d2a3d;
+  --surface-glass: rgba(16, 23, 34, 0.82);
+  --surface-glass-border: rgba(224, 242, 254, 0.12);
+  --text-primary: #f0f7ff;
+  --text-secondary: #a8c2dc;
+  --text-tertiary: #7897b8;
+  --text-muted: #516d8c;
+  --secondary-mesh-1: #0e3054;
+  --secondary-mesh-2: #14497e;
+  --secondary-mesh-3: #70ccff;
+  --accent-pink: #70ccff;
+  --accent-coral: #38bdf8;
+  --accent-amber: #bae6fd;
+  --accent: #38bdf8;
+  --accent-hover: #70ccff;
+  --accent-soft: rgba(56, 189, 248, 0.18);
+  --accent-border: rgba(112, 204, 255, 0.32);
+  --border-subtle: rgba(224, 242, 254, 0.08);
+  --border-default: rgba(224, 242, 254, 0.13);
+  --border-hover: rgba(112, 204, 255, 0.32);
+  --border-strong: rgba(255, 255, 255, 0.35);
+  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --shadow-card: 0 22px 60px -28px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 46px rgba(56, 189, 248, 0.24);
   --grain-opacity: 0.04;
-  --theme-dark-bg: #12080c;
-  --theme-light-bg: #f3e7da;
-  --hero-background: #12080c;
-  --hero-glow: rgba(184, 39, 95, 0.32);
-  --hero-glow-soft: rgba(122, 24, 64, 0.22);
-  --hero-line: rgba(245, 232, 218, 0.11);
-  --hero-light-ivory: #f5e8da;
-  --hero-light-rose: #e57ba2;
-  --hero-light-deep-rose: #b8275f;
-  --hero-light-warm: #d0a991;
-  --hero-light-ring: #e57ba2;
+  --theme-dark-bg: #090d14;
+  --theme-light-bg: #f4f8fc;
+  --hero-background: #090d14;
+  --hero-glow: rgba(56, 189, 248, 0.28);
+  --hero-glow-soft: rgba(14, 48, 84, 0.32);
+  --hero-line: rgba(224, 242, 254, 0.12);
+  --hero-light-ivory: #f0f7ff;
+  --hero-light-rose: #70ccff;
+  --hero-light-deep-rose: #38bdf8;
+  --hero-light-warm: #bae6fd;
+  --hero-light-ring: #70ccff;
   --font-sans: Inter, "Google Sans", Roboto, system-ui, -apple-system, "Segoe UI",
     sans-serif;
   --font-bold: "Inter Tight", Inter, system-ui, sans-serif;
@@ -87,53 +88,53 @@
 }
 [data-theme="light"] {
   color-scheme: light;
-  --base-bg: #f3e7da;
-  --base-bg-rgb: 243, 231, 218;
-  --surface-1: #ead9c7;
-  --surface-2: #fbf4ec;
-  --surface-3: #fffaf4;
-  --surface-glass: rgba(243, 231, 218, 0.86);
-  --surface-glass-border: rgba(30, 15, 20, 0.13);
-  --text-primary: #1e0f14;
-  --text-secondary: #564344;
-  --text-tertiary: #6f5a58;
-  --text-muted: #8a706a;
-  --secondary-mesh-1: #9b2a5b;
-  --secondary-mesh-2: #8f1e4d;
-  --secondary-mesh-3: #b98a72;
-  --accent-pink: #8f1e4d;
-  --accent-coral: #9b2a5b;
-  --accent-amber: #b98a72;
-  --accent: #8f1e4d;
-  --accent-hover: #a93663;
-  --accent-soft: rgba(143, 30, 77, 0.13);
-  --accent-border: rgba(143, 30, 77, 0.28);
-  --border-subtle: rgba(30, 15, 20, 0.08);
-  --border-default: rgba(30, 15, 20, 0.13);
-  --border-hover: rgba(30, 15, 20, 0.24);
-  --border-strong: rgba(0, 0, 0, 0.3);
-  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.85);
-  --shadow-card: 0 20px 50px -30px rgba(54, 30, 37, 0.22);
-  --shadow-glow: 0 0 42px rgba(143, 30, 77, 0.13);
+  --base-bg: #f4f8fc;
+  --base-bg-rgb: 244, 248, 252;
+  --surface-1: #e7eff8;
+  --surface-2: #f0f5fa;
+  --surface-3: #ffffff;
+  --surface-glass: rgba(244, 248, 252, 0.88);
+  --surface-glass-border: rgba(12, 74, 110, 0.12);
+  --text-primary: #091a2b;
+  --text-secondary: #335372;
+  --text-tertiary: #58799b;
+  --text-muted: #7997b5;
+  --secondary-mesh-1: #0369a1;
+  --secondary-mesh-2: #0284c7;
+  --secondary-mesh-3: #38bdf8;
+  --accent-pink: #0284c7;
+  --accent-coral: #0369a1;
+  --accent-amber: #38bdf8;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-soft: rgba(2, 132, 199, 0.12);
+  --accent-border: rgba(2, 132, 199, 0.32);
+  --border-subtle: rgba(12, 74, 110, 0.08);
+  --border-default: rgba(12, 74, 110, 0.14);
+  --border-hover: rgba(2, 132, 199, 0.34);
+  --border-strong: rgba(0, 0, 0, 0.35);
+  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-card: 0 20px 50px -30px rgba(12, 74, 110, 0.18);
+  --shadow-glow: 0 0 42px rgba(2, 132, 199, 0.16);
   --grain-opacity: 0.025;
-  --theme-dark-bg: #12080c;
-  --theme-light-bg: #f3e7da;
-  --hero-background: #f3e7da;
-  --hero-glow: rgba(143, 30, 77, 0.17);
-  --hero-glow-soft: rgba(185, 138, 114, 0.16);
-  --hero-line: rgba(30, 15, 20, 0.12);
-  --hero-light-ivory: #fffaf4;
-  --hero-light-rose: #8f1e4d;
-  --hero-light-deep-rose: #9b2a5b;
-  --hero-light-warm: #8b6559;
-  --hero-light-ring: #8f1e4d;
+  --theme-dark-bg: #090d14;
+  --theme-light-bg: #f4f8fc;
+  --hero-background: #f4f8fc;
+  --hero-glow: rgba(2, 132, 199, 0.18);
+  --hero-glow-soft: rgba(56, 189, 248, 0.16);
+  --hero-line: rgba(12, 74, 110, 0.12);
+  --hero-light-ivory: #ffffff;
+  --hero-light-rose: #0284c7;
+  --hero-light-deep-rose: #0369a1;
+  --hero-light-warm: #38bdf8;
+  --hero-light-ring: #0284c7;
 }
 
 /* ==========================================================================
    COLOR SYSTEM: 60 / 30 / 10
-   60% Base: Deep Ink (#0B0B12) dark / Warm Paper (#F4F1EA) light
-   30% Secondary: Rich Violet-to-Indigo Mesh (#2B1B6B -> var(--secondary-mesh-2))
-   10% Accent: Hot Pink / Coral to Amber (var(--accent-pink) -> var(--accent-amber))
+   60% Base: Deep Obsidian Navy (#090D14) dark / Crisp Ice Paper (#F4F8FC) light
+   30% Secondary: Deep Azure to Cobalt Ocean Mesh (#0E3054 -> var(--secondary-mesh-2))
+   10% Accent: Luminous Sky Blue / Azure to Ice Highlight (var(--accent-pink) -> var(--accent-amber))
    ========================================================================== */
 
 /* ==========================================================================

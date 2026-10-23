@@ -157,27 +157,37 @@ export default function CrossedMarquee({
     let frontXPercent = 0
     let backXPercent = -50
 
-    // Velocity state
-    let scrollVelocity = 0
+    // Persistent direction: -1 = Right to Left, +1 = Left to Right (towards right side)
+    let currentDir = -1
+    let scrollBoost = 0
+    let currentSpeed = -baseSpeedFront
     let lastScrollY = window.scrollY
     let isTicking = true
 
-    // Scroll listener for direction and burst response
+    // Scroll listener for direction switching and speed boost
     const handleScroll = () => {
       if (!reactToScroll) return
       const currentScrollY = window.scrollY
       const delta = currentScrollY - lastScrollY
       lastScrollY = currentScrollY
 
-      // Down-scroll (delta > 0) boosts forward
-      // Up-scroll (delta < 0) reverses the direction
-      const burst = delta * crossedMarqueeConfig.scrollBurstMultiplier
-      scrollVelocity += burst
+      if (Math.abs(delta) < 0.5) return
 
-      // Clamp max burst to avoid disorienting speed
-      const maxV = crossedMarqueeConfig.maxScrollVelocity
-      if (scrollVelocity > maxV) scrollVelocity = maxV
-      if (scrollVelocity < -maxV) scrollVelocity = -maxV
+      if (delta > 0) {
+        // Scrolled down -> move from right to left
+        currentDir = -1
+        scrollBoost = Math.min(
+          crossedMarqueeConfig.maxScrollVelocity,
+          scrollBoost + delta * crossedMarqueeConfig.scrollBurstMultiplier
+        )
+      } else {
+        // Scrolled up -> move towards the right side (left to right)
+        currentDir = 1
+        scrollBoost = Math.min(
+          crossedMarqueeConfig.maxScrollVelocity,
+          scrollBoost + Math.abs(delta) * crossedMarqueeConfig.scrollBurstMultiplier
+        )
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -192,21 +202,24 @@ export default function CrossedMarquee({
 
       const dt = Math.min(deltaTime / 1000, 0.1) // clamp delta time for tab switching
 
-      // Friction decay on scroll velocity
-      scrollVelocity *= crossedMarqueeConfig.scrollDecayFriction
-      if (Math.abs(scrollVelocity) < 0.001) scrollVelocity = 0
+      // Friction decay on the scroll boost
+      scrollBoost *= crossedMarqueeConfig.scrollDecayFriction
+      if (scrollBoost < 0.001) scrollBoost = 0
 
       // Hover damping factor
       const hoverFactor = isHovered && pauseOnHover ? 0 : 1
 
-      // Net velocity calculations
-      // Front moves leftward (negative X) by default
-      const netFrontSpeed = (baseSpeedFront * hoverFactor) + (scrollVelocity * 0.14)
-      frontXPercent -= netFrontSpeed * dt
+      // Target speed in the active scroll direction (front band: currentDir = -1 moves right-to-left, +1 moves left-to-right)
+      const targetSpeed = (currentDir * baseSpeedFront * hoverFactor) + (currentDir * scrollBoost)
 
-      // Back moves rightward (positive X) by default
-      const netBackSpeed = (baseSpeedBack * hoverFactor) + (scrollVelocity * 0.14 * 0.8)
-      backXPercent += netBackSpeed * dt
+      // Smoothly interpolate current speed towards target speed for zero-jank turnarounds
+      currentSpeed += (targetSpeed - currentSpeed) * 0.12
+
+      // Move front band
+      frontXPercent += currentSpeed * dt
+
+      // Back band moves in opposite direction of front band
+      backXPercent -= (currentSpeed / crossedMarqueeConfig.backDurationMultiplier) * dt
 
       // Wrap continuously from -50% to 0% so it never hits an edge
       const wrappedFront = gsap.utils.wrap(-50, 0, frontXPercent)

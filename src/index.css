@@ -1019,6 +1019,22 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   right: 24px;
   bottom: 20px;
 }
+
+/* Floating Tech Lamps Glowing Effect */
+.physics-portal-lamp.lamp-floating-glow {
+  filter: drop-shadow(0 0 18px var(--lamp-color, #38bdf8)) drop-shadow(0 0 42px var(--lamp-color, #38bdf8));
+  transition: filter 0.5s ease;
+}
+.physics-portal-lamp.lamp-floating-glow .tech-lamp-logo {
+  filter: drop-shadow(0 0 16px var(--lamp-color, #38bdf8)) drop-shadow(0 0 28px var(--lamp-color, #38bdf8)) brightness(1.6) !important;
+}
+.physics-portal-lamp.lamp-floating-glow .tech-lamp-art {
+  filter: drop-shadow(0 0 14px var(--lamp-color, #38bdf8)) brightness(1.35) !important;
+}
+.physics-portal-lamp.lamp-floating-glow .lamp-glow-aura {
+  opacity: 0.85 !important;
+  transform: scale(1.1) !important;
+}
 .ref-physics .physics-item {
   position: absolute;
   z-index: 1;

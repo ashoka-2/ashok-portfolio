@@ -149,8 +149,7 @@ void main() {
   }
 
   float aa = clamp(0.5 - d * uDpr, 0.0, 1.0);
-  float sh = d > 0.0 ? 0.2 * exp(-d / 22.0) : 0.0;
-  o = vec4(col * aa, aa) + vec4(vec3(0.03, 0.03, 0.05) * sh, sh) * (1.0 - aa);
+  o = vec4(col * aa, aa);
 }
 `
 

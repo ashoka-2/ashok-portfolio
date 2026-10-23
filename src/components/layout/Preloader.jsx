@@ -1,12 +1,175 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
+/* =========================================================================
+   GENUINE WEBGL 2 SYMBIOTE METABALL FLUID RAYMARCHING SHADERS
+   - 14+ independent streams with trailing droplets crawling from all edges
+   - True physical surface tension coalescence via Smooth-Minimum (smin)
+   - Fuses into one boiling central symbiote pool
+   - Carves mathematical Venom eyes and razor fangs directly out of the merged liquid
+   - Exact audio sync at the moment of coalescence
+   - High-contrast white background with jet-black wet symbiote liquid
+   ========================================================================= */
+
+const VS = `#version 300 es
+in vec2 aPos;
+void main() {
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}
+`
+
+const FS = `#version 300 es
+precision highp float;
+
+uniform vec2 uRes;
+uniform vec2 uC;
+uniform float uDpr;
+uniform float uT;
+uniform float uCenterR;
+uniform float uFace;
+uniform float uOpen;
+uniform float uHS;
+uniform float uEyeY;
+uniform int uBlobCount;
+uniform vec3 uBlobs[64]; // (x, y, radius)
+
+out vec4 o;
+
+float smin(float a, float b, float k) {
+  float h = max(k - abs(a - b), 0.0) / k;
+  return min(a, b) - h * h * k * 0.25;
+}
+
+float map(vec2 p) {
+  float d = 1e5;
+
+  // 1. Central coalesced liquid symbiote pool
+  if (uCenterR > 1.0) {
+    vec2 q = p - uC;
+    float wobble = (sin(p.x * 0.045 + uT * 2.8) * cos(p.y * 0.045 - uT * 2.2)) * 10.0;
+    d = length(q) - (uCenterR + wobble);
+  }
+
+  // 2. Incoming fluid droplets & trailing globules with viscous surface tension
+  for (int i = 0; i < 64; i++) {
+    if (i >= uBlobCount) break;
+    vec3 b = uBlobs[i];
+    if (b.z > 0.5) {
+      float bd = length(p - b.xy) - b.z;
+      // 28.0 blending radius creates thick liquid meniscus bridges between nearby drops!
+      d = smin(d, bd, 28.0);
+    }
+  }
+
+  return d;
+}
+
+void main() {
+  vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uDpr;
+  float d = map(p);
+
+  // Edge antialiasing factor
+  float aa = clamp(0.5 - d * uDpr, 0.0, 1.0);
+  if (aa <= 0.001) {
+    o = vec4(0.0);
+    return;
+  }
+
+  // Finite-difference normals for realistic raymarched liquid surface
+  vec2 gr = vec2(dFdx(d), -dFdy(d));
+  float gl2 = length(gr);
+  vec2 gn = gl2 > 1e-4 ? gr / gl2 : vec2(0.0);
+  float t = clamp(-d / 40.0, 0.0, 1.0);
+  vec3 n = normalize(vec3(gn * (1.0 - t) * 1.35, 0.35 + t * 1.25));
+
+  // Two-light specular shading model (Matching HeroModelCanvas symbiote lighting)
+  vec3 V = vec3(0.0, 0.0, 1.0);
+  vec3 L1 = normalize(vec3(-0.55, -0.65, 0.65));
+  vec3 L2 = normalize(vec3(0.55, 0.6, 0.5));
+  float h1 = max(dot(n, normalize(L1 + V)), 0.0);
+  float s1 = pow(h1, 75.0);
+  float s1b = pow(h1, 16.0) * 0.16;
+  float s2 = pow(max(dot(n, normalize(L2 + V)), 0.0), 38.0) * 0.35;
+  float fr = pow(1.0 - n.z, 3.0);
+  float wet = 0.5 + 0.5 * sin(p.x * 0.08 - p.y * 0.06 + uT * 1.6 + d * 0.35);
+
+  // Pitch-black wet obsidian symbiote body + razor-sharp specular reflection
+  vec3 liquidBody = vec3(0.012, 0.014, 0.018);
+  vec3 specHighlight = vec3(0.96, 0.98, 1.0) * (s1 * 0.95 + s1b + s2);
+  vec3 rimLight = vec3(0.35, 0.52, 0.82) * fr * 0.45;
+  vec3 wetSheen = vec3(0.07, 0.1, 0.18) * wet * fr;
+  vec3 col = liquidBody + specHighlight + rimLight + wetSheen;
+  col += vec3(0.18, 0.28, 0.52) * clamp(1.0 + d / 8.0, 0.0, 1.0) * 0.35;
+
+  // =========================================================================
+  // VENOM FACE: CARVED DIRECTLY OUT OF THE MERGED CENTRAL LIQUID MASS
+  // =========================================================================
+  if (uFace > 0.01 && d < 2.0 && uCenterR > 18.0) {
+    float fl = (p.x - uC.x) / uHS;
+    float vy = (p.y - uC.y - uEyeY) / uHS;
+    float gf = uFace * uFace * (3.0 - 2.0 * uFace);
+
+    // EYES: Big slanted sharp almonds
+    vec2 eq = vec2(abs(fl) - 0.5, vy - 0.04);
+    float eca = 0.87, esa = 0.5;
+    vec2 er = vec2(eq.x * eca + eq.y * esa, -eq.x * esa + eq.y * eca) / 0.47;
+    er.x /= (0.6 + 0.4 * gf);
+    float exx = clamp(er.x, -1.0, 1.0);
+    float ehh = 0.43 * pow(max(1.0 - pow(abs(exx), 1.7), 0.0), 0.8) * (1.0 + 0.28 * exx);
+    float ede = max(abs(er.y) - ehh * gf, abs(er.x) - 1.02);
+    float eye = (1.0 - smoothstep(-0.06, 0.08, ede)) * smoothstep(0.0, 0.15, gf);
+
+    // MOUTH: Curved predatory grin
+    float myy = vy + 0.95;
+    float cyL = 0.36 * fl * fl - 0.06;
+    float mop = 0.06 + 0.32 * gf * (0.3 + 0.7 * uOpen);
+    float mo2 = mop * pow(max(1.0 - fl * fl / 1.35, 0.0), 0.55);
+    float yU = cyL + mo2, yL = cyL - mo2;
+
+    // TEETH: Two interlocking rows of sharp fangs
+    float fU = fl * 4.6, fL2 = fl * 4.6 + 0.5;
+    float cU = floor(fU), cL = floor(fL2);
+    float tU = 1.0 - 2.0 * abs(fract(fU) - 0.5);
+    float tL = 1.0 - 2.0 * abs(fract(fL2) - 0.5);
+    float hU = fract(sin(cU * 12.9898) * 43758.5453);
+    float hL = fract(sin((cL + 7.3) * 12.9898) * 43758.5453);
+    float tb = 0.22 * gf * smoothstep(0.0, 0.28, mo2);
+    float fng = exp(-pow((abs(fl) - 0.36) / 0.1, 2.0));
+    float lnU = tb * (0.7 + 0.7 * hU) * (1.0 + 1.15 * fng);
+    float lnL = tb * (0.6 + 0.6 * hL) * (1.0 + 0.55 * fng);
+    float dU = max((yU - myy) - lnU * tU, myy - yU);
+    float dL = max((myy - yL) - lnL * tL, yL - myy);
+    float teeth = max(1.0 - smoothstep(-0.02, 0.025, dU),
+                      1.0 - smoothstep(-0.02, 0.025, dL))
+                * step(abs(fl), 1.15) * smoothstep(0.12, 0.5, gf);
+
+    // Composite Glowing Eyes (pure white core with electric cyan pulse)
+    col = mix(col, vec3(0.99, 1.0, 1.0), eye);
+    col += vec3(0.35, 0.65, 1.0) * eye * 0.95;
+
+    // Composite Razor Sharp Ivory Teeth
+    col = mix(col, vec3(0.96, 0.97, 0.98), teeth);
+  }
+
+  o = vec4(col * aa, aa);
+}
+`
+
+function compileShader(gl, type, source) {
+  const s = gl.createShader(type)
+  gl.shaderSource(s, source)
+  gl.compileShader(s)
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error('Symbiote shader error:', gl.getShaderInfoLog(s))
+  }
+  return s
+}
+
 export default function Preloader() {
-  // Always show on initial visit and on every page reload
+  // Always show on initial load and every browser reload
   const [visible, setVisible] = useState(true)
   const rootRef = useRef(null)
   const canvasRef = useRef(null)
-  const venomHeadRef = useRef(null)
 
   useEffect(() => {
     if (!visible || !rootRef.current) return
@@ -18,7 +181,7 @@ export default function Preloader() {
 
     // Audio: Venom roar sound effect
     const roarAudio = new Audio('/sounds/venom-sound.mpeg')
-    roarAudio.volume = 0.7
+    roarAudio.volume = 0.75
     roarAudio.preload = 'auto'
 
     const playRoar = () => {
@@ -31,91 +194,125 @@ export default function Preloader() {
       } catch {}
     }
 
+    // WebGL 2 Initialization
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+      powerPreference: 'high-performance',
+    })
+
+    if (!gl) {
+      console.warn('WebGL2 not supported for Venom preloader.')
+      finish()
+      return
+    }
+
+    const prog = gl.createProgram()
+    gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, VS))
+    gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, FS))
+    gl.linkProgram(prog)
+    gl.useProgram(prog)
+
+    // Full screen quad geometry VBO
+    const posBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer)
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      gl.STATIC_DRAW
+    )
+    const aPos = gl.getAttribLocation(prog, 'aPos')
+    gl.enableVertexAttribArray(aPos)
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0)
+
+    const U = {}
+    ;[
+      'uRes',
+      'uC',
+      'uDpr',
+      'uT',
+      'uCenterR',
+      'uFace',
+      'uOpen',
+      'uHS',
+      'uEyeY',
+      'uBlobCount',
+      'uBlobs',
+    ].forEach((n) => {
+      U[n] = gl.getUniformLocation(prog, n)
+    })
+
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
     let W = (canvas.width = window.innerWidth)
     let H = (canvas.height = window.innerHeight)
+    let dpr = Math.min(window.devicePixelRatio || 1, 1.75)
 
-    const handleResize = () => {
-      W = canvas.width = window.innerWidth
-      H = canvas.height = window.innerHeight
+    const layout = () => {
+      W = window.innerWidth
+      H = window.innerHeight
+      dpr = Math.min(window.devicePixelRatio || 1, 1.75)
+      canvas.width = Math.round(W * dpr)
+      canvas.height = Math.round(H * dpr)
+      gl.viewport(0, 0, canvas.width, canvas.height)
     }
-    window.addEventListener('resize', handleResize)
-
-    // Check theme
-    const isLight = document.documentElement.dataset.theme === 'light'
-    const fluidColor = isLight ? '#06080d' : '#020306'
+    layout()
+    window.addEventListener('resize', layout)
 
     // -------------------------------------------------------------------------
-    // Viscous Fluid Symbiote Streams crawling slowly from all 4 borders
-    // Each stream has a crawling head and trailing undulating liquid globules
+    // 14+ Fluid Symbiote Streams with Satellite Droplets (total 56 metaballs)
     // -------------------------------------------------------------------------
-    const STREAM_COUNT = 18
+    const STREAM_COUNT = 14
+    const BLOBS_PER_STREAM = 4
+    const TOTAL_BLOBS = STREAM_COUNT * BLOBS_PER_STREAM
+    const blobUniformData = new Float32Array(64 * 3)
+
     const streams = []
-
     for (let i = 0; i < STREAM_COUNT; i++) {
-      const angle = (i / STREAM_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.22
+      const angle = (i / STREAM_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.25
       const spawnDist = Math.max(W, H) * 0.62 + Math.random() * 80
       const startX = W / 2 + Math.cos(angle) * spawnDist
       const startY = H / 2 + Math.sin(angle) * spawnDist
 
-      const blobCount = 5 + Math.floor(Math.random() * 4)
-      const baseR = 16 + Math.random() * 18
-      const speed = 0.75 + Math.random() * 0.4
-      const waveFreq = 2.0 + Math.random() * 2.5
-      const waveAmp = 40 + Math.random() * 50
+      const baseR = 18 + Math.random() * 16
+      const speed = 0.85 + Math.random() * 0.35
+      const waveFreq = 2.2 + Math.random() * 2.0
+      const waveAmp = 45 + Math.random() * 45
       const phase = Math.random() * Math.PI * 2
+
+      const blobChain = []
+      for (let j = 0; j < BLOBS_PER_STREAM; j++) {
+        blobChain.push({
+          lag: j * 0.05,
+          radius: baseR * (1 - j * 0.14),
+          wobbleOffset: j * 0.5,
+        })
+      }
 
       streams.push({
         id: i,
         startX,
         startY,
         angle,
-        blobCount,
-        baseR,
         speed,
         waveFreq,
         waveAmp,
         phase,
-        progress: 0,
-        // Trailing chain of fluid blobs forming the stream
-        blobs: Array.from({ length: blobCount }, (_, bIdx) => ({
-          lag: bIdx * 0.045,
-          scale: 1 - bIdx * 0.12,
-          x: startX,
-          y: startY,
-          r: baseR * (1 - bIdx * 0.1),
-        })),
+        blobChain,
       })
     }
 
-    // Detached dripping droplets
-    const droplets = []
-    for (let i = 0; i < 24; i++) {
-      const angle = Math.random() * Math.PI * 2
-      const dist = Math.max(W, H) * 0.5 + Math.random() * 120
-      droplets.push({
-        startX: W / 2 + Math.cos(angle) * dist,
-        startY: H / 2 + Math.sin(angle) * dist,
-        r: 10 + Math.random() * 16,
-        progress: 0,
-        delay: Math.random() * 0.4,
-        speed: 0.6 + Math.random() * 0.5,
-        curv: (Math.random() - 0.5) * 80,
-        phase: Math.random() * Math.PI * 2,
-      })
-    }
-
-    // Global timeline state
+    // Choreography Controller
     const sim = {
-      streamProgress: 0, // 0 to 1 (slow, takes ~3.2s)
-      centerPoolProgress: 0, // radius multiplier for central coalesced liquid
-      venomHeadScale: 0.05,
-      venomHeadOpacity: 0,
-      jawOpen: 0,
+      creepProgress: 0, // 0 to 1 (takes 0.0s to 2.8s)
+      centerR: 0,       // radius of central coalesced symbiote pool
+      face: 0,          // visibility of venom eyes & fangs
+      open: 0,          // jaw open parameter
     }
 
     let animId = 0
@@ -124,195 +321,164 @@ export default function Preloader() {
     const render = (now) => {
       animId = requestAnimationFrame(render)
       const t = (now - startTime) * 0.001
-      ctx.clearRect(0, 0, W, H)
 
       const cx = W / 2
       const cy = H / 2
+      const hs = Math.min(W, H) * 0.18
 
-      // 1. Draw each crawling liquid stream
+      // Update positions of all 56 metaball droplets
+      let blobIdx = 0
       streams.forEach((st) => {
-        const streamProg = Math.min(1, Math.max(0, sim.streamProgress * st.speed))
-        st.progress = streamProg
-
-        if (streamProg <= 0.001) return
-
+        const streamProg = Math.min(1, Math.max(0, sim.creepProgress * st.speed))
         const nx = -Math.sin(st.angle)
         const ny = Math.cos(st.angle)
 
-        // Update trailing globules along the stream
-        st.blobs.forEach((b, bIdx) => {
-          const blobProg = Math.min(1, Math.max(0, streamProg - b.lag))
-          if (blobProg <= 0) return
+        st.blobChain.forEach((b, j) => {
+          if (blobIdx >= 64) return
 
-          // Viscous non-linear trickle curve
-          const ease = blobProg < 0.5 ? 2 * blobProg * blobProg : -1 + (4 - 2 * blobProg) * blobProg
+          const relProg = Math.min(1, Math.max(0, streamProg - b.lag))
 
-          const straightX = st.startX + (cx - st.startX) * ease
-          const straightY = st.startY + (cy - st.startY) * ease
+          if (relProg <= 0.001) {
+            blobUniformData[blobIdx * 3] = -9999
+            blobUniformData[blobIdx * 3 + 1] = -9999
+            blobUniformData[blobIdx * 3 + 2] = 0
+          } else {
+            // Viscous fluid non-linear trickle ease
+            const ease = relProg < 0.5 ? 2 * relProg * relProg : -1 + (4 - 2 * relProg) * relProg
 
-          const wave = Math.sin(t * st.waveFreq + st.phase + bIdx * 0.4) * st.waveAmp * (1 - ease * 0.6)
-          b.x = straightX + nx * wave
-          b.y = straightY + ny * wave
+            const straightX = st.startX + (cx - st.startX) * ease
+            const straightY = st.startY + (cy - st.startY) * ease
 
-          // Fluid squash & stretch: when moving fast, stretch radius
-          const squash = 1 + 0.15 * Math.sin(t * 4 + bIdx)
-          const currentR = b.r * squash * Math.min(1, blobProg * 3)
+            // Fluid snaking undulation
+            const wave = Math.sin(t * st.waveFreq + st.phase + b.wobbleOffset) * st.waveAmp * (1 - ease * 0.65)
+            const curX = straightX + nx * wave
+            const curY = straightY + ny * wave
 
-          ctx.beginPath()
-          ctx.arc(b.x, b.y, Math.max(2, currentR), 0, Math.PI * 2)
-          ctx.fillStyle = fluidColor
-          ctx.fill()
+            // Fluid squash & stretch
+            const squash = 1 + 0.15 * Math.sin(t * 3.5 + blobIdx)
+            const curR = b.radius * squash * Math.min(1, relProg * 2.8)
+
+            blobUniformData[blobIdx * 3] = curX
+            blobUniformData[blobIdx * 3 + 1] = curY
+            blobUniformData[blobIdx * 3 + 2] = Math.max(1.0, curR)
+          }
+
+          blobIdx++
         })
-      });
-
-      // 2. Draw detached trickling droplets
-      droplets.forEach((d) => {
-        const relProg = Math.min(1, Math.max(0, (sim.streamProgress - d.delay) * d.speed))
-        if (relProg <= 0.001) return
-
-        const ease = relProg < 0.5 ? 2 * relProg * relProg : -1 + (4 - 2 * relProg) * relProg
-        const straightX = d.startX + (cx - d.startX) * ease
-        const straightY = d.startY + (cy - d.startY) * ease
-
-        const curve = Math.sin(ease * Math.PI) * d.curv
-        const curX = straightX - Math.sin(d.phase) * curve
-        const curY = straightY + Math.cos(d.phase) * curve
-
-        ctx.beginPath()
-        ctx.arc(curX, curY, d.r * Math.min(1, relProg * 2.5), 0, Math.PI * 2)
-        ctx.fillStyle = fluidColor
-        ctx.fill()
       })
 
-      // 3. Central pooled fluid mass that directly swells as streams arrive
-      if (sim.centerPoolProgress > 0.01) {
-        // Living surface tension wobble
-        const wobble = Math.sin(t * 3.6) * 10 + Math.cos(t * 2.8) * 8
-        const r = sim.centerPoolProgress * (Math.min(W, H) * 0.22) + wobble
+      // Upload Uniforms to WebGL 2 Shader
+      gl.uniform2f(U.uRes, canvas.width, canvas.height)
+      gl.uniform2f(U.uC, cx, cy)
+      gl.uniform1f(U.uDpr, dpr)
+      gl.uniform1f(U.uT, t)
+      gl.uniform1f(U.uCenterR, sim.centerR)
+      gl.uniform1f(U.uFace, sim.face)
+      gl.uniform1f(U.uOpen, sim.open)
+      gl.uniform1f(U.uHS, hs)
+      gl.uniform1f(U.uEyeY, -hs * 0.1)
+      gl.uniform1i(U.uBlobCount, TOTAL_BLOBS)
+      gl.uniform3fv(U.uBlobs, blobUniformData)
 
-        ctx.beginPath()
-        ctx.arc(cx, cy, Math.max(2, r), 0, Math.PI * 2)
-        ctx.fillStyle = fluidColor
-        ctx.fill()
-      }
+      // Draw full screen raymarched quad
+      gl.drawArrays(gl.TRIANGLES, 0, 6)
     }
 
     animId = requestAnimationFrame(render)
 
     // -------------------------------------------------------------------------
-    // MASTER TIMELINE: PACE CALIBRATED FOR DRAMATIC LIQUID FLUID EFFECT (4.8s total)
+    // MASTER 4-STAGE CHOREOGRAPHY TIMELINE (TOTAL ~5.0s)
     // -------------------------------------------------------------------------
     const tl = gsap.timeline({
       onComplete: finish,
     })
 
-    // Phase 1 (0.1s to 2.8s): Fluid streams slowly slither & ooze from all directions
+    // Stage 1: The Creep (0.0s – 2.2s)
+    // Viscous fluid streams slowly crawl inward from all edges
     tl.to(
       sim,
       {
-        streamProgress: 1.0,
-        duration: 2.8,
+        creepProgress: 1.0,
+        duration: 2.3,
         ease: 'power1.inOut',
       },
       0.1
     )
 
-    // Phase 2 (1.8s to 3.2s): Fluid arrives at center and swells into the coalesced mass
+    // Stage 2: The Collision & Coalescence (2.0s – 3.0s)
+    // All separate streams collide in the center and fuse into one boiling pool
     tl.to(
       sim,
       {
-        centerPoolProgress: 1.0,
-        duration: 1.4,
+        centerR: Math.min(W, H) * 0.22,
+        duration: 1.0,
         ease: 'power2.out',
       },
-      1.8
+      2.0
     )
 
-    // Phase 3 (3.1s to 3.8s): The coalesced fluid mass forms the FULL VENOM HEAD!
-    tl.to(
-      sim,
-      {
-        venomHeadScale: 1.0,
-        venomHeadOpacity: 1.0,
-        jawOpen: 1.0,
-        duration: 0.75,
-        ease: 'back.out(1.6)',
-        onUpdate: () => {
-          if (!venomHeadRef.current) return
-          venomHeadRef.current.style.opacity = sim.venomHeadOpacity
-          venomHeadRef.current.style.transform = `translate(-50%, -50%) scale(${sim.venomHeadScale})`
-
-          const lowerJaw = venomHeadRef.current.querySelector('.venom-jaw-lower')
-          if (lowerJaw) {
-            lowerJaw.style.transform = `translateY(${sim.jawOpen * 24}px)`
-          }
-        },
-      },
-      3.1
-    )
-
-    // EXACT TIMING: Roar sound plays right as the fluid forms the complete Venom head!
+    // Stage 3: The Venom Face Reveal & Audio Drop (3.0s – 4.2s)
+    // EXACT AUDIO TRIGGER: Right at 3.0s when coalescence completes and jaws open!
     tl.call(
       () => {
         playRoar()
       },
       null,
-      3.15
+      3.0
     )
 
-    // Phase 4 (3.9s to 4.4s): Venom eyes narrow and jaws snap closed!
+    // Directly inside the newly merged liquid, eyes and fangs emerge and snap open!
     tl.to(
       sim,
       {
-        jawOpen: 0.0,
-        venomHeadScale: 0.88,
-        duration: 0.42,
-        ease: 'power3.in',
-        onUpdate: () => {
-          if (!venomHeadRef.current) return
-          venomHeadRef.current.style.transform = `translate(-50%, -50%) scale(${sim.venomHeadScale})`
-          const lowerJaw = venomHeadRef.current.querySelector('.venom-jaw-lower')
-          if (lowerJaw) {
-            lowerJaw.style.transform = `translateY(${sim.jawOpen * 24}px)`
-          }
-        },
+        face: 1.0,
+        open: 0.95,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
       },
-      3.95
+      3.0
     )
 
-    // Head snaps shut & dissolves
+    // Eyes narrow and jaws snap closed!
     tl.to(
       sim,
       {
-        venomHeadOpacity: 0.0,
-        venomHeadScale: 0.1,
-        centerPoolProgress: 0.0,
+        open: 0.0,
+        face: 0.0,
         duration: 0.45,
-        ease: 'power2.in',
-        onUpdate: () => {
-          if (!venomHeadRef.current) return
-          venomHeadRef.current.style.opacity = sim.venomHeadOpacity
-          venomHeadRef.current.style.transform = `translate(-50%, -50%) scale(${sim.venomHeadScale})`
-        },
+        ease: 'power3.in',
       },
-      4.35
+      3.85
     )
 
-    // Phase 5 (4.5s to 5.0s): Smooth veil blur dissolve to reveal portfolio
+    // Stage 4: The Exit / Page Reveal (4.2s – 5.0s)
+    // Central liquid mass dissolves / implodes into void
+    tl.to(
+      sim,
+      {
+        centerR: 0,
+        creepProgress: 0,
+        duration: 0.5,
+        ease: 'power2.in',
+      },
+      4.2
+    )
+
+    // Smooth curtain blur dissolve revealing the portfolio
     tl.to(
       rootRef.current,
       {
         opacity: 0,
-        filter: 'blur(18px)',
-        duration: 0.55,
+        filter: 'blur(16px)',
+        duration: 0.65,
         ease: 'power2.inOut',
       },
-      4.55
+      4.35
     )
 
     return () => {
       cancelAnimationFrame(animId)
-      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('resize', layout)
       tl.kill()
     }
   }, [visible])
@@ -322,157 +488,19 @@ export default function Preloader() {
   return (
     <div
       ref={rootRef}
-      className="venom-preloader-root fixed inset-0 z-[99999] pointer-events-auto flex items-center justify-center overflow-hidden select-none transition-colors duration-300"
+      className="venom-preloader-root fixed inset-0 z-[99999] pointer-events-auto flex items-center justify-center overflow-hidden select-none"
       style={{
-        background: 'var(--base-bg, #000000)',
+        background: '#ffffff', // High-contrast clean white background as requested
       }}
-      aria-label="Venom Preloader"
+      aria-label="Venom Symbiote Preloader"
       role="status"
     >
-      {/* 
-        ADVANCED 3D LIQUID METABALL FILTER:
-        Uses Gaussian Blur + High-Contrast Color Matrix + 3D Specular Point Lighting
-        Transforms 2D fluid canvas into viscous, shiny, organic black symbiote liquid!
-      */}
-      <svg className="pointer-events-none absolute h-0 w-0" aria-hidden="true">
-        <defs>
-          <filter id="venom-3d-fluid" x="-30%" y="-30%" width="160%" height="160%">
-            {/* 1. Viscous Surface Tension Blur */}
-            <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur" />
-
-            {/* 2. Alpha Threshold (Liquid Meniscus Snapping) */}
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 48 -18"
-              result="goo"
-            />
-
-            {/* 3. 3D Wet Specular Lighting on Fluid Curvature */}
-            <feSpecularLighting
-              in="blur"
-              surfaceScale="7"
-              specularConstant="1.4"
-              specularExponent="28"
-              lightingColor="#ffffff"
-              result="specular"
-            >
-              <fePointLight x="800" y="400" z="450" />
-            </feSpecularLighting>
-
-            <feComposite in="specular" in2="goo" operator="in" result="specularCut" />
-
-            <feMerge>
-              <feMergeNode in="goo" />
-              <feMergeNode in="specularCut" />
-            </feMerge>
-          </filter>
-
-          <filter id="venomEyeGlowFilter" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" result="glow1" />
-            <feGaussianBlur stdDeviation="16" result="glow2" />
-            <feMerge>
-              <feMergeNode in="glow2" />
-              <feMergeNode in="glow1" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-      </svg>
-
-      {/* Viscous Fluid Canvas with 3D Specular Surface Tension Filter */}
-      <div
+      {/* Full-Screen WebGL 2 Liquid Raymarching Canvas */}
+      <canvas
+        ref={canvasRef}
         className="pointer-events-none absolute inset-0 z-0 size-full"
-        style={{ filter: 'url(#venom-3d-fluid)' }}
-      >
-        <canvas ref={canvasRef} className="size-full" />
-      </div>
-
-      {/* 
-        FULL VENOM HEAD ENTITY:
-        Forms directly inside the gathered liquid pool as all streams collide!
-      */}
-      <div
-        ref={venomHeadRef}
-        className="pointer-events-none absolute left-1/2 top-1/2 z-10 size-64 sm:size-80 will-change-transform"
-        style={{
-          transform: 'translate(-50%, -50%) scale(0.05)',
-          opacity: 0,
-        }}
         aria-hidden="true"
-      >
-        <svg
-          viewBox="0 0 200 200"
-          className="size-full overflow-visible"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Full Venom Head & Jaw Silhouette (Glistening Viscous Body) */}
-          <path
-            d="M 100 20 C 155 20, 175 58, 170 102 C 165 138, 138 165, 100 176 C 62 165, 35 138, 30 102 C 25 58, 45 20, 100 20 Z"
-            fill="var(--base-bg, #030508)"
-            stroke="rgba(255, 255, 255, 0.28)"
-            strokeWidth="3.5"
-            filter="drop-shadow(0 0 26px rgba(0,0,0,0.95))"
-          />
-
-          {/* Temples & Cheek Contour lines */}
-          <path
-            d="M 45 75 Q 60 110, 85 135"
-            stroke="rgba(255, 255, 255, 0.18)"
-            strokeWidth="2.2"
-            fill="none"
-          />
-          <path
-            d="M 155 75 Q 140 110, 115 135"
-            stroke="rgba(255, 255, 255, 0.18)"
-            strokeWidth="2.2"
-            fill="none"
-          />
-
-          {/* Left Slanted Sharp Almond Eye */}
-          <path
-            d="M 44 64 C 56 48, 80 54, 90 68 C 82 80, 60 78, 44 64 Z"
-            fill="#ffffff"
-            filter="url(#venomEyeGlowFilter)"
-            stroke="rgba(98, 168, 232, 0.95)"
-            strokeWidth="2.8"
-          />
-
-          {/* Right Slanted Sharp Almond Eye */}
-          <path
-            d="M 156 64 C 144 48, 120 54, 110 68 C 118 80, 140 78, 156 64 Z"
-            fill="#ffffff"
-            filter="url(#venomEyeGlowFilter)"
-            stroke="rgba(98, 168, 232, 0.95)"
-            strokeWidth="2.8"
-          />
-
-          {/* Upper Jaw Fangs (Wide curved grin) */}
-          <path
-            d="M 60 102 L 66 116 L 72 102 L 79 118 L 86 102 L 93 120 L 100 102 L 107 120 L 114 102 L 121 118 L 128 102 L 134 116 L 140 102"
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth="3.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="drop-shadow(0 0 6px rgba(255,255,255,0.85))"
-          />
-
-          {/* Lower Jaw Fangs (Snaps open on roar, then snaps shut!) */}
-          <g className="venom-jaw-lower transition-transform duration-75">
-            <path
-              d="M 62 125 L 68 112 L 74 128 L 81 110 L 88 130 L 100 108 L 112 130 L 119 110 L 126 128 L 132 112 L 138 125"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="3.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="drop-shadow(0 0 6px rgba(255,255,255,0.85))"
-            />
-          </g>
-        </svg>
-      </div>
+      />
     </div>
   )
 }

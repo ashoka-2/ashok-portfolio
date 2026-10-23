@@ -103,28 +103,29 @@ void main() {
 
   // =========================================================================
   // VENOM FACE: CARVED DIRECTLY OUT OF THE MERGED CENTRAL LIQUID MASS
+  // Eyes cleanly at TOP, mouth cleanly at BOTTOM
   // =========================================================================
   if (uFace > 0.01 && d < 2.0 && uCenterR > 18.0) {
     float fl = (p.x - uC.x) / uHS;
-    float vy = (p.y - uC.y - uEyeY) / uHS;
+    float vy = (p.y - uC.y) / uHS;
     float gf = uFace * uFace * (3.0 - 2.0 * uFace);
 
-    // EYES: Big slanted sharp almonds
-    vec2 eq = vec2(abs(fl) - 0.5, vy - 0.04);
-    float eca = 0.87, esa = 0.5;
-    vec2 er = vec2(eq.x * eca + eq.y * esa, -eq.x * esa + eq.y * eca) / 0.47;
+    // EYES AT TOP (vy around -0.35, above center):
+    vec2 eq = vec2(abs(fl) - 0.52, vy - (-0.35));
+    float eca = 0.88, esa = 0.47;
+    vec2 er = vec2(eq.x * eca + eq.y * esa, -eq.x * esa + eq.y * eca) / 0.46;
     er.x /= (0.6 + 0.4 * gf);
     float exx = clamp(er.x, -1.0, 1.0);
-    float ehh = 0.43 * pow(max(1.0 - pow(abs(exx), 1.7), 0.0), 0.8) * (1.0 + 0.28 * exx);
+    float ehh = 0.42 * pow(max(1.0 - pow(abs(exx), 1.7), 0.0), 0.8) * (1.0 + 0.28 * exx);
     float ede = max(abs(er.y) - ehh * gf, abs(er.x) - 1.02);
     float eye = (1.0 - smoothstep(-0.06, 0.08, ede)) * smoothstep(0.0, 0.15, gf);
 
-    // MOUTH: Curved predatory grin
-    float myy = vy + 0.95;
-    float cyL = 0.36 * fl * fl - 0.06;
+    // MOUTH AT BOTTOM (vy around +0.35, below eyes & below center):
+    float myy = vy - 0.35;
+    float cyL = -0.28 * fl * fl + 0.02;
     float mop = 0.06 + 0.32 * gf * (0.3 + 0.7 * uOpen);
     float mo2 = mop * pow(max(1.0 - fl * fl / 1.35, 0.0), 0.55);
-    float yU = cyL + mo2, yL = cyL - mo2;
+    float yU = cyL - mo2, yL = cyL + mo2;
 
     // TEETH: Two interlocking rows of sharp fangs
     float fU = fl * 4.6, fL2 = fl * 4.6 + 0.5;
@@ -137,8 +138,8 @@ void main() {
     float fng = exp(-pow((abs(fl) - 0.36) / 0.1, 2.0));
     float lnU = tb * (0.7 + 0.7 * hU) * (1.0 + 1.15 * fng);
     float lnL = tb * (0.6 + 0.6 * hL) * (1.0 + 0.55 * fng);
-    float dU = max((yU - myy) - lnU * tU, myy - yU);
-    float dL = max((myy - yL) - lnL * tL, yL - myy);
+    float dU = max((myy - yU) - lnU * tU, yU - myy);
+    float dL = max((yL - myy) - lnL * tL, myy - yL);
     float teeth = max(1.0 - smoothstep(-0.02, 0.025, dU),
                       1.0 - smoothstep(-0.02, 0.025, dL))
                 * step(abs(fl), 1.15) * smoothstep(0.12, 0.5, gf);

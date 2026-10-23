@@ -27,6 +27,12 @@ An award-grade, creative portfolio engineered with **React 19**, **Vite**, **Tai
 
 ---
 
+<!--
+Symbiote hero follows the reference: IDLE → APPROACH → COMMIT → FLOW OUT (2.6s) → COVER/FACE (2.8s) → HOLD (3.8s) → FLOW BACK (3.4s) → IDLE. The screen-space coating uses the rendered GLB silhouette, and the shader face uses the upper 13% of its local mesh bounds.
+Tuning is in VENOM at the top of SymbioteOverlay.jsx: 270px attract radius, 8 tendrils (6 mobile) with 6 points each, a 24-point artery, and 45% minimum pill mass. The GLB is one static mesh with no head bone; its face frame uses local +X, which points toward the camera with the portfolio's -π/2 Y rotation.
+The coating mask is captured at half resolution; the existing portfolio background is untouched.
+-->
+
 ## 🛠️ Tech Stack
 
 | Layer | Technologies |

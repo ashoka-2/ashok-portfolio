@@ -82,7 +82,7 @@ export default function HomePage() {
       id="top"
       onPointerDownCapture={handleHeroPointerDown}
       onPointerMoveCapture={handleHeroPointerMove}
-      onPointerLeaveCapture={handleHeroPointerLeave}
+      onPointerLeave={handleHeroPointerLeave}
     >
       <div className="ref-hero-glow absolute z-0 left-1/2 top-[42%] w-[min(58vw,720px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,var(--hero-glow),var(--hero-glow-soft)_42%,transparent_72%)] blur-[20px]" aria-hidden="true" />
       <h1 className="ref-sr">{hero.title}</h1>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Venom — Explore work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:rgba(20,20,20,.45);color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:rgba(255,255,255,.5)}}
+:root[data-theme="dark"]{--ink:rgba(255,255,255,.5)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:transparent;font-family:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;touch-action:none;user-select:none}
+#g3,#ov{position:fixed;inset:0;width:100%;height:100%;background:transparent}
+#g3{z-index:1}
+/* the real, normal blue pill button – it sits UNDER the liquid layer so venom strands can still flow over it */
+#bb{position:fixed;left:50%;z-index:2;pointer-events:none;border-radius:999px;opacity:0;transform:translate(-50%,-50%) scale(.86);
+ background:linear-gradient(180deg,#5c9cff 0%,#2f6bff 55%,#1f4fe0 100%);border:2px solid #a9ccff;
+ box-shadow:0 16px 34px -10px rgba(47,107,255,.6),inset 0 2px 0 rgba(255,255,255,.28),inset 0 -10px 18px rgba(10,40,160,.35);
+ transition:filter .2s ease;will-change:transform,opacity}
+#bb.h{filter:brightness(1.12) saturate(1.1)}
+#ov{z-index:3;pointer-events:none}
+#btn{position:fixed;left:50%;z-index:4;transform:translate(-50%,-50%);background:transparent;border:0;border-radius:999px;color:#fff;font:700 32px/1 'Inter',sans-serif;letter-spacing:-.02em;cursor:pointer;outline:0;text-shadow:0 2px 6px rgba(0,0,0,.45)}
+#btn span{display:block;will-change:transform,opacity}
+#btn:focus-visible{box-shadow:0 0 0 3px rgba(120,160,255,.8)}
+#note{position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;text-align:center;font-size:12px;font-weight:600;letter-spacing:.03em;color:var(--ink);pointer-events:none;padding:0 16px}
+#note u{pointer-events:auto;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<canvas id="g3"></canvas><div id="bb"></div><canvas id="ov"></canvas>
+<button id="btn"><span>explore work</span></button>
+<div id="note">Move near the button, then toward the character</div>
+<input id="file" type="file" accept=".glb,.gltf" hidden>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/libs/meshopt_decoder.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function(){'use strict';
+/* ================= CONFIG (all timings in seconds) =================
+   out   : venom drains out of the button and streams to the character
+   cover : the character gets swallowed + face forms
+   hold  : venom mode (~5 s) – the character is alive and reaches for your cursor
+   back  : venom flows back into the button, character returns to normal            */
+var CFG={out:2.1,cover:2.3,hold:5,back:3.2,attract:270,dwell:.25,glb:'ashok3dmodel.glb',eyeUp:.072,headHalf:.056,wideGrin:true};
+var HINT='Move near the button, then toward the character \u2022 drag to rotate \u2022 click Venom to make him roar \u2022 F flips face \u2022 \u2191\u2193 [ ] tune face';
+var $=function(i){return document.getElementById(i);};
+var ov=$('ov'),g3=$('g3'),btn=$('btn'),bb=$('bb'),lab=btn.firstElementChild,note=$('note');
+var gl=ov.getContext('webgl2',{alpha:true,premultipliedAlpha:true,antialias:false});
+if(!gl){note.textContent='WebGL2 is required for the liquid.';return;}
+note.textContent=HINT;
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var rnd=function(s){var x=Math.sin(s*127.1+311.7)*43758.5453;return x-Math.floor(x);};
+var cl=function(v,a,b){return Math.max(a,Math.min(b,v));};
+var sm=function(a,b,v){var t=cl((v-a)/(b-a),0,1);return t*t*(3-2*t);};
+var e5=function(t){t=cl(t,0,1);return t*t*t*(t*(t*6-15)+10);};
+
+/* ================= 2D LIQUID OVERLAY (one smooth-union SDF) ================= */
+var VS='#version 300 es\nvoid main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);gl_Position=vec4(p*2.-1.,0.,1.);}';
+var FS='#version 300 es\nprecision highp float;\nuniform vec2 uRes,uC,uHR,uCss,uCh;uniform float uDpr,uT,uPress,uFr,uDrip,uCov,uFaceOn;uniform vec4 uBox,uCB;uniform sampler2D uTex;\n'+
+'uniform vec3 uP[60];uniform vec3 uA[24];uniform vec3 uQ[8];out vec4 o;\n'+
+'float smin(float a,float b,float k){float h=max(k-abs(a-b),0.)/k;return min(a,b)-h*h*k*.25;}\n'+
+'float h2(float x){return fract(sin(x*127.1)*43758.5453);}\n'+
+'float vn2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float a=h2(i.x+i.y*57.),b=h2(i.x+1.+i.y*57.),c=h2(i.x+(i.y+1.)*57.),d=h2(i.x+1.+(i.y+1.)*57.);return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}\n'+
+'float sA(vec2 p){return texture(uTex,p/uCss).a;}\n'+
+'float cap(vec2 p,vec3 a,vec3 b){vec2 pa=p-a.xy,ba=b.xy-a.xy;float h=clamp(dot(pa,ba)/max(dot(ba,ba),1e-4),0.,1.);return length(pa-ba*h)-mix(a.z,b.z,h);}\n'+
+/* the character silhouette, blurred into a soft liquid height field, bulged outward and limited by the advancing front */
+'float coat(vec2 p){float s=sA(p)*2.;\n'+
+' for(int i=0;i<8;i++){float a=float(i)*.7854;s+=sA(p+vec2(cos(a),sin(a))*14.);}\n'+
+' for(int i=0;i<4;i++){float a=float(i)*1.5708+.39;s+=sA(p+vec2(cos(a),sin(a))*7.);}\n'+
+' s/=14.;float sL=sA(p);for(int i=0;i<8;i++){float a=float(i)*.7854;sL+=sA(p+vec2(cos(a),sin(a))*36.);}sL/=9.;\n'+
+' float b=(.5-s)*30.-5.-16.*smoothstep(.55,1.,sL);\n'+
+' float f=length(p-uCh)-uFr+(vn2(p*.025+uT*.25)-.5)*70.;\n'+
+' return -smin(-b,-f,14.);}\n'+
+'float map(vec2 p){vec2 q=p-uC;float x=clamp(q.x,-uHR.x,uHR.x);float d=uHR.y<.4?1e5:length(q-vec2(x,0.))-uHR.y;\n'+
+' d+=(.9*sin(p.x*.055+uT*1.6)*sin(p.y*.07-uT*1.2)+uPress*2.5)*clamp(uHR.y/30.,0.,1.);\n'+
+' float a=1e5;for(int s=0;s<23;s++){vec3 u=uA[s],v=uA[s+1];if(u.z>.05&&v.z>.05)a=min(a,cap(p,u,v));}\n'+
+' if(a<1e4)d=smin(d,a,18.);\n'+
+' for(int t=0;t<10;t++){float m=1e5;for(int s=0;s<5;s++){vec3 u=uP[t*6+s],v=uP[t*6+s+1];if(u.z>.05&&v.z>.05)m=min(m,cap(p,u,v));}if(m<1e4)d=smin(d,m,14.);}\n'+
+' for(int i=0;i<8;i++){vec3 u=uQ[i];if(u.z>.05)d=smin(d,length(p-u.xy)-u.z,14.);}\n'+
+' if(uCov>.5&&p.x>uCB.x&&p.x<uCB.z&&p.y>uCB.y&&p.y<uCB.w){\n'+
+'  float c0=coat(p);float col=pow(max(0.,sin(p.x*.11+1.7*sin(p.x*.031))),6.);\n'+
+'  float L=uDrip*(20.+80.*h2(floor(p.x/9.)))*col*(.85+.15*sin(uT*2.+p.x*.2));\n'+
+'  float c1=coat(p-vec2(0.,L));d=smin(d,min(c0,c1),10.);}\n'+
+' return d;}\n'+
+'void main(){vec2 p=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y)/uDpr;\n'+
+' if(p.x<uBox.x||p.x>uBox.z||p.y<uBox.y||p.y>uBox.w){o=vec4(0.);return;}\n'+
+' float d=map(p);vec2 gr=vec2(dFdx(d),-dFdy(d));float gl2=length(gr);vec2 gn=gl2>1e-4?gr/gl2:vec2(0.);\n'+
+' float t=clamp(-d/(uCov>.5?55.:14.),0.,1.);vec3 n=normalize(vec3(gn*(1.-t)*1.15,.3+t*1.1));\n'+
+' if(uCov>.5){n.xy+=(vec2(vn2(p*.045+uT*.35),vn2(p*.045+9.-uT*.3))-.5)*.28;n=normalize(n);}\n'+
+' vec3 V=vec3(0.,0.,1.);vec3 L1=normalize(vec3(-.5,-.65,.6)),L2=normalize(vec3(.55,.6,.5));\n'+
+' float h1=max(dot(n,normalize(L1+V)),0.);float s1=pow(h1,70.),s1b=pow(h1,16.)*.12;float s2=pow(max(dot(n,normalize(L2+V)),0.),38.)*.3;\n'+
+' float fr=pow(1.-n.z,3.);float wet=.5+.5*sin(p.x*.09-p.y*.07+uT*1.4+d*.35);\n'+
+' vec3 col=vec3(.012,.013,.018)+vec3(.9,.94,1.)*(s1*.85+s1b+s2)+vec3(.3,.36,.55)*fr*.3+vec3(.05,.07,.14)*wet*fr;\n'+
+' col+=vec3(.2,.26,.42)*clamp(1.+d/6.,0.,1.)*.3;\n'+
+' if(uFaceOn>.01&&d<-2.){vec4 fm=texture(uTex,p/uCss);float e0=fm.r;float gw=0.;for(int i=0;i<6;i++){float a=float(i)*1.047;gw+=texture(uTex,(p+vec2(cos(a),sin(a))*7.)/uCss).r;}gw/=6.;\n'+
+'  col=mix(col,vec3(.97,.99,1.),e0*uFaceOn);col+=vec3(.3,.45,.95)*gw*.35*uFaceOn;\n'+
+'  col=mix(col,vec3(.8,.09,.17)*(1.-.5*fm.b)+vec3(.25,.05,.08)*e0,fm.g*uFaceOn);}\n'+
+' float aa=clamp(.5-d*uDpr,0.,1.);float sh=d>0.?.2*exp(-d/22.):0.;\n'+
+' o=vec4(col*aa,aa)+vec4(vec3(.03,.03,.05)*sh,sh)*(1.-aa);}';
+
+function sh(t,s){var x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(x));return x;}
+var prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);
+var U={};['uRes','uC','uHR','uDpr','uT','uPress','uBox','uP','uA','uQ','uTex','uCss','uCh','uFr','uDrip','uCov','uFaceOn','uCB'].forEach(function(n){U[n]=gl.getUniformLocation(prog,n);});
+var tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);[[gl.TEXTURE_MIN_FILTER,gl.LINEAR],[gl.TEXTURE_MAG_FILTER,gl.LINEAR],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]].forEach(function(a){gl.texParameteri(gl.TEXTURE_2D,a[0],a[1]);});
+gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4));gl.uniform1i(U.uTex,0);
+gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
+
+/* ================= 3D SCENE ================= */
+var renderer=new THREE.WebGLRenderer({canvas:g3,alpha:true,antialias:true});
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.setClearColor(0x000000,0);
+var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,.1,100);
+scene.add(new THREE.AmbientLight(0xffffff,.75));
+var key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(-3,4,5);scene.add(key);
+var fill=new THREE.DirectionalLight(0xaaccff,.9);fill.position.set(4,1,2);scene.add(fill);
+scene.add(new THREE.HemisphereLight(0xffffff,0x444455,.5));
+var pivot=new THREE.Group();scene.add(pivot);
+var W,H,dpr,S=1,cx,cy,hl,rad,btnY,baseY=0;
+var cB=document.createElement('canvas'),cx2=cB.getContext('2d'),mw=1,mh=1,G={fr:0,drip:0};
+var SI={uFace:{value:0},uT:{value:0},uHC:{value:new THREE.Vector3()},uFw:{value:new THREE.Vector2(1,0)},uHS:{value:.05},uEyeY:{value:0},uMode:{value:0},uOpen:{value:.5},uTongue:{value:0}};
+var HEADC=SI.uHC.value;
+
+/* ---- the Venom face, painted on the model surface (head-local coordinates, 1 unit = half head width) ----
+   r channel = white features (eyes + teeth), g = tongue, b = tongue groove                                       */
+var FACE='{\n'+
+'vec3 d3=vLP-uHC;float lat=dot(d3,vec3(-uFw.y,0.,uFw.x));float fo=dot(vON,vec3(uFw.x,0.,uFw.y));\n'+
+'float gf=uFace*uFace*(3.-2.*uFace);float fmk=smoothstep(.12,.45,fo)*step(.001,uFace);\n'+
+'float l=lat/uHS;float vy=(vLP.y-uEyeY)/uHS;\n'+
+/* eyes: big slanted almonds, sharp at both tips, chunkier toward the temples */
+'vec2 eq=vec2(abs(l)-.5,vy-.04);float ca=.87,sa=.5;\n'+
+'vec2 r=vec2(eq.x*ca+eq.y*sa,-eq.x*sa+eq.y*ca)/.47;r.x/=(.6+.4*gf);\n'+
+'float xx=clamp(r.x,-1.,1.);\n'+
+'float hh=.43*pow(max(1.-pow(abs(xx),1.7),0.),.8)*(1.+.28*xx);\n'+
+'float de=max(abs(r.y)-hh*gf,abs(r.x)-1.02);float eye=(1.-smoothstep(-.05,.07,de))*smoothstep(.0,.15,gf);\n'+
+/* mouth: huge curved grin that tapers into the cheeks */
+'float yy=vy+1.0;float cyL=.36*l*l-.06;float op=.07+.27*gf*(.3+.7*uOpen);\n'+
+'float o2=op*pow(max(1.-l*l/1.3,0.),.55);float yU=cyL+o2,yL=cyL-o2;\n'+
+/* two interlocking rows of jagged teeth, irregular sizes, with fangs */
+'float fU=l*4.4,fL=l*4.4+.5;float cU=floor(fU),cL=floor(fL);\n'+
+'float tU=1.-2.*abs(fract(fU)-.5),tL=1.-2.*abs(fract(fL)-.5);\n'+
+'float hU=fract(sin(cU*12.9898)*43758.5453),hL=fract(sin((cL+7.3)*12.9898)*43758.5453);\n'+
+'float tb=.2*gf*smoothstep(.0,.3,o2);float fang=exp(-pow((abs(l)-.36)/.1,2.));\n'+
+'float lenU=tb*(.7+.7*hU)*(1.+1.1*fang),lenL=tb*(.6+.6*hL)*(1.+.5*fang);\n'+
+'float dU=max((yU-yy)-lenU*tU,yy-yU),dL=max((yy-yL)-lenL*tL,yL-yy);\n'+
+'float teeth=max(1.-smoothstep(-.02,.025,dU),1.-smoothstep(-.02,.025,dL))*step(abs(l),1.15)*smoothstep(.1,.5,gf)*'+(CFG.wideGrin?'1.':'.6')+';\n'+
+/* long wavy tongue that lolls out of the mouth */
+'float tx=.12*sin(yy*4.5+uT*2.6)*(1.-smoothstep(-.7,0.,yy));\n'+
+'float tlen=.3+1.4*uTongue;float td=clamp(-yy/tlen,0.,1.);float tw=.17*sqrt(max(1.-.85*td*td,0.))*(1.-.35*td);\n'+
+'float tg=(1.-smoothstep(-.03,.03,max(abs(l-tx)-tw,max(yy-(cyL+.03),-yy-tlen))))*smoothstep(.02,.15,uTongue)*smoothstep(.3,.7,gf);\n'+
+'float groove=1.-smoothstep(.0,.05,abs(l-tx));\n'+
+'float feat=clamp(eye+teeth,0.,1.)*fmk*(1.+.04*sin(uT*2.5));float tgm=tg*fmk;\n'+
+'if(uMode>.5)outgoingLight=vec3(feat,tgm,tgm*groove);\n'+
+'}\n';
+function patch(m){
+ m.onBeforeCompile=function(s){
+  for(var k in SI)s.uniforms[k]=SI[k];
+  s.vertexShader=s.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vLP;varying vec3 vON;')
+   .replace('#include <beginnormal_vertex>','#include <beginnormal_vertex>\nvON=objectNormal;')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\nvLP=transformed;');
+  s.fragmentShader=s.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vLP;varying vec3 vON;uniform float uFace,uT,uHS,uEyeY,uMode,uOpen,uTongue;uniform vec3 uHC;uniform vec2 uFw;')
+   .replace('#include <output_fragment>',FACE+'#include <output_fragment>');
+ };
+ m.customProgramCacheKey=function(){return 'venomface2';};m.needsUpdate=true;
+}
+
+var model=null,chestL=new THREE.Vector3(),fwdI=0,FW=[[1,0],[0,1],[-1,0],[0,-1]],yaw0=-Math.PI/2,sc=1,MH=1,MTOP=0;
+var tmp=new THREE.Vector3(),chestW=new THREE.Vector3();
+function applyDims(){SI.uEyeY.value=MTOP-CFG.eyeUp*MH;SI.uHS.value=CFG.headHalf*MH;}
+function setupModel(root){
+ if(model)pivot.remove(model);
+ var box=new THREE.Box3(),meshes=[];
+ root.traverse(function(n){if(n.isMesh){meshes.push(n);n.geometry.computeBoundingBox();box.union(n.geometry.boundingBox);
+  (Array.isArray(n.material)?n.material:[n.material]).forEach(patch);}});
+ var c=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),Hh=size.y;
+ var thr=box.max.y-.13*Hh,sx=0,sz=0,cnt=0;
+ meshes.forEach(function(m){var p=m.geometry.attributes.position;for(var i=0;i<p.count;i++){if(p.getY(i)>thr){sx+=p.getX(i);sz+=p.getZ(i);cnt++;}}});
+ HEADC.set(cnt?sx/cnt:c.x,0,cnt?sz/cnt:c.z);
+ MH=Hh;MTOP=box.max.y;applyDims();
+ chestL.set(c.x,box.max.y-.27*Hh,c.z);
+ root.position.set(-c.x,-c.y,-c.z);
+ var g=new THREE.Group();g.add(root);pivot.add(g);model=g;
+ sc=2.3/Hh;pivot.scale.setScalar(sc);
+ applyFace();layout();
+}
+function applyFace(){var f=FW[fwdI];SI.uFw.value.set(f[0],f[1]);yaw0=Math.atan2(-f[0],f[1]);}
+function placeholder(){
+ var m=new THREE.MeshStandardMaterial({color:0xc9a98e,roughness:.55,metalness:0}),g=new THREE.Group();
+ function add(geo,x,y,z){geo.translate(x,y,z);g.add(new THREE.Mesh(geo,m));}
+ add(new THREE.SphereGeometry(.1,32,24),0,.38,0);add(new THREE.SphereGeometry(.018,12,10),.1,.37,0);
+ add(new THREE.CylinderGeometry(.04,.05,.06,16),0,.29,0);add(new THREE.CylinderGeometry(.15,.17,.42,28),0,.06,0);
+ add(new THREE.CylinderGeometry(.06,.05,.46,16),0,-.38,.07);add(new THREE.CylinderGeometry(.06,.05,.46,16),0,-.38,-.07);
+ add(new THREE.CylinderGeometry(.04,.035,.4,14),0,.04,.22);add(new THREE.CylinderGeometry(.04,.035,.4,14),0,.04,-.22);
+ setupModel(g);note.innerHTML='Placeholder figure shown. Put <b>ashok3dmodel.glb</b> next to this file (run a local server) or <u id="pick">choose / drop your .glb</u> &bull; F turns the face';
+ var p=$('pick');if(p)p.onclick=function(){$('file').click();};
+}
+var loader=new THREE.GLTFLoader();var MD=window.MeshoptDecoder||THREE.MeshoptDecoder;if(MD&&loader.setMeshoptDecoder)loader.setMeshoptDecoder(MD);
+function loadURL(u,fail){loader.load(u,function(g){setupModel(g.scene);note.textContent=HINT;},undefined,fail||placeholder);}
+loadURL(CFG.glb);
+$('file').onchange=function(e){var f=e.target.files[0];if(f)loadURL(URL.createObjectURL(f),function(){});};
+addEventListener('dragover',function(e){e.preventDefault();});
+addEventListener('drop',function(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f)loadURL(URL.createObjectURL(f),function(){});});
+
+/* ================= LAYOUT ================= */
+var visH=1;
+function layout(){
+ W=innerWidth;H=innerHeight;dpr=Math.min(devicePixelRatio||1,1.75);
+ ov.width=Math.round(W*dpr);ov.height=Math.round(H*dpr);gl.viewport(0,0,ov.width,ov.height);
+ renderer.setPixelRatio(dpr);renderer.setSize(W,H,false);
+ cam.aspect=W/H;var ffr=Math.min(.6,1.15*W/H);var d=2.3/(ffr*2*Math.tan(cam.fov*Math.PI/360));cam.position.set(0,0,d);cam.updateProjectionMatrix();
+ visH=2*d*Math.tan(cam.fov*Math.PI/360);baseY=(.5-.42)*visH;pivot.position.y=baseY;
+ S=Math.min(1,(W-32)/340);cx=W/2;btnY=H*.88;cy=btnY;hl=120*S;rad=50*S;
+ btn.style.width=340*S+'px';btn.style.height=100*S+'px';btn.style.fontSize=32*S+'px';btn.style.top=btnY+'px';
+ bb.style.width=340*S+'px';bb.style.height=100*S+'px';bb.style.top=btnY+'px';
+ var ts=Math.min(1,1400/Math.max(W,H));mw=Math.ceil(W*ts);mh=Math.ceil(H*ts);cB.width=mw;cB.height=mh;
+}
+addEventListener('resize',layout);layout();
+
+/* ================= POINTER / ROTATION INPUT ================= */
+var P={x:-999,y:-999,sx:-999,sy:-999,vx:0,vy:0,inW:false,down:false,drag:false,lx:0,ly:0};
+var dragX=0,dragY=0,dragMoved=0,downT=0,roar=0,pressV=0;
+function setP(e){P.x=e.clientX;P.y=e.clientY;if(!P.inW){P.sx=P.x;P.sy=P.y;}P.inW=true;
+ if(P.drag){var dx=e.clientX-P.lx,dy=e.clientY-P.ly;dragX+=dx;dragY+=dy;dragMoved+=Math.abs(dx)+Math.abs(dy);P.lx=e.clientX;P.ly=e.clientY;}}
+addEventListener('pointermove',setP,{passive:true});
+addEventListener('pointerdown',function(e){setP(e);P.down=true;
+ if(overChar(P.x,P.y)){P.drag=true;P.lx=e.clientX;P.ly=e.clientY;dragMoved=0;downT=performance.now();}
+ var i=pill(P.x,P.y,BTN);if(ph==='idle'&&i.sd<90*S)pressV+=7;},{passive:true});
+addEventListener('pointerup',function(e){
+ if(P.drag&&ph==='hold'&&dragMoved<8&&performance.now()-downT<400)triggerRoar();
+ P.down=false;P.drag=false;if(e.pointerType==='touch')P.inW=false;},{passive:true});
+document.addEventListener('mouseleave',function(){P.inW=false;});
+btn.addEventListener('click',function(){pressV+=7;if(ph==='idle')startSeq();else if(ph==='hold'&&pt>.12){ph='back';pt=0;}});
+btn.addEventListener('pointerenter',function(){bb.classList.add('h');});
+btn.addEventListener('pointerleave',function(){bb.classList.remove('h');});
+addEventListener('dblclick',function(e){if(overChar(e.clientX,e.clientY)){yawU=0;pitchU=0;yawVel=0;}});
+addEventListener('keydown',function(e){var k=e.key;
+ if(k==='f'||k==='F'){fwdI=(fwdI+1)%4;applyFace();}
+ else if(k==='ArrowUp'){CFG.eyeUp=Math.max(0,CFG.eyeUp-.004);applyDims();e.preventDefault();}
+ else if(k==='ArrowDown'){CFG.eyeUp+=.004;applyDims();e.preventDefault();}
+ else if(k==='['){CFG.headHalf=Math.max(.02,CFG.headHalf-.003);applyDims();}
+ else if(k===']'){CFG.headHalf+=.003;applyDims();}
+ else if(k==='r'||k==='R'){yawU=0;pitchU=0;yawVel=0;}});
+function overChar(x,y){var rx=Math.min(.2*H,.3*W),ry=.3*H,a=(x-W/2)/rx,b=(y-.42*H)/ry;return a*a+b*b<1;}
+
+/* ================= SEQUENCE STATE MACHINE ================= */
+var ph='idle',pt=0,armed=0,dwell=0,inf=0,infT=0,face=0,faceT=0,ps=1,psV=0,massT=1,press=0,tAbs=0;
+var bl=0,bs=0,bsV=0,proxV=0,lean=0,yawU=0,yawF=0,pitchU=0,pitchF=0,yawVel=0,idleT=0;
+var DUR={out:CFG.out,cover:CFG.cover,hold:CFG.hold,back:CFG.back};
+function startSeq(){ph='out';pt=0;}
+var BTN={x:0,y:0,hl:0,r:0},BODY={x:0,y:0,hl:0,r:0};
+var info={sd:0,nx:0,ny:-1,ex:0,ey:0};
+function pill(x,y,c){var qx=x-c.x,qy=y-c.y,sx=cl(qx,-c.hl,c.hl),dx=qx-sx,l=Math.hypot(dx,qy),nx,ny;
+ if(l>1e-4){nx=dx/l;ny=qy/l;}else{nx=0;ny=-1;}info.sd=l-c.r;info.nx=nx;info.ny=ny;info.ex=c.x+sx+nx*c.r;info.ey=c.y+ny*c.r;return info;}
+
+/* ---- tendrils ---- */
+var TN=10,TP=6,tend=[],PA=new Float32Array(TN*6*3),AA=new Float32Array(24*3),QA=new Float32Array(8*3);
+for(var k=0;k<TN;k++){var o={k:k,off:(k-(TN-1)/2)*15,thr:.05+k*.08,maxLen:230+rnd(k*3.1)*170,jx:(rnd(k*7.3)-.5)*70,jy:(rnd(k*5.9)-.5)*70,
+ base:k<3?5.4:k<7?3.3:1.9,curv:(rnd(k*2.2)-.5)*54,wf:2+rnd(k)*3,ph:rnd(k*4.4)*6.28,st:0,ext:0,cd:0,tens:0,rx:cx,ry:cy,x:[],y:[],vx:[],vy:[]};
+ for(var j=0;j<TP;j++){o.x.push(cx);o.y.push(cy);o.vx.push(0);o.vy.push(0);}tend.push(o);}
+var drops=[];for(var i=0;i<6;i++)drops.push({a:0,x:0,y:0,vx:0,vy:0,r:0,age:0,max:.5,tx:0,ty:0,free:false});
+function spawn(x,y,vx,vy,tx,ty,r,free){if(reduce)return;for(var i=0;i<6;i++){var d=drops[i];if(!d.a){d.a=1;d.x=x;d.y=y;d.vx=vx;d.vy=vy;d.tx=tx;d.ty=ty;d.r=r;d.age=0;d.free=!!free;d.max=free?.7+Math.random()*.5:.4+Math.random()*.3;return;}}}
+function triggerRoar(){roar=1;for(var i=0;i<6;i++){var a=i/6*6.2832+Math.random()*.6;spawn(BODY.x+Math.cos(a)*BODY.r,BODY.y+Math.sin(a)*BODY.r,Math.cos(a)*460,Math.sin(a)*460-220,0,0,5+Math.random()*4,true);}}
+
+/* ---- artery: the stream of liquid that carries the button's mass to the character ---- */
+var M=24,ax=[],ay=[],avx=[],avy=[];for(var i=0;i<M;i++){ax.push(cx);ay.push(cy);avx.push(0);avy.push(0);}
+var chestS={x:W/2,y:H*.4};
+
+function step(dt,time){
+ tAbs=time;
+ /* pointer smoothing */
+ var lf=Math.min(1,dt*30),ox=P.sx,oy=P.sy;P.sx+=(P.x-P.sx)*lf;P.sy+=(P.y-P.sy)*lf;
+ P.vx+=((P.sx-ox)/dt-P.vx)*Math.min(1,dt*14);P.vy+=((P.sy-oy)/dt-P.vy)*Math.min(1,dt*14);
+ var venom=(ph==='hold')||(ph==='cover'&&pt>.88);
+ if(roar>0)roar=Math.max(0,roar-dt/1.2);
+ /* free rotation (drag + inertia + gentle return) + cursor look + lean toward the cursor */
+ if(model){
+  var ddx=dragX,ddy=dragY;dragX=0;dragY=0;
+  if(P.drag){yawU+=ddx*.011;pitchU=cl(pitchU+ddy*.006,-.55,.55);yawVel+=(cl((ddx*.011)/dt,-14,14)-yawVel)*Math.min(1,dt*16);idleT=0;}
+  else{yawU+=yawVel*dt;yawVel*=Math.pow(.06,dt);idleT+=dt;
+   if(idleT>6&&Math.abs(yawVel)<.15){var tg0=Math.round(yawU/6.2832)*6.2832,k2=Math.min(1,dt*1.6);yawU+=(tg0-yawU)*k2;pitchU+=(0-pitchU)*k2;}}
+  var fol=P.inW&&!P.drag;
+  yawF+=((fol?cl((P.sx/W-.5)*.9,-.55,.55):0)-yawF)*Math.min(1,dt*4);
+  pitchF+=((fol?cl((P.sy/H-.38)*.5,-.3,.3):0)-pitchF)*Math.min(1,dt*4);
+  var leanT=(venom&&P.inW)?cl((P.sx-W/2)/(W*.5),-1,1)*(.12+.2*proxV):0;
+  lean+=(leanT*.8-lean)*(1-Math.exp(-4*dt));
+  pivot.rotation.set(pitchU+pitchF,yaw0+yawU+yawF,0);
+  pivot.position.set(lean,baseY+Math.sin(time*1.7)*.025*inf,0);
+  pivot.scale.setScalar(sc*(1+.012*inf*Math.sin(time*2.3)+.05*roar));
+  pivot.updateMatrixWorld(true);
+  chestW.copy(chestL);model.children[0].localToWorld(chestW);
+  tmp.copy(chestW).project(cam);chestS.x=(tmp.x*.5+.5)*W;chestS.y=(-tmp.y*.5+.5)*H;}
+ BODY.x=chestS.x;BODY.y=chestS.y+.035*H;BODY.hl=0;BODY.r=Math.min(.075*H,.12*W);
+ BTN.x=cx;BTN.y=cy;BTN.hl=hl*ps;BTN.r=rad*ps;
+ /* proximity to whichever liquid mass is "alive" (the button in normal mode, the character in venom mode) */
+ var src=venom?BODY:BTN;
+ var pi0=pill(P.sx,P.sy,src),sd=pi0.sd;
+ var att=venom?Math.min(.45*H,.9*W):CFG.attract*Math.max(.85,S);
+ var raw=P.inW?Math.max(0,1-Math.max(sd,0)/att):0;raw=raw*raw*(3-2*raw);
+ var prox=raw;proxV=prox;
+ if(prox>.12)armed=3;else armed=Math.max(0,armed-dt);
+ /* commit when the cursor moves from the button onto the character */
+ if(ph==='idle'){if(armed>0&&P.inW&&overChar(P.sx,P.sy)&&prox<.35){dwell+=dt;if(dwell>CFG.dwell)startSeq();}else dwell=Math.max(0,dwell-dt);}
+ /* timeline */
+ var lo=0,hi=0,blob=0,blT=0;
+ if(ph!=='idle'){pt+=dt/DUR[ph];
+  if(pt>=1){pt=0;ph=ph==='out'?'cover':ph==='cover'?'hold':ph==='hold'?'back':'idle';}}
+ if(ph==='out'){massT=1-e5(pt);infT=0;faceT=0;hi=e5(pt);blob=16*S*sm(.78,1,pt);blT=pt>.72?1:0;}
+ else if(ph==='cover'){massT=0;infT=e5(pt);faceT=pt>.62?1:0;lo=sm(0,.8,pt);hi=1;blob=16*S*(1-sm(.05,.5,pt));blT=1;}
+ else if(ph==='hold'){massT=0;infT=1;faceT=1;blT=1;}
+ else if(ph==='back'){faceT=pt<.12?1:0;infT=1-e5((pt-.1)/.55);
+  if(pt<.8){if(pt>.5){lo=1-e5((pt-.5)/.3);hi=1;}}else{lo=0;hi=1-e5((pt-.8)/.2);}
+  massT=pt>.8?1:0;blob=pt>.5&&pt<.8?10*S:0;blT=pt<.72?1:0;}
+ else{massT=1;infT=0;faceT=0;blT=0;}
+ inf+=(infT-inf)*(1-Math.exp(-(reduce?30:5)*dt));face+=(faceT-face)*(1-Math.exp(-4*dt));
+ psV+=((massT-ps)*60-psV*7)*dt;ps+=psV*dt;if(ps<0){ps=0;psV=0;}
+ bl+=(blT-bl)*(1-Math.exp(-9*dt));
+ bsV+=((bl-bs)*190-bsV*15)*dt;bs+=bsV*dt;
+ pressV+=(((P.down&&pi0.sd<20&&!venom)?1:0)-press)*220*dt-pressV*18*dt;press+=pressV*dt;
+ SI.uFace.value=face;SI.uT.value=time;G.fr=10+inf*H*.55;G.drip=sm(.45,1,inf);
+ /* face animation: mouth opens wider near the cursor / on roar, tongue lolls out now and then */
+ var openT=venom?cl(.5+.4*prox+.55*roar+.08*Math.sin(time*5.3),0,1):.5;
+ var tgT=venom?cl((Math.sin(time*.8)>.72?.8:0)+(prox>.7?.55:0)+roar,0,1):0;
+ SI.uOpen.value+=(openT-SI.uOpen.value)*Math.min(1,dt*7);SI.uTongue.value+=(tgT-SI.uTongue.value)*Math.min(1,dt*5);
+ var active=(ph==='out'||ph==='cover'||(ph==='back'&&pt>.3));
+ /* artery chain */
+ var Ax=cx,Ay=cy-rad*ps*.3,Bx=chestS.x,By=chestS.y+8,dyy=By-Ay;
+ var sw=Math.sin(time*1.3)*32,sw2=Math.cos(time*1.1)*36;
+ var p1x=Ax+sw,p1y=Ay+dyy*.55,p2x=Bx+sw2+(Ax-Bx)*.25,p2y=By-dyy*.3;
+ for(var j=0;j<M;j++){var t=j/(M-1),u=1-t;
+  var gx=u*u*u*Ax+3*u*u*t*p1x+3*u*t*t*p2x+t*t*t*Bx,gy=u*u*u*Ay+3*u*u*t*p1y+3*u*t*t*p2y+t*t*t*By;
+  if(!active){ax[j]=gx;ay[j]=gy;avx[j]=avy[j]=0;}
+  else if(j===0){ax[0]=gx;ay[0]=gy;}
+  else{var stf=70+40*t;avx[j]+=((gx-ax[j])*stf-avx[j]*2*Math.sqrt(stf)*.55)*dt;avy[j]+=((gy-ay[j])*stf-avy[j]*2*Math.sqrt(stf)*.55)*dt;ax[j]+=avx[j]*dt;ay[j]+=avy[j]*dt;}
+  var r=0;
+  if(active&&t>=lo-.001&&t<=hi+.001){
+   var fl=(lo>.001?sm(lo,lo+.07,t):1)*(hi<.999?sm(hi,hi-.07,t):1);
+   r=13*S*(.65+.75*Math.pow(1-t,2.5))*(1-.3*Math.sin(Math.PI*t))*fl;if(r<.5)r=0;}
+  AA[j*3]=ax[j];AA[j*3+1]=ay[j];AA[j*3+2]=r;}
+ /* tendrils: reach for the cursor from the button, fan out toward the character during the transfer,
+    and in venom mode grow out of the character's body toward the cursor (or writhe / burst on roar) */
+ var mode;
+ if(ph==='idle')mode=P.inW?'idle':'none';
+ else if(venom)mode=roar>0?'roar':(P.inW&&prox>.04)?'idle':'wave';
+ else if(ph==='out'||ph==='cover')mode='seq';
+ else mode='none';
+ var S0=(venom||ph==='back')?BODY:BTN,ofs=(S0===BTN)?ps:1;
+ for(var k=0;k<TN;k++){var td=tend[k];td.cd-=dt;
+  var tx,ty;
+  if(mode==='seq'){tx=chestS.x+td.jx;ty=chestS.y+td.jy;}
+  else if(mode==='roar'){var ra=td.k/TN*6.2832+.4+Math.sin(time*3+td.k)*.15,rd=(BODY.r+(150+rnd(td.k*1.7)*200)*Math.sqrt(Math.sin(Math.PI*cl(1-roar,0,1))));tx=BODY.x+Math.cos(ra)*rd;ty=BODY.y+Math.sin(ra)*rd;}
+  else if(mode==='wave'){var wa=time*.6+td.k*2.1,wd=BODY.r+110+40*Math.sin(time*1.3+td.k);tx=BODY.x+Math.cos(wa)*wd*1.2;ty=BODY.y+Math.sin(wa)*wd*.8-30;}
+  else{tx=P.sx+td.jx*.15;ty=P.sy+td.jy*.15;}
+  var q=pill(tx,ty,S0),qn=q.nx,qm=q.ny,qs=q.sd;
+  var e2=pill(q.ex-qm*td.off*ofs,q.ey+qn*td.off*ofs,S0);var rx=e2.ex-e2.nx*2.5,ry=e2.ey-e2.ny*2.5;
+  /* while the liquid is leaving the button the tendril roots detach from it and slide into the character */
+  if(mode==='seq'&&ph==='cover'){var det=sm(.1,.85,pt);rx+=(tx-rx)*det;ry+=(ty-ry)*det;}
+  var rl=Math.min(1,dt*9);td.rx+=(rx-td.rx)*rl;td.ry+=(ry-td.ry)*rl;
+  var dx=tx-td.rx,dy=ty-td.ry,len=Math.hypot(dx,dy);td.tens=Math.min(1.3,len/td.maxLen);
+  var want=mode==='seq'?((ph==='cover'||pt>td.thr*.55)?1:0):mode==='roar'?(roar>.12?1:0):mode==='wave'?(td.k%3===0?1:0):mode==='idle'?(prox>td.thr?1:0):0;
+  if(td.st===0){for(var j=0;j<TP;j++){td.x[j]=td.rx;td.y[j]=td.ry;td.vx[j]=td.vy[j]=0;}td.ext=0;if(want&&td.cd<=0)td.st=1;}
+  else if(td.st===1){td.ext+=(1-td.ext)*Math.min(1,dt*(5+td.k*.4));
+   if(!want)td.st=2;
+   else if(mode==='idle'&&td.tens>=1&&qs>0){td.st=2;td.cd=.45;if(len>60)spawn((td.rx+tx)*.5,(td.ry+ty)*.5,-dx*1.6+(Math.random()-.5)*90,-dy*1.6+(Math.random()-.5)*90,td.rx,td.ry,2+Math.random()*2,false);
+    for(var j=1;j<TP;j++){td.vx[j]-=dx*(j/TP)*2.5;td.vy[j]-=dy*(j/TP)*2.5;}}}
+  else{td.ext-=dt*5;if(td.ext<=.02){td.st=0;td.ext=0;}}
+  var ee=Math.max(0,td.ext),tipx=td.rx+dx*ee,tipy=td.ry+dy*ee,ll=Math.max(len*ee,1),px=-dy/(len||1),py=dx/(len||1);
+  var str=1-.6*Math.min(1,td.tens),wob=reduce?0:Math.sin(time*td.wf+td.ph)*9;
+  for(var j=0;j<TP;j++){var tt=j/(TP-1);if(j===0){td.x[0]=td.rx;td.y[0]=td.ry;continue;}
+   var sag=Math.sin(Math.PI*tt)*(td.curv+wob)*str*Math.min(1,ll/100);
+   var gx2=td.rx+(tipx-td.rx)*tt+px*sag,gy2=td.ry+(tipy-td.ry)*tt+py*sag,st=(170+td.k*12)*(.55+.45*tt),dm=Math.sqrt(st);
+   td.vx[j]+=((gx2-td.x[j])*st-td.vx[j]*dm)*dt;td.vy[j]+=((gy2-td.y[j])*st-td.vy[j]*dm)*dt;td.x[j]+=td.vx[j]*dt;td.y[j]+=td.vy[j]*dt;}
+  var g=cl(td.ext/.12,0,1);g=g*g*(3-2*g);
+  for(var j=0;j<TP;j++){var tt=j/(TP-1),idx=(k*6+j)*3,rr=0;
+   if(td.st!==0&&g>0){var fa=1+1.6*Math.pow(1-tt,3),tp=td.st===1?.6+.8*Math.pow(tt,4):Math.max(.25,1-tt*.7),nk=1-Math.sin(Math.PI*tt)*Math.min(.8,td.tens*.75);
+    rr=Math.max(.6,td.base*g*fa*tp*nk*S);}
+   PA[idx]=td.x[j];PA[idx+1]=td.y[j];PA[idx+2]=rr;}}
+ /* blobs (cursor-facing bulge + chest swell) + droplets */
+ var b=pill(P.sx,P.sy,src);
+ QA[0]=b.ex+b.nx*2;QA[1]=b.ey+b.ny*2;
+ QA[2]=((venom||ph==='idle')&&b.sd>0&&P.inW&&(venom||ps>.5))?(3+13*prox)*S*(venom?1:ps)*(.9+.1*Math.sin(time*5)):0;
+ QA[3]=chestS.x;QA[4]=chestS.y+8;QA[5]=blob;
+ for(var i=0;i<6;i++){var d=drops[i],qq=(2+i)*3;
+  if(!d.a){QA[qq+2]=0;continue;}
+  d.age+=dt;if(d.age>=d.max){d.a=0;QA[qq+2]=0;continue;}
+  if(d.free){d.vy+=1100*dt;d.vx*=Math.pow(.5,dt);}
+  else{d.vx+=((d.tx-d.x)*40-d.vx*6)*dt;d.vy+=((d.ty-d.y)*40-d.vy*6)*dt;}
+  d.x+=d.vx*dt;d.y+=d.vy*dt;
+  QA[qq]=d.x;QA[qq+1]=d.y;QA[qq+2]=d.r*(1-d.age/d.max);}
+ /* label rides the shrinking pill, then sits on the blue button */
+ var lop=Math.max(cl((ps-.58)/.3,0,1),cl(bl*1.4,0,1));
+ var lsc=(.6+.4*ps)*(1-bl)+bl;
+ lab.style.transform='scale('+lsc.toFixed(3)+') translateY('+(press*2).toFixed(2)+'px)';
+ lab.style.opacity=lop.toFixed(2);
+ /* the real blue pill button: pops in once the venom has left, squashes on press */
+ var bsc=(.86+.14*bs)*(1-.035*cl(P.down&&!venom&&ph!=='idle'?1:0,0,1)*bl);
+ bb.style.opacity=cl(bl*1.5,0,1).toFixed(3);
+ bb.style.transform='translate(-50%,-50%) scale('+bsc.toFixed(3)+')';
+}
+
+/* ================= RENDER ================= */
+var last=performance.now(),el=0;
+function frame(now){
+ requestAnimationFrame(frame);if(document.hidden){last=now;return;}
+ var dt=Math.min(.032,Math.max(.001,(now-last)/1000));last=now;el+=dt;
+ step(dt,el);
+ if(model&&(inf>.002||face>.01)){SI.uMode.value=1;renderer.render(scene,cam);cx2.clearRect(0,0,mw,mh);cx2.drawImage(g3,0,0,mw,mh);
+  gl.bindTexture(gl.TEXTURE_2D,tex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cB);SI.uMode.value=0;}
+ renderer.render(scene,cam);
+ var x0=cx-hl-rad-90,x1=cx+hl+rad+90,y0=cy-rad-90,y1=cy+rad+90;
+ function ext(arr,n){for(var i=0;i<n;i++){var z=arr[i*3+2];if(z>0){var a=arr[i*3],b=arr[i*3+1],p=z+70;x0=Math.min(x0,a-p);x1=Math.max(x1,a+p);y0=Math.min(y0,b-p);y1=Math.max(y1,b+p);}}}
+ ext(PA,TN*6);ext(AA,24);ext(QA,8);
+ var bw=Math.min(.36*H,.5*W),cbx0=W/2-bw,cbx1=W/2+bw,cby0=.06*H,cby1=.78*H+130,covOn=inf>.002;
+ if(covOn){x0=Math.min(x0,cbx0);x1=Math.max(x1,cbx1);y0=Math.min(y0,cby0);y1=Math.max(y1,cby1);}
+ gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
+ gl.uniform2f(U.uRes,ov.width,ov.height);gl.uniform1f(U.uDpr,dpr);gl.uniform1f(U.uT,reduce?0:el);gl.uniform1f(U.uPress,press);
+ gl.uniform2f(U.uC,cx,cy);gl.uniform2f(U.uHR,hl*ps,rad*ps);gl.uniform4f(U.uBox,x0,y0,x1,y1);
+ gl.uniform3fv(U.uP,PA);gl.uniform3fv(U.uA,AA);gl.uniform3fv(U.uQ,QA);
+ gl.uniform2f(U.uCss,W,H);gl.uniform2f(U.uCh,chestS.x,chestS.y);gl.uniform1f(U.uFr,G.fr);gl.uniform1f(U.uDrip,G.drip);
+ gl.uniform1f(U.uCov,covOn?1:0);gl.uniform1f(U.uFaceOn,face);gl.uniform4f(U.uCB,cbx0,cby0,cbx1,cby1);
+ gl.drawArrays(gl.TRIANGLES,0,3);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -262,150 +262,157 @@ export default function PhysicsField({ items }) {
         const portalNodes = document.querySelectorAll('.physics-portal-lamp')
         if (!portalNodes.length) return
 
-        portalNodes.forEach((lampEl, i) => {
-          lampEl.classList.remove('lamp-floating-glow')
-          const body = bodies.current[i]
-          const startX = body ? fieldPageLeft + body.position.x - 41 : fieldPageLeft + 50
-          const startY = body ? fieldPageTop + body.position.y - 49 : fieldPageTop + 50
-          const startAngle = body ? (body.angle * 180) / Math.PI : 0
+      let landedCount = 0
 
-          // Calculate random destination across full footer width
-          const targetX = footerPageLeft + 45 + Math.random() * Math.max(120, footerW - 90)
-          const targetY = footerFloorY - (Math.random() * 40 + 15)
-          const targetAngle = (Math.random() - 0.5) * 55
+      portalNodes.forEach((lampEl, i) => {
+        lampEl.classList.remove('lamp-floating-glow')
+        const body = bodies.current[i]
+        const startX = body ? fieldPageLeft + body.position.x - 41 : fieldPageLeft + 50
+        const startY = body ? fieldPageTop + body.position.y - 49 : fieldPageTop + 50
+        const startAngle = body ? (body.angle * 180) / Math.PI : 0
 
-          // Set starting position at card
-          gsap.set(lampEl, {
-            x: startX,
-            y: startY,
-            rotation: startAngle,
-            opacity: 1,
-            filter: 'blur(0px)',
-            scale: 1,
-          })
+        // Calculate random destination across full footer width
+        const targetX = footerPageLeft + 45 + Math.random() * Math.max(120, footerW - 90)
+        const targetY = footerFloorY - (Math.random() * 40 + 15)
+        const targetAngle = (Math.random() - 0.5) * 55
 
-          // Smooth gravitational fall: pop up slightly then accelerate down to footer with gentle settle
-          const popY = startY - (25 + Math.random() * 35)
-          const popX = startX + (Math.random() - 0.5) * 60
-
-          const tl = gsap.timeline({
-            delay: i * 0.05 + Math.random() * 0.08,
-            onComplete: () => {
-              if (i === portalNodes.length - 1) {
-                escapedStateRef.current = 'in_footer'
-              }
-            },
-          })
-
-          tl.to(lampEl, {
-            x: popX,
-            y: popY,
-            rotation: startAngle + (Math.random() - 0.5) * 25,
-            duration: 0.45,
-            ease: 'sine.out',
-          })
-          .to(lampEl, {
-            x: targetX,
-            y: targetY,
-            rotation: targetAngle,
-            duration: 2.2 + Math.random() * 0.5,
-            ease: 'power2.in',
-          })
-          .to(lampEl, {
-            y: targetY - 14,
-            duration: 0.22,
-            ease: 'power1.out',
-          })
-          .to(lampEl, {
-            y: targetY,
-            duration: 0.24,
-            ease: 'power1.in',
-          })
-
-          floatingTweensRef.current.push(tl)
-        })
-      })
-    }
-
-    // Trigger 2: Float from footer to top (random places, random order, slow dreamy speed, intense glowing)
-    const triggerFloatToTop = () => {
-      // Kill any previous tweens
-      floatingTweensRef.current.forEach((t) => t?.kill?.())
-      floatingTweensRef.current = []
-
-      escapedStateRef.current = 'floating_to_top'
-      const portalNodes = Array.from(document.querySelectorAll('.physics-portal-lamp'))
-      if (!portalNodes.length) return
-
-      // Randomize array order so they don't launch in a predictable sequence
-      const shuffledLamps = portalNodes.slice().sort(() => Math.random() - 0.5)
-      const pageWidth = window.innerWidth
-
-      shuffledLamps.forEach((lampEl, idx) => {
-        // Place each lamp at a random horizontal place across the page width
-        const randomStartX = 40 + Math.random() * Math.max(100, pageWidth - 100)
-        const currentY = gsap.getProperty(lampEl, 'y') || (document.documentElement.scrollHeight - 180)
-
-        // Reset and randomize initial X position for a truly scattered distribution
+        // Set starting position at card
         gsap.set(lampEl, {
-          x: randomStartX,
-          y: currentY,
+          x: startX,
+          y: startY,
+          rotation: startAngle,
           opacity: 1,
           filter: 'blur(0px)',
           scale: 1,
         })
 
-        // Unpredictable staggered launch delays: not a rigid queue, completely organic
-        const randomLaunchDelay = Math.random() * 1.8 + idx * (0.9 + Math.random() * 1.4)
+        // Smooth gravitational fall: pop up slightly then accelerate down to footer with gentle settle
+        const popY = startY - (25 + Math.random() * 35)
+        const popX = startX + (Math.random() - 0.5) * 60
 
-        // Slow, serene, and dreamy upward floating speed (52s to 68s across the entire page)
-        const slowFloatDuration = 52 + Math.random() * 16
-
-        // Horizontal sway parameters
-        const swayAmp = 35 + Math.random() * 45
-        const swayDuration = 4.2 + Math.random() * 2.0
-        const swayDirection = Math.random() > 0.5 ? 1 : -1
-
-        const floatTween = gsap.to(lampEl, {
-          y: -220, // floats above the hero section
-          duration: slowFloatDuration,
-          delay: randomLaunchDelay,
-          ease: 'power1.inOut',
-          onStart: () => {
-            // Activate intense luminous glow on the lamp and its inner logo
-            lampEl.classList.add('lamp-floating-glow')
-
-            // Natural organic horizontal swaying drift while ascending
-            const swayTween = gsap.to(lampEl, {
-              x: randomStartX + (swayDirection * swayAmp),
-              duration: swayDuration,
-              repeat: -1,
-              yoyo: true,
-              ease: 'sine.inOut',
-            })
-            floatingTweensRef.current.push(swayTween)
-          },
-          onUpdate: function () {
-            // When crossing above hero (y <= 300px), smoothly fade and blur out
-            const currentPosY = gsap.getProperty(lampEl, 'y')
-            if (currentPosY <= 300) {
-              const blurProgress = Math.min(1, Math.max(0, (300 - currentPosY) / 380))
-              gsap.set(lampEl, {
-                filter: `blur(${blurProgress * 20}px)`,
-                opacity: Math.max(0, 1 - blurProgress),
-                scale: 1 + blurProgress * 0.18,
-              })
-            }
-          },
+        const tl = gsap.timeline({
+          delay: i * 0.05 + Math.random() * 0.08,
           onComplete: () => {
-            gsap.set(lampEl, { opacity: 0, filter: 'blur(20px)' })
-            lampEl.classList.remove('lamp-floating-glow')
+            landedCount++
+            lampEl._footerX = targetX
+            lampEl._footerY = targetY
+            lampEl._footerAngle = targetAngle
+            if (landedCount >= portalNodes.length) {
+              escapedStateRef.current = 'in_footer'
+            }
           },
         })
 
-        floatingTweensRef.current.push(floatTween)
+        tl.to(lampEl, {
+          x: popX,
+          y: popY,
+          rotation: startAngle + (Math.random() - 0.5) * 25,
+          duration: 0.45,
+          ease: 'sine.out',
+        })
+        .to(lampEl, {
+          x: targetX,
+          y: targetY,
+          rotation: targetAngle,
+          duration: 2.2 + Math.random() * 0.5,
+          ease: 'power2.in',
+        })
+        .to(lampEl, {
+          y: targetY - 14,
+          duration: 0.22,
+          ease: 'power1.out',
+        })
+        .to(lampEl, {
+          y: targetY,
+          duration: 0.24,
+          ease: 'power1.in',
+        })
+
+        floatingTweensRef.current.push(tl)
       })
-    }
+    })
+  }
+
+  // Trigger 2: Float from footer to top (random places, random order, slow dreamy speed, subtle glow)
+  const triggerFloatToTop = () => {
+    // Kill any previous tweens
+    floatingTweensRef.current.forEach((t) => t?.kill?.())
+    floatingTweensRef.current = []
+
+    escapedStateRef.current = 'floating_to_top'
+    const portalNodes = Array.from(document.querySelectorAll('.physics-portal-lamp'))
+    if (!portalNodes.length) return
+
+    // Randomize array order so they don't launch in a predictable sequence
+    const shuffledLamps = portalNodes.slice().sort(() => Math.random() - 0.5)
+    const pageWidth = window.innerWidth
+
+    shuffledLamps.forEach((lampEl, idx) => {
+      // Clear footer nudge markers so it doesn't nudge while launching
+      lampEl._footerX = undefined
+      lampEl._footerY = undefined
+      lampEl._footerAngle = undefined
+
+      // Pair launch cadence requested by user:
+      // 1st lamp moves -> after 2 seconds, 2nd lamp moves
+      // Then 5 seconds delay after the 2nd lamp -> 3rd lamp moves
+      // After 2 seconds -> 4th lamp moves
+      // Then 5 seconds delay -> 5th lamp moves, and so on.
+      const pairIndex = Math.floor(idx / 2)
+      const isSecondInPair = idx % 2 === 1
+      const launchDelay = (pairIndex * 7) + (isSecondInPair ? 2 : 0)
+
+      // Starting X position is the lamp's current resting X position in the footer
+      const startX = gsap.getProperty(lampEl, 'x') || (50 + Math.random() * Math.max(100, pageWidth - 120))
+
+      // Slow, serene, and dreamy upward floating speed (52s to 68s across the entire page)
+      const slowFloatDuration = 52 + Math.random() * 16
+
+      // Horizontal sway parameters
+      const swayAmp = 35 + Math.random() * 45
+      const swayDuration = 4.2 + Math.random() * 2.0
+      const swayDirection = Math.random() > 0.5 ? 1 : -1
+
+      const floatTween = gsap.to(lampEl, {
+        y: -220, // floats above the hero section
+        duration: slowFloatDuration,
+        delay: launchDelay,
+        ease: 'power1.inOut',
+        onStart: () => {
+          // Activate subtle luminous glow on the lamp and its inner logo
+          lampEl.classList.add('lamp-floating-glow')
+
+          // Natural organic horizontal swaying drift while ascending
+          const swayTween = gsap.to(lampEl, {
+            x: startX + (swayDirection * swayAmp),
+            duration: swayDuration,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+          })
+          floatingTweensRef.current.push(swayTween)
+        },
+        onUpdate: function () {
+          // When crossing above hero (y <= 300px), smoothly fade and blur out
+          const currentPosY = gsap.getProperty(lampEl, 'y')
+          if (currentPosY <= 300) {
+            const blurProgress = Math.min(1, Math.max(0, (300 - currentPosY) / 380))
+            gsap.set(lampEl, {
+              filter: `blur(${blurProgress * 20}px)`,
+              opacity: Math.max(0, 1 - blurProgress),
+              scale: 1 + blurProgress * 0.18,
+            })
+          }
+        },
+        onComplete: () => {
+          gsap.set(lampEl, { opacity: 0, filter: 'blur(20px)' })
+          lampEl.classList.remove('lamp-floating-glow')
+        },
+      })
+
+      floatingTweensRef.current.push(floatTween)
+    })
+  }
 
     // Trigger 3: Fall back down from wherever to Physics Card (when gravity turns ON)
     const triggerFallBackToCard = () => {
@@ -579,20 +586,73 @@ export default function PhysicsField({ items }) {
       gravityEnabled.current = enabled
       engine.gravity.y = enabled ? (node.clientWidth <= 720 ? 0.8 : 1.05) : 0
 
-      if (escapedStateRef.current === 'in_footer' && !enabled) {
-        // Gravity turned OFF while in footer -> Float to top!
-        triggerFloatToTop()
-      } else if (escapedStateRef.current === 'floating_to_top' && enabled) {
-        // Gravity turned ON while floating -> Fall back to Physics Card!
-        triggerFallBackToCard()
-      } else if (escapedStateRef.current === 'falling_to_footer' && !enabled) {
-        // Gravity turned OFF mid-fall -> Float to top
-        triggerFloatToTop()
+      if (escapedStateRef.current !== 'inside_card') {
+        if (!enabled && escapedStateRef.current !== 'floating_to_top') {
+          // Gravity turned OFF while lamps are outside -> Float to top!
+          triggerFloatToTop()
+        } else if (enabled && escapedStateRef.current === 'floating_to_top') {
+          // Gravity turned ON while floating -> Fall back to Physics Card!
+          triggerFallBackToCard()
+        }
       }
+    }
+
+    // Interactive mouse nudge over fallen lamps in the footer (mirroring physics card cursor repel)
+    const handleFooterNudge = (event) => {
+      if (escapedStateRef.current !== 'in_footer') return
+      if (event.pointerType === 'touch') return
+
+      const mousePageX = event.pageX ?? (event.clientX + window.scrollX)
+      const mousePageY = event.pageY ?? (event.clientY + window.scrollY)
+
+      const portalNodes = document.querySelectorAll('.physics-portal-lamp')
+      if (!portalNodes.length) return
+
+      portalNodes.forEach((lampEl) => {
+        if (lampEl._footerX === undefined || lampEl._footerY === undefined) return
+
+        // Center of compact lamp (82px x 98px)
+        const lampCenterX = lampEl._footerX + 41
+        const lampCenterY = lampEl._footerY + 49
+
+        const dx = lampCenterX - mousePageX
+        const dy = lampCenterY - mousePageY
+        const dist = Math.hypot(dx, dy)
+
+        // 180px distance threshold, matching physics card nudge
+        if (dist < 180) {
+          const power = Math.pow((180 - dist) / 180, 1.4)
+          const pushX = (dx / (dist || 1)) * power * 65
+          const pushY = (dy / (dist || 1)) * power * 40
+          const pushRot = (dx / (dist || 1)) * power * 28
+
+          gsap.to(lampEl, {
+            x: lampEl._footerX + pushX,
+            y: Math.min(lampEl._footerY + 14, lampEl._footerY + pushY),
+            rotation: lampEl._footerAngle + pushRot,
+            duration: 0.22,
+            ease: 'power2.out',
+            overwrite: 'auto',
+            onComplete: () => {
+              if (escapedStateRef.current === 'in_footer') {
+                gsap.to(lampEl, {
+                  x: lampEl._footerX,
+                  y: lampEl._footerY,
+                  rotation: lampEl._footerAngle,
+                  duration: 1.25,
+                  ease: 'elastic.out(1.1, 0.42)',
+                  overwrite: 'auto',
+                })
+              }
+            },
+          })
+        }
+      })
     }
 
     window.addEventListener('reference-physics-shake', handleShake)
     window.addEventListener('reference-physics-gravity', handleGravity)
+    window.addEventListener('pointermove', handleFooterNudge, { passive: true })
 
     return () => {
       cancelAnimationFrame(frame)
@@ -601,6 +661,7 @@ export default function PhysicsField({ items }) {
       node.removeEventListener('touchmove', handleTouchMove)
       window.removeEventListener('reference-physics-shake', handleShake)
       window.removeEventListener('reference-physics-gravity', handleGravity)
+      window.removeEventListener('pointermove', handleFooterNudge)
       Matter.Engine.clear(engine)
       Matter.Composite.clear(engine.world)
       bodies.current = []
@@ -689,13 +750,9 @@ export default function PhysicsField({ items }) {
               className="physics-portal-lamp absolute left-0 top-0 will-change-transform pointer-events-auto"
               style={{
                 transform: 'translate3d(-999px, -999px, 0)',
-                '--lamp-color': tech.color || '#38bdf8',
+                '--lamp-color': tech.color || '#62A8E8',
               }}
             >
-              <span
-                className="lamp-glow-halo pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-28 rounded-full bg-[radial-gradient(circle,var(--lamp-color,#38bdf8)_0%,transparent_70%)] opacity-0 blur-lg transition-all duration-500 -z-10"
-                aria-hidden="true"
-              />
               <TechLamp
                 tech={tech}
                 compact

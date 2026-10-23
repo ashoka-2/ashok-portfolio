@@ -1020,21 +1020,6 @@ button:not([role="tab"]):not(.menu-link-item):not(.faq-trigger):not(
   bottom: 20px;
 }
 
-/* Floating Tech Lamps Glowing Effect */
-.physics-portal-lamp.lamp-floating-glow {
-  filter: drop-shadow(0 0 18px var(--lamp-color, #38bdf8)) drop-shadow(0 0 42px var(--lamp-color, #38bdf8));
-  transition: filter 0.5s ease;
-}
-.physics-portal-lamp.lamp-floating-glow .tech-lamp-logo {
-  filter: drop-shadow(0 0 16px var(--lamp-color, #38bdf8)) drop-shadow(0 0 28px var(--lamp-color, #38bdf8)) brightness(1.6) !important;
-}
-.physics-portal-lamp.lamp-floating-glow .tech-lamp-art {
-  filter: drop-shadow(0 0 14px var(--lamp-color, #38bdf8)) brightness(1.35) !important;
-}
-.physics-portal-lamp.lamp-floating-glow .lamp-glow-aura {
-  opacity: 0.85 !important;
-  transform: scale(1.1) !important;
-}
 .ref-physics .physics-item {
   position: absolute;
   z-index: 1;
@@ -1475,63 +1460,36 @@ body::-webkit-scrollbar {
 }
 
 /* =========================================================================
-   Physics Escaped Tech Lamps Glowing Aura & Floating Effects
+   Physics Escaped Tech Lamps Subtle Color-Matched Ambient Glow
    ========================================================================= */
 
-@keyframes pulse-lamp-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 18px var(--lamp-color, #38bdf8))
-            drop-shadow(0 0 38px color-mix(in srgb, var(--lamp-color, #38bdf8) 70%, transparent))
-            drop-shadow(0 0 70px color-mix(in srgb, var(--lamp-color, #38bdf8) 40%, transparent));
-  }
-  50% {
-    filter: drop-shadow(0 0 28px var(--lamp-color, #38bdf8))
-            drop-shadow(0 0 54px color-mix(in srgb, var(--lamp-color, #38bdf8) 85%, transparent))
-            drop-shadow(0 0 95px color-mix(in srgb, var(--lamp-color, #38bdf8) 55%, transparent));
-  }
-}
-
-@keyframes pulse-inner-logo-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 8px #ffffff)
-            drop-shadow(0 0 18px var(--lamp-color, #38bdf8))
-            brightness(1.4);
-  }
-  50% {
-    filter: drop-shadow(0 0 14px #ffffff)
-            drop-shadow(0 0 28px var(--lamp-color, #38bdf8))
-            brightness(1.65);
-  }
-}
-
 .physics-portal-lamp {
-  transition: filter 0.5s ease-out;
+  transition: filter 0.6s ease-out;
 }
 
 .physics-portal-lamp.lamp-floating-glow {
-  animation: pulse-lamp-glow 3.2s ease-in-out infinite;
+  /* Subtle, delicate glow matching the exact lamp color */
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--lamp-color, #62A8E8) 70%, transparent))
+          drop-shadow(0 0 16px color-mix(in srgb, var(--lamp-color, #62A8E8) 30%, transparent));
   z-index: 9999;
 }
 
 .physics-portal-lamp.lamp-floating-glow .tech-lamp-art {
   opacity: 1 !important;
-  filter: brightness(1.4) drop-shadow(0 0 16px var(--lamp-color, #38bdf8));
+  /* Preserve exact hue-rotation so the lamp artwork matches the technology color */
+  filter: hue-rotate(var(--lamp-hue, 0deg)) saturate(1.1)
+          drop-shadow(0 0 6px color-mix(in srgb, var(--lamp-color, #62A8E8) 35%, transparent)) !important;
   transition: filter 0.4s ease-out, opacity 0.4s ease-out;
 }
 
 .physics-portal-lamp.lamp-floating-glow .tech-lamp-logo {
-  animation: pulse-inner-logo-glow 2.8s ease-in-out infinite;
-  transform: translate(-50%, -50%) scale(1.08) !important;
-  transition: transform 0.4s ease-out;
+  /* Subtle illumination on the logo */
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--lamp-color, #62A8E8) 60%, transparent)) brightness(1.15) !important;
+  transition: filter 0.4s ease-out;
 }
 
 .physics-portal-lamp.lamp-floating-glow .tech-lamp-logo svg,
 .physics-portal-lamp.lamp-floating-glow .tech-lamp-logo img {
-  filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px var(--lamp-color, #38bdf8));
-}
-
-.physics-portal-lamp.lamp-floating-glow .lamp-glow-halo {
-  opacity: 0.85;
-  transform: translate(-50%, -50%) scale(1.2);
+  filter: drop-shadow(0 0 4px var(--lamp-color, #62A8E8));
 }
 

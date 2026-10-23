@@ -15,6 +15,13 @@ const CFG = {
   eyeUp: 0.072,
   headHalf: 0.056,
   wideGrin: true,
+  /**
+   * Vertical position of the 3D character:
+   * 0.50 = centered
+   * > 0.50 (e.g. 0.55) = moves character DOWN (avoids navbar, reduces empty space below legs)
+   * < 0.50 = moves character UP
+   */
+  characterY: 0.55,
 }
 
 /* ================= SHADERS ================= */
@@ -370,7 +377,7 @@ uniform vec3 uHC;uniform vec2 uFw;`)
       cam.updateProjectionMatrix()
 
       visH = 2 * d * Math.tan((cam.fov * Math.PI) / 360)
-      baseY = (0.5 - 0.44) * visH
+      baseY = (0.5 - CFG.characterY) * visH
       pivot.position.y = baseY
 
       /* Measure real button */
@@ -417,7 +424,7 @@ uniform vec3 uHC;uniform vec2 uFw;`)
 
     function overChar(x, y) {
       const rx = Math.min(0.2 * H, 0.3 * W), ry = 0.3 * H
-      const a = (x - W / 2) / rx, b = (y - 0.42 * H) / ry
+      const a = (x - W / 2) / rx, b = (y - CFG.characterY * H) / ry
       return a * a + b * b < 1
     }
 

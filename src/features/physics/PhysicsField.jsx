@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Matter from 'matter-js'
+import gsap from 'gsap'
 import TechLamp from '../../components/tech/TechLamp.jsx'
 
 export default function PhysicsField({ items }) {
@@ -9,6 +11,45 @@ export default function PhysicsField({ items }) {
   const mouseConstraint = useRef(null)
   const gesture = useRef(null)
   const gravityEnabled = useRef(true)
+
+  // Escaped / Special interaction state
+  const [isEscaped, setIsEscaped] = useState(false)
+  const escapedStateRef = useRef('inside_card') // 'inside_card' | 'falling_to_footer' | 'in_footer' | 'floating_to_top' | 'returning_to_card'
+  const escapedLampsRef = useRef([])
+  const floatingTweensRef = useRef([])
+  const insideShakeClicksRef = useRef(0)
+  const insideShakeTimerRef = useRef(null)
+  const outsideShakeClicksRef = useRef(0)
+  const outsideShakeTimerRef = useRef(null)
+
+  // Portal container for full-page escaped lamps
+  const [portalTarget, setPortalTarget] = useState(null)
+
+  useEffect(() => {
+    let container = document.getElementById('physics-escaped-root')
+    if (!container) {
+      container = document.createElement('div')
+      container.id = 'physics-escaped-root'
+      container.style.position = 'absolute'
+      container.style.top = '0px'
+      container.style.left = '0px'
+      container.style.width = '100%'
+      container.style.pointerEvents = 'none'
+      container.style.zIndex = '9999'
+      document.body.appendChild(container)
+    }
+    setPortalTarget(container)
+
+    return () => {
+      // Clean up floating tweens on unmount
+      floatingTweensRef.current.forEach((t) => t?.kill?.())
+      floatingTweensRef.current = []
+      if (insideShakeTimerRef.current) clearTimeout(insideShakeTimerRef.current)
+      if (outsideShakeTimerRef.current) clearTimeout(outsideShakeTimerRef.current)
+    }
+  }, [])
+
+  // Matter.js engine & Physics Card logic
   useEffect(() => {
     const node = field.current
     if (!node) return
@@ -24,7 +65,6 @@ export default function PhysicsField({ items }) {
     Matter.Composite.add(engine.world, drag)
 
     const handleTouchMove = (e) => {
-      // Only prevent native page scroll if the user is actively dragging a physics body
       if (drag.constraint.bodyB && e.cancelable) {
         e.preventDefault()
       }
@@ -114,6 +154,7 @@ export default function PhysicsField({ items }) {
     build()
 
     const constrainDragAndFloor = () => {
+      if (escapedStateRef.current !== 'inside_card') return
       const { width, height } = node.getBoundingClientRect()
       const compactLayout = width <= 720
       if (drag.constraint.bodyB) {
@@ -140,67 +181,393 @@ export default function PhysicsField({ items }) {
 
     let frame
     const tick = () => {
-      Matter.Engine.update(engine, 1000 / 60)
-      const { width, height } = node.getBoundingClientRect()
-      const compactLayout = width <= 720
-      bodies.current.forEach((body) => {
-        const el = body.plugin.el
-        const halfH = (el?.offsetHeight || (compactLayout ? 55 : 98)) / 2
-        const halfW = (el?.offsetWidth || (compactLayout ? 46 : 82)) / 2
-        const maxY = height - halfH - 2
-        if (body.position.y > maxY) {
-          Matter.Body.setPosition(body, { x: body.position.x, y: maxY })
-          if (body.velocity.y > 0) {
-            Matter.Body.setVelocity(body, { x: body.velocity.x, y: 0 })
+      if (escapedStateRef.current === 'inside_card') {
+        Matter.Engine.update(engine, 1000 / 60)
+        const { width, height } = node.getBoundingClientRect()
+        const compactLayout = width <= 720
+        bodies.current.forEach((body) => {
+          const el = body.plugin.el
+          const halfH = (el?.offsetHeight || (compactLayout ? 55 : 98)) / 2
+          const halfW = (el?.offsetWidth || (compactLayout ? 46 : 82)) / 2
+          const maxY = height - halfH - 2
+          if (body.position.y > maxY) {
+            Matter.Body.setPosition(body, { x: body.position.x, y: maxY })
+            if (body.velocity.y > 0) {
+              Matter.Body.setVelocity(body, { x: body.velocity.x, y: 0 })
+            }
           }
-        }
-        if (body.position.x < halfW) {
-          Matter.Body.setPosition(body, { x: halfW, y: body.position.y })
-          if (body.velocity.x < 0) {
-            Matter.Body.setVelocity(body, { x: 0, y: body.velocity.y })
+          if (body.position.x < halfW) {
+            Matter.Body.setPosition(body, { x: halfW, y: body.position.y })
+            if (body.velocity.x < 0) {
+              Matter.Body.setVelocity(body, { x: 0, y: body.velocity.y })
+            }
+          } else if (body.position.x > width - halfW) {
+            Matter.Body.setPosition(body, { x: width - halfW, y: body.position.y })
+            if (body.velocity.x > 0) {
+              Matter.Body.setVelocity(body, { x: 0, y: body.velocity.y })
+            }
           }
-        } else if (body.position.x > width - halfW) {
-          Matter.Body.setPosition(body, { x: width - halfW, y: body.position.y })
-          if (body.velocity.x > 0) {
-            Matter.Body.setVelocity(body, { x: 0, y: body.velocity.y })
+          if (el) {
+            el.style.transform = `translate3d(${body.position.x - el.offsetWidth / 2}px, ${body.position.y - el.offsetHeight / 2}px, 0) rotate(${body.angle}rad)`
           }
-        }
-        if (el) {
-          el.style.transform = `translate3d(${body.position.x - el.offsetWidth / 2}px, ${body.position.y - el.offsetHeight / 2}px, 0) rotate(${body.angle}rad)`
-        }
-      })
+        })
+      }
       frame = requestAnimationFrame(tick)
     }
     frame = requestAnimationFrame(tick)
     const resize = new ResizeObserver(build)
     resize.observe(node)
-    const shake = () => bodies.current.forEach((body) => {
-      Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 24, y: -(8 + Math.random() * 15) })
-      Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.3)
-    })
-    const setGravity = (event) => {
-      gravityEnabled.current = Boolean(event.detail?.enabled)
-      engine.gravity.y = gravityEnabled.current ? (node.clientWidth <= 720 ? 0.8 : 1.05) : 0
+
+    // =========================================================================
+    // ESCAPE AND RETURN CHOREOGRAPHY
+    // =========================================================================
+
+    // Trigger 1: Escape from card and fall into footer
+    const triggerEscapeToFooter = () => {
+      if (escapedStateRef.current !== 'inside_card') return
+      escapedStateRef.current = 'falling_to_footer'
+      setIsEscaped(true)
+
+      // Get footer and field positions in page coordinates
+      const footer = document.getElementById('contact') || document.querySelector('footer')
+      const fieldRect = node.getBoundingClientRect()
+      const fieldPageLeft = fieldRect.left + window.scrollX
+      const fieldPageTop = fieldRect.top + window.scrollY
+
+      const footerRect = footer ? footer.getBoundingClientRect() : { left: 0, top: fieldRect.bottom + 200, width: fieldRect.width, height: 400 }
+      const footerPageLeft = footerRect.left + window.scrollX
+      const footerPageTop = footerRect.top + window.scrollY
+      const footerHeight = footer ? footer.offsetHeight : 450
+      const footerFloorY = footerPageTop + footerHeight - 95
+
+      // Stop matter constraint
+      if (mouseConstraint.current) mouseConstraint.current.constraint.bodyB = null
+
+      // Wait a tick for portal nodes to mount
+      requestAnimationFrame(() => {
+        const portalNodes = document.querySelectorAll('.physics-portal-lamp')
+        if (!portalNodes.length) return
+
+        portalNodes.forEach((lampEl, i) => {
+          const body = bodies.current[i]
+          const startX = body ? fieldPageLeft + body.position.x - 41 : fieldPageLeft + 50
+          const startY = body ? fieldPageTop + body.position.y - 49 : fieldPageTop + 50
+          const startAngle = body ? (body.angle * 180) / Math.PI : 0
+
+          // Calculate destination scattered in the footer
+          const targetX = footerPageLeft + 60 + ((i + 0.5) / items.length) * (footerRect.width - 120) + (Math.random() - 0.5) * 50
+          const targetY = footerFloorY - (Math.random() * 50 + 15)
+          const targetAngle = (Math.random() - 0.5) * 65
+
+          // Set starting position
+          gsap.set(lampEl, {
+            x: startX,
+            y: startY,
+            rotation: startAngle,
+            opacity: 1,
+            filter: 'blur(0px)',
+            scale: 1,
+          })
+
+          // Downward tumble arc into footer
+          const midY = startY + (targetY - startY) * 0.35 - (Math.random() * 60 + 20)
+          const midX = startX + (targetX - startX) * 0.4 + (Math.random() - 0.5) * 60
+
+          const tl = gsap.timeline({
+            delay: i * 0.032,
+            onComplete: () => {
+              if (i === items.length - 1) {
+                escapedStateRef.current = 'in_footer'
+              }
+            },
+          })
+
+          tl.to(lampEl, {
+            x: midX,
+            y: midY,
+            rotation: startAngle + (Math.random() - 0.5) * 120,
+            duration: 0.35,
+            ease: 'power1.out',
+          }).to(lampEl, {
+            x: targetX,
+            y: targetY,
+            rotation: targetAngle,
+            duration: 0.85 + Math.random() * 0.3,
+            ease: 'bounce.out',
+          })
+
+          floatingTweensRef.current.push(tl)
+        })
+      })
     }
-    window.addEventListener('reference-physics-shake', shake)
-    window.addEventListener('reference-physics-gravity', setGravity)
+
+    // Trigger 2: Float from footer to top of hero (staggered pairs)
+    const triggerFloatToTop = () => {
+      // Kill any previous tweens
+      floatingTweensRef.current.forEach((t) => t?.kill?.())
+      floatingTweensRef.current = []
+
+      escapedStateRef.current = 'floating_to_top'
+      const portalNodes = document.querySelectorAll('.physics-portal-lamp')
+      if (!portalNodes.length) return
+
+      portalNodes.forEach((lampEl, i) => {
+        // Cadence:
+        // 1 lamp moves, after 1 second the next lamp moves (2 lamps)
+        // Wait 2 seconds (3 seconds total per pair cycle)
+        // Then move 2 lamps one by one after a second, and so on:
+        const pairIndex = Math.floor(i / 2)
+        const isSecondInPair = i % 2 === 1
+        const launchDelay = pairIndex * 3 + (isSecondInPair ? 1 : 0)
+
+        const startX = gsap.getProperty(lampEl, 'x') || (window.innerWidth / 2)
+        const swayAmp = 25 + Math.random() * 35
+        const swayDuration = 2.4 + Math.random() * 1.2
+
+        // Main upward floating tween
+        const floatDuration = 14 + Math.random() * 4 // slow and graceful
+        const floatTween = gsap.to(lampEl, {
+          y: -180, // floats above the hero section
+          duration: floatDuration,
+          delay: launchDelay,
+          ease: 'power1.inOut',
+          onStart: () => {
+            // Swaying horizontal motion while floating
+            const swayTween = gsap.to(lampEl, {
+              x: startX + swayAmp,
+              duration: swayDuration,
+              repeat: -1,
+              yoyo: true,
+              ease: 'sine.inOut',
+            })
+            floatingTweensRef.current.push(swayTween)
+          },
+          onUpdate: function () {
+            // When crossing above hero (y <= 240px), fade and blur smoothly out
+            const currentY = gsap.getProperty(lampEl, 'y')
+            if (currentY <= 240) {
+              const blurProgress = Math.min(1, Math.max(0, (240 - currentY) / 360))
+              gsap.set(lampEl, {
+                filter: `blur(${blurProgress * 16}px)`,
+                opacity: 1 - blurProgress,
+                scale: 1 + blurProgress * 0.15,
+              })
+            }
+          },
+          onComplete: () => {
+            gsap.set(lampEl, { opacity: 0, filter: 'blur(16px)' })
+          },
+        })
+
+        floatingTweensRef.current.push(floatTween)
+      })
+    }
+
+    // Trigger 3: Fall back down from wherever to Physics Card (when gravity turns ON)
+    const triggerFallBackToCard = () => {
+      // Kill all floating tweens
+      floatingTweensRef.current.forEach((t) => t?.kill?.())
+      floatingTweensRef.current = []
+
+      escapedStateRef.current = 'returning_to_card'
+      const portalNodes = document.querySelectorAll('.physics-portal-lamp')
+      if (!portalNodes.length) {
+        escapedStateRef.current = 'inside_card'
+        setIsEscaped(false)
+        return
+      }
+
+      const fieldRect = node.getBoundingClientRect()
+      const fieldPageLeft = fieldRect.left + window.scrollX
+      const fieldPageTop = fieldRect.top + window.scrollY
+      const fieldW = fieldRect.width
+      const fieldH = fieldRect.height
+
+      let finishedCount = 0
+
+      portalNodes.forEach((lampEl, i) => {
+        // Reset appearance if it was blurred out
+        gsap.set(lampEl, { opacity: 1, filter: 'blur(0px)', scale: 1 })
+
+        const targetX = fieldPageLeft + 45 + Math.random() * (fieldW - 90)
+        const targetY = fieldPageTop + 30 + Math.random() * (fieldH - 80)
+        const targetAngle = (Math.random() - 0.5) * 40
+
+        gsap.to(lampEl, {
+          x: targetX,
+          y: targetY,
+          rotation: targetAngle,
+          duration: 0.95 + Math.random() * 0.35,
+          delay: Math.random() * 0.12,
+          ease: 'power2.in',
+          onComplete: () => {
+            finishedCount++
+            // Place Matter.js body back in card at landing point
+            const body = bodies.current[i]
+            if (body) {
+              Matter.Body.setPosition(body, {
+                x: targetX - fieldPageLeft,
+                y: targetY - fieldPageTop,
+              })
+              Matter.Body.setVelocity(body, {
+                x: (Math.random() - 0.5) * 6,
+                y: 4 + Math.random() * 6,
+              })
+              Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.2)
+            }
+
+            if (finishedCount === portalNodes.length) {
+              escapedStateRef.current = 'inside_card'
+              setIsEscaped(false)
+              insideShakeClicksRef.current = 0
+              outsideShakeClicksRef.current = 0
+            }
+          },
+        })
+      })
+    }
+
+    // Trigger 4: Swoop back to card on 2 shake clicks when outside
+    const triggerReturnToCard = () => {
+      // Kill all floating tweens
+      floatingTweensRef.current.forEach((t) => t?.kill?.())
+      floatingTweensRef.current = []
+
+      escapedStateRef.current = 'returning_to_card'
+      const portalNodes = document.querySelectorAll('.physics-portal-lamp')
+      if (!portalNodes.length) {
+        escapedStateRef.current = 'inside_card'
+        setIsEscaped(false)
+        return
+      }
+
+      const fieldRect = node.getBoundingClientRect()
+      const fieldPageLeft = fieldRect.left + window.scrollX
+      const fieldPageTop = fieldRect.top + window.scrollY
+      const fieldW = fieldRect.width
+      const fieldH = fieldRect.height
+
+      let finishedCount = 0
+
+      portalNodes.forEach((lampEl, i) => {
+        gsap.set(lampEl, { opacity: 1, filter: 'blur(0px)', scale: 1 })
+
+        const targetX = fieldPageLeft + 45 + Math.random() * (fieldW - 90)
+        const targetY = fieldPageTop + 30 + Math.random() * (fieldH - 80)
+        const targetAngle = (Math.random() - 0.5) * 40
+
+        gsap.to(lampEl, {
+          x: targetX,
+          y: targetY,
+          rotation: targetAngle,
+          duration: 1.1 + Math.random() * 0.25,
+          delay: i * 0.025,
+          ease: 'power3.out',
+          onComplete: () => {
+            finishedCount++
+            const body = bodies.current[i]
+            if (body) {
+              Matter.Body.setPosition(body, {
+                x: targetX - fieldPageLeft,
+                y: targetY - fieldPageTop,
+              })
+              Matter.Body.setVelocity(body, {
+                x: (Math.random() - 0.5) * 4,
+                y: (Math.random() - 0.5) * 4,
+              })
+            }
+
+            if (finishedCount === portalNodes.length) {
+              escapedStateRef.current = 'inside_card'
+              setIsEscaped(false)
+              insideShakeClicksRef.current = 0
+              outsideShakeClicksRef.current = 0
+            }
+          },
+        })
+      })
+    }
+
+    // Shake event dispatcher listener
+    const handleShake = () => {
+      if (escapedStateRef.current === 'inside_card') {
+        // Normal in-card shake
+        bodies.current.forEach((body) => {
+          Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 24, y: -(8 + Math.random() * 15) })
+          Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.3)
+        })
+
+        // Track clicks towards 3
+        insideShakeClicksRef.current += 1
+        if (insideShakeTimerRef.current) clearTimeout(insideShakeTimerRef.current)
+        insideShakeTimerRef.current = setTimeout(() => {
+          insideShakeClicksRef.current = 0
+        }, 3500)
+
+        if (insideShakeClicksRef.current >= 3) {
+          insideShakeClicksRef.current = 0
+          if (insideShakeTimerRef.current) clearTimeout(insideShakeTimerRef.current)
+          if (gravityEnabled.current) {
+            triggerEscapeToFooter()
+          }
+        }
+      } else {
+        // Outside of physics card: Track clicks towards 2 to return
+        outsideShakeClicksRef.current += 1
+        if (outsideShakeTimerRef.current) clearTimeout(outsideShakeTimerRef.current)
+        outsideShakeTimerRef.current = setTimeout(() => {
+          outsideShakeClicksRef.current = 0
+        }, 3500)
+
+        if (outsideShakeClicksRef.current >= 2) {
+          outsideShakeClicksRef.current = 0
+          if (outsideShakeTimerRef.current) clearTimeout(outsideShakeTimerRef.current)
+          triggerReturnToCard()
+        }
+      }
+    }
+
+    // Gravity event dispatcher listener
+    const handleGravity = (event) => {
+      const enabled = Boolean(event.detail?.enabled)
+      gravityEnabled.current = enabled
+      engine.gravity.y = enabled ? (node.clientWidth <= 720 ? 0.8 : 1.05) : 0
+
+      if (escapedStateRef.current === 'in_footer' && !enabled) {
+        // Gravity turned OFF while in footer -> Float to top!
+        triggerFloatToTop()
+      } else if (escapedStateRef.current === 'floating_to_top' && enabled) {
+        // Gravity turned ON while floating -> Fall back to Physics Card!
+        triggerFallBackToCard()
+      } else if (escapedStateRef.current === 'falling_to_footer' && !enabled) {
+        // Gravity turned OFF mid-fall -> Float to top
+        triggerFloatToTop()
+      }
+    }
+
+    window.addEventListener('reference-physics-shake', handleShake)
+    window.addEventListener('reference-physics-gravity', handleGravity)
+
     return () => {
       cancelAnimationFrame(frame)
       resize.disconnect()
       Matter.Events.off(engine, 'beforeUpdate', constrainDragAndFloor)
       node.removeEventListener('touchmove', handleTouchMove)
-      window.removeEventListener('reference-physics-shake', shake)
-      window.removeEventListener('reference-physics-gravity', setGravity)
+      window.removeEventListener('reference-physics-shake', handleShake)
+      window.removeEventListener('reference-physics-gravity', handleGravity)
       Matter.Engine.clear(engine)
       Matter.Composite.clear(engine.world)
       bodies.current = []
       mouseConstraint.current = null
     }
   }, [items])
+
   const nudge = (event) => {
+    if (isEscaped) return
     if (event.pointerType === 'touch') return
     if (mouseConstraint.current?.constraint?.bodyB) return
-    const bounds = field.current.getBoundingClientRect()
+    const bounds = field.current?.getBoundingClientRect()
+    if (!bounds) return
     const x = event.clientX - bounds.left
     const y = event.clientY - bounds.top
     bodies.current.forEach((body) => {
@@ -212,14 +579,17 @@ export default function PhysicsField({ items }) {
       }
     })
   }
+
   const startGesture = (event, tech) => {
     gesture.current = { id: tech.id, x: event.clientX, y: event.clientY, moved: false }
   }
+
   const trackGesture = (event, tech) => {
     const current = gesture.current
     if (!current || current.id !== tech.id) return
     if (Math.hypot(event.clientX - current.x, event.clientY - current.y) > 8) current.moved = true
   }
+
   const suppressDragClick = (event, tech) => {
     if (gesture.current?.id === tech.id && gesture.current.moved) {
       event.preventDefault()
@@ -227,11 +597,64 @@ export default function PhysicsField({ items }) {
     }
     gesture.current = null
   }
-  return <div className="physics-field-viewport">
-    <div className="physics-field" ref={field} style={{ '--physics-field-height': '460px' }} onPointerMove={nudge} aria-label="Interactive physics field of technology icons">
-      <span className="physics-corner">A TOOLBOX, IN MOTION</span>
-      {items.map((tech, index) => <span className="physics-item" key={tech.id} data-physics-item style={{ '--item-index': index }} onPointerDown={(event) => startGesture(event, tech)} onPointerMove={(event) => trackGesture(event, tech)} onClickCapture={(event) => suppressDragClick(event, tech)} onPointerCancel={() => { gesture.current = null }}><TechLamp tech={tech} compact className="!rounded-none border-0 bg-transparent shadow-none" /></span>)}
-      <span className="physics-floor">DRAG TO DROP · CLICK TO OPEN</span>
+
+  return (
+    <div className="physics-field-viewport">
+      <div
+        className="physics-field"
+        ref={field}
+        style={{ '--physics-field-height': '460px' }}
+        onPointerMove={nudge}
+        aria-label="Interactive physics field of technology icons"
+      >
+        <span className="physics-corner">A TOOLBOX, IN MOTION</span>
+        {items.map((tech, index) => (
+          <span
+            className="physics-item"
+            key={tech.id}
+            data-physics-item
+            style={{
+              '--item-index': index,
+              opacity: isEscaped ? 0 : 1,
+              pointerEvents: isEscaped ? 'none' : 'auto',
+              transition: 'opacity 0.2s',
+            }}
+            onPointerDown={(event) => startGesture(event, tech)}
+            onPointerMove={(event) => trackGesture(event, tech)}
+            onClickCapture={(event) => suppressDragClick(event, tech)}
+            onPointerCancel={() => {
+              gesture.current = null
+            }}
+          >
+            <TechLamp tech={tech} compact className="!rounded-none border-0 bg-transparent shadow-none" />
+          </span>
+        ))}
+        <span className="physics-floor">
+          {isEscaped ? 'CLICK SHAKE TWICE TO RECALL LAMPS' : 'DRAG TO DROP · CLICK TO OPEN'}
+        </span>
+      </div>
+
+      {/* Full-Page Escaped Lamps Portal */}
+      {isEscaped && portalTarget && createPortal(
+        <div className="physics-escaped-layer pointer-events-none absolute inset-0 z-[9999]" aria-hidden="true">
+          {items.map((tech) => (
+            <div
+              key={tech.id}
+              className="physics-portal-lamp absolute left-0 top-0 will-change-transform pointer-events-auto"
+              style={{
+                transform: 'translate3d(-999px, -999px, 0)',
+              }}
+            >
+              <TechLamp
+                tech={tech}
+                compact
+                className="drop-shadow-[0_14px_28px_rgba(0,0,0,0.65)] hover:scale-110 transition-transform cursor-pointer"
+              />
+            </div>
+          ))}
+        </div>,
+        portalTarget
+      )}
     </div>
-  </div>
+  )
 }

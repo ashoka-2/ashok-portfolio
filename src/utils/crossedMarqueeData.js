@@ -91,15 +91,15 @@ export const defaultBackMarqueeItems = [
 // ============================================================================
 export const crossedMarqueeConfig = {
   // Angle of the crossing bands in degrees (front band tilts +tilt, back band tilts -tilt)
-  tilt: 3,
+  tilt: 2,
 
   // Seconds for the front band to travel one full loop (back band is 22% slower for natural parallax)
-  duration: 42,
+  duration: 100,
   backDurationMultiplier: 1.22,
 
   // Scroll reaction physics
   reactToScroll: true,           // Burst forward when scrolling down, reverse when scrolling up
-  scrollBurstMultiplier: 0.18,    // Acceleration sensitivity to wheel/page scroll
+  scrollBurstMultiplier: 0.20,    // Acceleration sensitivity to wheel/page scroll
   scrollDecayFriction: 0.93,     // Friction damping factor returning to cruise speed (0.90 = quick settle, 0.96 = glide longer)
   maxScrollVelocity: 16,         // Velocity ceiling to prevent visual vertigo
 

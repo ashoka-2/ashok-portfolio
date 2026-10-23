@@ -77,33 +77,59 @@ void main(){
 
 /* Venom face painted on 3D model surface (head-local coords) */
 const FACE_GLSL = /* glsl */ `
+float symFeat = 0.0;
 {
-  vec3 d3=vLP-uHC;float lat=dot(d3,vec3(-uFw.y,0.,uFw.x));float fo=dot(vON,vec3(uFw.x,0.,uFw.y));
-  float gf=uFace*uFace*(3.-2.*uFace);float fmk=smoothstep(.12,.45,fo)*step(.001,uFace);
-  float l=lat/uHS;float vy=(vLP.y-uEyeY)/uHS;
+  vec3 fd3 = vLP - uHC;
+  float lat = dot(fd3, vec3(-uFw.y, 0.0, uFw.x));
+  float fo  = dot(vON, vec3(uFw.x, 0.0, uFw.y));
+  float gf  = uFace * uFace * (3.0 - 2.0 * uFace);
+  float fmk = smoothstep(0.12, 0.45, fo) * step(0.001, uFace);
+  float fl  = lat / uHS;
+  float vy  = (vLP.y - uEyeY) / uHS;
 
   /* eyes: big slanted almonds, sharp at both tips */
-  vec2 eq=vec2(abs(l)-.5,vy-.04);float ca=.87,sa=.5;
-  vec2 r=vec2(eq.x*ca+eq.y*sa,-eq.x*sa+eq.y*ca)/.47;r.x/=(.6+.4*gf);
-  float xx=clamp(r.x,-1.,1.);
-  float hh=.43*pow(max(1.-pow(abs(xx),1.7),0.),.8)*(1.+.28*xx);
-  float de=max(abs(r.y)-hh*gf,abs(r.x)-1.02);float eye=(1.-smoothstep(-.05,.07,de))*smoothstep(.0,.15,gf);
+  vec2 eq = vec2(abs(fl) - 0.5, vy - 0.04);
+  float eca = 0.87, esa = 0.5;
+  vec2 er = vec2(eq.x * eca + eq.y * esa, -eq.x * esa + eq.y * eca) / 0.47;
+  er.x /= (0.6 + 0.4 * gf);
+  float exx = clamp(er.x, -1.0, 1.0);
+  float ehh = 0.43 * pow(max(1.0 - pow(abs(exx), 1.7), 0.0), 0.8) * (1.0 + 0.28 * exx);
+  float ede = max(abs(er.y) - ehh * gf, abs(er.x) - 1.02);
+  float eye = (1.0 - smoothstep(-0.05, 0.07, ede)) * smoothstep(0.0, 0.15, gf);
 
   /* mouth: huge curved grin */
-  float yy=vy+1.0;float cyL=.36*l*l-.06;float op=.07+.27*gf*(.3+.7*uOpen);
-  float o2=op*pow(max(1.-l*l/1.3,0.),.55);float yU=cyL+o2,yL=cyL-o2;
+  float myy = vy + 1.0;
+  float cyL = 0.36 * fl * fl - 0.06;
+  float mop = 0.07 + 0.27 * gf * (0.3 + 0.7 * uOpen);
+  float mo2 = mop * pow(max(1.0 - fl * fl / 1.3, 0.0), 0.55);
+  float yU  = cyL + mo2, yL = cyL - mo2;
 
-  /* two interlocking rows of jagged teeth, with fangs */
-  float fU=l*4.4,fL=l*4.4+.5;float cU=floor(fU),cL=floor(fL);
-  float tU=1.-2.*abs(fract(fU)-.5),tL=1.-2.*abs(fract(fL)-.5);
-  float hU=fract(sin(cU*12.9898)*43758.5453),hL=fract(sin((cL+7.3)*12.9898)*43758.5453);
-  float tb=.2*gf*smoothstep(.0,.3,o2);float fang=exp(-pow((abs(l)-.36)/.1,2.));
-  float lenU=tb*(.7+.7*hU)*(1.+1.1*fang),lenL=tb*(.6+.6*hL)*(1.+.5*fang);
-  float dU=max((yU-yy)-lenU*tU,yy-yU),dL=max((yy-yL)-lenL*tL,yL-yy);
-  float teeth=max(1.-smoothstep(-.02,.025,dU),1.-smoothstep(-.02,.025,dL))*step(abs(l),1.15)*smoothstep(.1,.5,gf)*1.;
+  /* teeth: two interlocking rows, irregular sizes, fangs */
+  float fU = fl * 4.4, fL2 = fl * 4.4 + 0.5;
+  float cU = floor(fU), cL = floor(fL2);
+  float tU = 1.0 - 2.0 * abs(fract(fU) - 0.5);
+  float tL = 1.0 - 2.0 * abs(fract(fL2) - 0.5);
+  float hU = fract(sin(cU * 12.9898) * 43758.5453);
+  float hL = fract(sin((cL + 7.3) * 12.9898) * 43758.5453);
+  float tb  = 0.2 * gf * smoothstep(0.0, 0.3, mo2);
+  float fng = exp(-pow((abs(fl) - 0.36) / 0.1, 2.0));
+  float lnU = tb * (0.7 + 0.7 * hU) * (1.0 + 1.1 * fng);
+  float lnL = tb * (0.6 + 0.6 * hL) * (1.0 + 0.5 * fng);
+  float dU  = max((yU - myy) - lnU * tU, myy - yU);
+  float dL  = max((myy - yL) - lnL * tL, yL - myy);
+  float teeth = max(1.0 - smoothstep(-0.02, 0.025, dU),
+                    1.0 - smoothstep(-0.02, 0.025, dL))
+              * step(abs(fl), 1.15) * smoothstep(0.1, 0.5, gf);
 
-  float feat=clamp(eye+teeth,0.,1.)*fmk*(1.+.04*sin(uT*2.5));
-  if(uMode>.5)outgoingLight=vec3(feat,0.,0.);
+  symFeat = clamp(eye + teeth, 0.0, 1.0) * fmk * (1.0 + 0.04 * sin(uT * 2.5));
+}
+`
+
+const MASK_OUT_GLSL = /* glsl */ `
+if (uMode > 0.5) {
+  gl_FragColor = vec4(symFeat, 0.0, 0.0, step(0.02, diffuseColor.a));
+} else if (uFace > 0.001) {
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.012, 0.013, 0.018), clamp(uFace * 1.5, 0.0, 0.95));
 }
 `
 
@@ -165,7 +191,7 @@ export default function HeroModelCanvas({ interactionRef }) {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 
     /* Three.js 3D Scene */
-    const renderer = new THREE.WebGLRenderer({ canvas: g3, alpha: true, antialias: true })
+    const renderer = new THREE.WebGLRenderer({ canvas: g3, alpha: true, antialias: true, preserveDrawingBuffer: true })
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.setClearColor(0x000000, 0)
 
@@ -217,7 +243,7 @@ export default function HeroModelCanvas({ interactionRef }) {
     const pivot = new THREE.Group()
     scene.add(pivot)
 
-    let W = 1, H = 1, dpr = 1, S = 1, cx = 0, cy = 0, hl = 0, rad = 0, btnY = 0, baseY = -0.08, modelScale = 2.8
+    let W = 1, H = 1, dpr = 1, visH = 1, S = 1, cx = 0, cy = 0, hl = 0, rad = 0, btnY = 0, baseY = -0.08, modelScale = 2.8
     const cB = document.createElement('canvas')
     const cx2 = cB.getContext('2d')
     let mw = 1, mh = 1
@@ -236,48 +262,38 @@ export default function HeroModelCanvas({ interactionRef }) {
     const HEADC = SI.uHC.value
 
     function patch(m) {
-      const next = m.clone()
-      if ('metalness' in next) next.metalness = 0.3
-      if ('roughness' in next) next.roughness = Math.min(next.roughness ?? 0.7, 0.48)
-      if ('envMapIntensity' in next) next.envMapIntensity = 1.15
-      next.userData.symbioteBaseRoughness = next.roughness
+      if ('metalness' in m) {
+        m.userData.baseMetalness = 0.3
+        m.metalness = 0.3
+      }
+      if ('roughness' in m) {
+        m.userData.baseRoughness = Math.min(m.roughness ?? 0.7, 0.48)
+        m.roughness = m.userData.baseRoughness
+      }
+      if ('envMapIntensity' in m) m.envMapIntensity = 1.15
 
-      next.onBeforeCompile = function (s) {
+      m.onBeforeCompile = function (s) {
         for (const k in SI) s.uniforms[k] = SI[k]
         s.vertexShader = s.vertexShader
-          .replace('#include <common>', '#include <common>\nvarying vec3 vLP;varying vec3 vON;varying vec3 vSymbioteWorldPosition;')
+          .replace('#include <common>', '#include <common>\nvarying vec3 vLP;varying vec3 vON;')
           .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nvON=objectNormal;')
-          .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLP=transformed;\nvSymbioteWorldPosition=(modelMatrix*vec4(transformed,1.0)).xyz;')
+          .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLP=transformed;')
         s.fragmentShader = s.fragmentShader
-          .replace('#include <common>', '#include <common>\nvarying vec3 vLP;varying vec3 vON;varying vec3 vSymbioteWorldPosition;uniform float uFace,uT,uHS,uEyeY,uMode,uOpen;uniform vec3 uHC;uniform vec2 uFw;')
-          .replace('#include <color_fragment>', `#include <color_fragment>
-            if (uMode < 0.5 && uFace > 0.001) {
-              float symNoise = sin(vSymbioteWorldPosition.x * 9.3 + sin(vSymbioteWorldPosition.y * 7.1)) * sin(vSymbioteWorldPosition.z * 8.7 + vSymbioteWorldPosition.y * 3.7);
-              float symEdge = smoothstep(-0.34, 0.18, uFace * 1.75 - symNoise * 0.24 - 0.9);
-              diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.008, 0.011, 0.018), symEdge * 0.98);
-            }
-          `)
-          .replace('#include <output_fragment>', `
-            if (uMode < 0.5 && uFace > 0.001) {
-              float symNoise = sin(vSymbioteWorldPosition.x * 9.3 + sin(vSymbioteWorldPosition.y * 7.1)) * sin(vSymbioteWorldPosition.z * 8.7 + vSymbioteWorldPosition.y * 3.7);
-              float symEdge = smoothstep(-0.34, 0.18, uFace * 1.75 - symNoise * 0.24 - 0.9);
-              float symRim = pow(1.0 - abs(dot(normalize(normal), normalize(vViewPosition))), 3.2) * symEdge;
-              outgoingLight += vec3(0.19, 0.25, 0.33) * symRim * 0.75;
-              outgoingLight += vec3(0.34, 0.38, 0.46) * pow(max(0.0, symNoise), 14.0) * symEdge * 0.22;
-            }
-            ${FACE_GLSL}
-            #include <output_fragment>
-          `)
+          .replace('#include <common>', `#include <common>
+varying vec3 vLP;varying vec3 vON;
+uniform float uFace,uT,uHS,uEyeY,uMode,uOpen;
+uniform vec3 uHC;uniform vec2 uFw;`)
+          .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FACE_GLSL)
+          .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + MASK_OUT_GLSL)
       }
-      next.customProgramCacheKey = function () { return 'venomface-metallic-v8' }
-      next.needsUpdate = true
-      return next
+      m.customProgramCacheKey = function () { return 'venomface-r186-v7' }
+      m.needsUpdate = true
     }
 
     let model = null
     const chestL = new THREE.Vector3()
     const FW = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    let fwdI = 0, yaw0 = -Math.PI / 2, MH = 1, MTOP = 0
+    let fwdI = 0, yaw0 = -Math.PI / 2, sc = 1, MH = 1, MTOP = 0
     const tmp = new THREE.Vector3()
     const chestW = new THREE.Vector3()
 
@@ -302,7 +318,8 @@ export default function HeroModelCanvas({ interactionRef }) {
           n.receiveShadow = false
           n.geometry.computeBoundingBox()
           box.union(n.geometry.boundingBox)
-          n.material = Array.isArray(n.material) ? n.material.map(patch) : patch(n.material)
+          const materials = Array.isArray(n.material) ? n.material : [n.material]
+          materials.forEach(patch)
         }
       })
       const c = box.getCenter(new THREE.Vector3())
@@ -321,9 +338,14 @@ export default function HeroModelCanvas({ interactionRef }) {
       MTOP = box.max.y
       applyDims()
       chestL.set(c.x, box.max.y - 0.27 * Hh, c.z)
+      root.position.set(-c.x, -c.y, -c.z)
 
-      pivot.add(root)
-      model = root
+      const g = new THREE.Group()
+      g.add(root)
+      pivot.add(g)
+      model = g
+      sc = 2.3 / Hh
+      pivot.scale.setScalar(sc)
       applyFace()
       layout()
     }
@@ -342,12 +364,13 @@ export default function HeroModelCanvas({ interactionRef }) {
       renderer.setSize(W, H, false)
 
       cam.aspect = W / H
-      cam.fov = 35
-      cam.position.set(0, 0, 5.6)
+      const ffr = Math.min(0.80, 1.25 * W / H)
+      const d = 2.3 / (ffr * 2 * Math.tan((cam.fov * Math.PI) / 360))
+      cam.position.set(0, 0, d)
       cam.updateProjectionMatrix()
 
-      modelScale = W < 760 ? 2 : W < 1024 ? 2.4 : 2.8
-      baseY = W < 760 ? 0.16 : W < 1024 ? 0.02 : -0.08
+      visH = 2 * d * Math.tan((cam.fov * Math.PI) / 360)
+      baseY = (0.5 - 0.44) * visH
       pivot.position.y = baseY
 
       /* Measure real button */
@@ -537,23 +560,26 @@ export default function HeroModelCanvas({ interactionRef }) {
         pivot.rotation.set(pitchU + pitchF, yaw0 + yawU + yawF, 0)
         const floatY = reduce ? 0 : Math.sin(time * 0.7) * 0.045
         pivot.position.set(lean, baseY + floatY + Math.sin(time * 1.7) * 0.025 * inf, 0)
-        pivot.scale.setScalar(modelScale * (1 + 0.012 * inf * Math.sin(time * 2.3) + 0.05 * roar))
+        pivot.scale.setScalar(sc * (1 + 0.012 * inf * Math.sin(time * 2.3) + 0.05 * roar))
         pivot.updateMatrixWorld(true)
 
-        if (inf > 0.001) {
-          model.traverse((n) => {
-            if (!n.isMesh) return
-            const mats = Array.isArray(n.material) ? n.material : [n.material]
-            for (const m of mats) {
-              if (m?.userData?.symbioteBaseRoughness !== undefined) {
-                m.roughness = THREE.MathUtils.lerp(m.userData.symbioteBaseRoughness, 0.09, inf)
-              }
+        model.traverse((n) => {
+          if (!n.isMesh) return
+          const mats = Array.isArray(n.material) ? n.material : [n.material]
+          for (const m of mats) {
+            if ('metalness' in m) {
+              const baseM = m.userData.baseMetalness ?? 0.3
+              m.metalness = THREE.MathUtils.lerp(baseM, 0.0, inf)
             }
-          })
-        }
+            if ('roughness' in m) {
+              const baseR = m.userData.baseRoughness ?? 0.48
+              m.roughness = THREE.MathUtils.lerp(baseR, 0.08, inf)
+            }
+          }
+        })
 
         chestW.copy(chestL)
-        model.localToWorld(chestW)
+        model.children[0].localToWorld(chestW)
         tmp.copy(chestW).project(cam)
         chestS.x = (tmp.x * 0.5 + 0.5) * W
         chestS.y = (-tmp.y * 0.5 + 0.5) * H

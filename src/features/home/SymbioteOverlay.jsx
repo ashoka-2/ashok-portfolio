@@ -170,6 +170,8 @@ const rnd = (s) => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return 
 
 export default function SymbioteOverlay({ buttonRef, heroRef, active = true, invalidateRef }) {
   const canvasRef = useRef(null)
+  const activeRef = useRef(active)
+  useEffect(() => { activeRef.current = active }, [active])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -240,22 +242,26 @@ export default function SymbioteOverlay({ buttonRef, heroRef, active = true, inv
     /* Layout state in hero-local coords */
     let W = 1, H = 1, dpr = 1, S = 1, cx = 0, cy = 0, hl = 0, rad = 0
 
-    const layout = () => {
+    /* Called EVERY frame, so scroll / sticky / parallax / smooth-scroll can never desync the liquid */
+    const measure = () => {
       const rect = heroEl.getBoundingClientRect()
-      W = rect.width
-      H = rect.height
+      const k = rect.width > 0 ? W / rect.width : 1 // undo any CSS scale
+      const bRect = buttonEl.getBoundingClientRect()
+      cx = (bRect.left - rect.left + bRect.width / 2) * k
+      cy = (bRect.top - rect.top + bRect.height / 2) * k
+      hl = Math.max(0, (bRect.width - bRect.height) / 2) * k
+      rad = (bRect.height / 2) * k
+      S = Math.min(1, (bRect.width * k) / 180)
+    }
+
+    const layout = () => {
+      W = heroEl.clientWidth || 1
+      H = heroEl.clientHeight || 1
       dpr = Math.min(window.devicePixelRatio || 1, 1.75)
       canvas.width = Math.round(W * dpr)
       canvas.height = Math.round(H * dpr)
       gl.viewport(0, 0, canvas.width, canvas.height)
-
-      /* Measure trigger button */
-      const bRect = buttonEl.getBoundingClientRect()
-      cx = bRect.left - rect.left + bRect.width / 2
-      cy = bRect.top - rect.top + bRect.height / 2
-      hl = Math.max(0, (bRect.width - bRect.height) / 2)
-      rad = bRect.height / 2
-      S = Math.min(1, bRect.width / 180)
+      measure()
     }
 
     const resizeObserver = new ResizeObserver(layout)
@@ -373,11 +379,13 @@ export default function SymbioteOverlay({ buttonRef, heroRef, active = true, inv
     /* Pointer input listeners */
     const updatePointer = (e) => {
       const rect = heroEl.getBoundingClientRect()
-      P.x = e.clientX - rect.left
-      P.y = e.clientY - rect.top
-      if (!P.inW) { P.sx = P.x; P.sy = P.y }
-      P.inW = true
-      symbioteStore.state.pointerInside = true
+      const k = rect.width > 0 ? W / rect.width : 1
+      P.x = (e.clientX - rect.left) * k
+      P.y = (e.clientY - rect.top) * k
+      const inside = P.x >= 0 && P.x <= W && P.y >= 0 && P.y <= H
+      if (!P.inW && inside) { P.sx = P.x; P.sy = P.y }
+      P.inW = inside
+      symbioteStore.state.pointerInside = inside
       symbioteStore.state.pointerX = P.x
       symbioteStore.state.pointerY = P.y
     }
@@ -438,7 +446,7 @@ export default function SymbioteOverlay({ buttonRef, heroRef, active = true, inv
     window.addEventListener('pointermove', onPointerMove, { passive: true })
     window.addEventListener('pointerdown', onPointerDown, { passive: true })
     window.addEventListener('pointerup', onPointerUp, { passive: true })
-    heroEl.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('mouseleave', onPointerLeave)
     buttonEl.addEventListener('click', onButtonClick)
 
     /* Physics & Sequence Step */
@@ -777,7 +785,8 @@ export default function SymbioteOverlay({ buttonRef, heroRef, active = true, inv
 
     function frame(now) {
       rafId = requestAnimationFrame(frame)
-      if (document.hidden) { last = now; return }
+      if (document.hidden || !activeRef.current) { last = now; return }
+      measure()
       const dt = Math.min(0.032, Math.max(0.001, (now - last) / 1000))
       last = now
       el += dt
@@ -860,14 +869,14 @@ export default function SymbioteOverlay({ buttonRef, heroRef, active = true, inv
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('pointerup', onPointerUp)
-      heroEl.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('mouseleave', onPointerLeave)
       buttonEl.removeEventListener('click', onButtonClick)
 
       gl.deleteTexture(tex)
       gl.deleteProgram(prog)
       symbioteStore.reset()
     }
-  }, [buttonRef, heroRef, active, invalidateRef])
+  }, [buttonRef, heroRef, invalidateRef])
 
   return <canvas ref={canvasRef} className="symbiote-overlay" aria-hidden="true" />
 }

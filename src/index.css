@@ -1473,3 +1473,65 @@ body::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
+
+/* =========================================================================
+   Physics Escaped Tech Lamps Glowing Aura & Floating Effects
+   ========================================================================= */
+
+@keyframes pulse-lamp-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 18px var(--lamp-color, #38bdf8))
+            drop-shadow(0 0 38px color-mix(in srgb, var(--lamp-color, #38bdf8) 70%, transparent))
+            drop-shadow(0 0 70px color-mix(in srgb, var(--lamp-color, #38bdf8) 40%, transparent));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px var(--lamp-color, #38bdf8))
+            drop-shadow(0 0 54px color-mix(in srgb, var(--lamp-color, #38bdf8) 85%, transparent))
+            drop-shadow(0 0 95px color-mix(in srgb, var(--lamp-color, #38bdf8) 55%, transparent));
+  }
+}
+
+@keyframes pulse-inner-logo-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px #ffffff)
+            drop-shadow(0 0 18px var(--lamp-color, #38bdf8))
+            brightness(1.4);
+  }
+  50% {
+    filter: drop-shadow(0 0 14px #ffffff)
+            drop-shadow(0 0 28px var(--lamp-color, #38bdf8))
+            brightness(1.65);
+  }
+}
+
+.physics-portal-lamp {
+  transition: filter 0.5s ease-out;
+}
+
+.physics-portal-lamp.lamp-floating-glow {
+  animation: pulse-lamp-glow 3.2s ease-in-out infinite;
+  z-index: 9999;
+}
+
+.physics-portal-lamp.lamp-floating-glow .tech-lamp-art {
+  opacity: 1 !important;
+  filter: brightness(1.4) drop-shadow(0 0 16px var(--lamp-color, #38bdf8));
+  transition: filter 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.physics-portal-lamp.lamp-floating-glow .tech-lamp-logo {
+  animation: pulse-inner-logo-glow 2.8s ease-in-out infinite;
+  transform: translate(-50%, -50%) scale(1.08) !important;
+  transition: transform 0.4s ease-out;
+}
+
+.physics-portal-lamp.lamp-floating-glow .tech-lamp-logo svg,
+.physics-portal-lamp.lamp-floating-glow .tech-lamp-logo img {
+  filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px var(--lamp-color, #38bdf8));
+}
+
+.physics-portal-lamp.lamp-floating-glow .lamp-glow-halo {
+  opacity: 0.85;
+  transform: translate(-50%, -50%) scale(1.2);
+}
+

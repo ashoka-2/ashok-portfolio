@@ -153,11 +153,15 @@ export default function CrossedMarquee({
     const backTrack = backTrackRef.current
     if (!frontTrack) return
 
+    // Base loop speeds (% per second)
+    const baseSpeedFront = 100 / Math.max(duration, 10)
+    const baseSpeedBack = 100 / Math.max(duration * crossedMarqueeConfig.backDurationMultiplier, 10)
+
     // Position state tracked in percentage
     let frontXPercent = 0
     let backXPercent = -50
 
-    // Persistent direction: -1 = Right to Left, +1 = Left to Right (towards right side)
+    // Persistent direction: -1 = Right to Left (scroll down), +1 = Left to Right (scroll up)
     let currentDir = -1
     let scrollBoost = 0
     let currentSpeed = -baseSpeedFront
@@ -191,10 +195,6 @@ export default function CrossedMarquee({
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-
-    // Base loop speeds (% per second)
-    const baseSpeedFront = 100 / Math.max(duration, 10)
-    const baseSpeedBack = 100 / Math.max(duration * crossedMarqueeConfig.backDurationMultiplier, 10)
 
     // Ticker callback
     const tick = (time, deltaTime) => {

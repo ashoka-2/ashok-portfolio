@@ -831,6 +831,7 @@ uniform vec3 uHC;uniform vec2 uFw;`)
         const bsc = (0.86 + 0.14 * bs) * (1 - 0.035 * cl(P.down && !venom && ph !== 'idle' ? 1 : 0, 0, 1) * bl)
         backplate.style.opacity = cl(bl * 1.5, 0, 1).toFixed(3)
         backplate.style.transform = 'scale(' + bsc.toFixed(3) + ')'
+        buttonEl.classList.toggle('backplate-active', bl > 0.4)
       }
     }
 

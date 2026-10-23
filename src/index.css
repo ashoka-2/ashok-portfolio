@@ -611,6 +611,25 @@ body {
 .ref-button:active {
   transform: scale(0.97);
 }
+.ref-button-inner {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+  line-height: 1;
+}
+
+.ref-button-inner > svg,
+.ref-button svg {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
 .ref-primary {
   background: var(--accent);
   color: #fff;
@@ -634,27 +653,49 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background: linear-gradient(180deg, #5c9cff 0%, #2f6bff 55%, #1f4fe0 100%);
-  border: 1.5px solid #a9ccff;
+  background: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent-hover) 35%, transparent);
   box-shadow:
-    0 12px 28px -6px rgba(47, 107, 255, 0.55),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -8px 14px rgba(10, 40, 160, 0.35);
+    0 10px 26px -6px color-mix(in srgb, var(--accent) 55%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
   opacity: 0;
   transform: scale(0.86);
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
+  overflow: hidden;
   will-change: transform, opacity;
-  transition: filter 0.2s ease;
+  transition: filter 0.25s ease, transform 0.25s ease;
+}
+.symbiote-backplate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--text-primary);
+  transform: translateY(102%);
+  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+  z-index: 1;
 }
 .symbiote-trigger:hover .symbiote-backplate {
-  filter: brightness(1.12) saturate(1.1);
+  filter: brightness(1.08) saturate(1.05);
+}
+.symbiote-trigger.backplate-active:hover .symbiote-backplate::before {
+  transform: none;
 }
 .symbiote-label {
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
   will-change: transform, opacity;
+  transition: color 0.25s ease;
+}
+.symbiote-trigger.backplate-active:hover .symbiote-label {
+  color: var(--base-bg);
 }
 .symbiote-trigger.ref-primary::before {
   content: none;

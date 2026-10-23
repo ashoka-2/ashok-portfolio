@@ -9,7 +9,7 @@ export default function Button({ children, to, href, kind = 'primary', className
   const content = (
     <>
       {isSymbiote && <span className="symbiote-backplate" aria-hidden="true" />}
-      <span className={isSymbiote ? 'symbiote-label' : undefined}>{children}</span>
+      <span className={`ref-button-inner ${isSymbiote ? 'symbiote-label' : ''}`.trim()}>{children}</span>
     </>
   )
   if (to) return <Link className={classes} to={to} {...props}>{content}</Link>

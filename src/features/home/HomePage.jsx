@@ -114,7 +114,7 @@ export default function HomePage() {
           </div>
           <div className="ref-hero-actions grid justify-items-end gap-[14px] max-[999px]:justify-items-center max-[999px]:gap-[10px]">
             <div className="ref-meta flex flex-wrap justify-end gap-2 max-[999px]:justify-center">{hero.meta.map((item) => <span className="inline-flex min-h-[34px] items-center rounded-full border border-border-default bg-[color-mix(in_srgb,var(--base-bg)_64%,transparent)] px-[13px] font-display text-[13px] font-normal text-text-primary backdrop-blur-lg max-[520px]:min-h-[31px] max-[520px]:px-[10px] max-[520px]:text-xs" key={item}>{item}</span>)}</div>
-            <div className="ref-cta-row flex flex-wrap justify-end gap-2 max-[999px]:justify-center max-[520px]:gap-2"><Button href="#work" kind="primary">{hero.primaryAction} <ArrowDown size={16} /></Button><Button href="#contact" kind="secondary">{hero.secondaryAction} <ArrowUpRight size={16} /></Button></div>
+            <div className="ref-cta-row flex flex-wrap justify-end gap-2 max-[999px]:justify-center max-[520px]:gap-2"><Button href="#work" kind="primary" className="symbiote-trigger">{hero.primaryAction} <ArrowDown size={16} /></Button><Button href="#contact" kind="secondary">{hero.secondaryAction} <ArrowUpRight size={16} /></Button></div>
           </div>
         </div>
       </div>

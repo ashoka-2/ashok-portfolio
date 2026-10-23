@@ -1,9 +1,11 @@
 import { Component, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Float, Html, useGLTF } from '@react-three/drei'
+import * as THREE from 'three'
 import { portfolioAssets } from '../../lib/assets.js'
+import SymbioteWebGL from './SymbioteWebGL.jsx'
 
-function Model({ drag, motion }) {
+function Model({ drag, motion, infectionRef, characterRef }) {
   const { scene } = useGLTF(portfolioAssets.models.hero)
   const size = useThree((state) => state.size)
   const invalidate = useThree((state) => state.invalidate)
@@ -19,6 +21,27 @@ function Model({ drag, motion }) {
         if ('metalness' in next) next.metalness = 0.3
         if ('roughness' in next) next.roughness = Math.min(next.roughness ?? 0.7, 0.48)
         if ('envMapIntensity' in next) next.envMapIntensity = 1.15
+        next.userData.symbioteBaseRoughness = next.roughness
+        next.userData.symbioteUniform = { value: 0 }
+        next.onBeforeCompile = (shader) => {
+          shader.uniforms.uSymbioteInfection = next.userData.symbioteUniform
+          shader.vertexShader = shader.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying vec3 vSymbioteWorldPosition;')
+            .replace('#include <begin_vertex>', '#include <begin_vertex>\nvSymbioteWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;')
+          shader.fragmentShader = shader.fragmentShader
+            .replace('#include <common>', '#include <common>\nvarying vec3 vSymbioteWorldPosition;\nuniform float uSymbioteInfection;')
+            .replace('#include <color_fragment>', `#include <color_fragment>
+              float symNoise = sin(vSymbioteWorldPosition.x * 9.3 + sin(vSymbioteWorldPosition.y * 7.1)) * sin(vSymbioteWorldPosition.z * 8.7 + vSymbioteWorldPosition.y * 3.7);
+              float symEdge = smoothstep(-0.34, 0.18, uSymbioteInfection * 1.75 - symNoise * 0.24 - 0.9);
+              diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.008, 0.011, 0.018), symEdge * 0.98);
+              `)
+            .replace('#include <output_fragment>', `
+              float symRim = pow(1.0 - abs(dot(normalize(normal), normalize(vViewPosition))), 3.2) * symEdge;
+              outgoingLight += vec3(0.19, 0.25, 0.33) * symRim * 0.75;
+              outgoingLight += vec3(0.34, 0.38, 0.46) * pow(max(0.0, symNoise), 14.0) * symEdge * 0.22;
+              #include <output_fragment>
+            `)
+        }
         return next
       }
       node.material = Array.isArray(node.material) ? node.material.map(makeMetallic) : makeMetallic(node.material)
@@ -40,6 +63,25 @@ function Model({ drag, motion }) {
     const stillMoving = Math.abs(targetX - root.current.rotation.x) > 0.001
       || Math.abs(targetY - root.current.rotation.y) > 0.001
     if (stillMoving) invalidate()
+  })
+
+  useEffect(() => {
+    if (characterRef) characterRef.current = root.current
+    return () => { if (characterRef?.current === root.current) characterRef.current = null }
+  }, [characterRef])
+
+  useFrame((state, delta) => {
+    const amount = infectionRef?.current ?? 0
+    if (amount < 0.001) return
+    root.current?.traverse((node) => {
+      if (!node.isMesh) return
+      const materials = Array.isArray(node.material) ? node.material : [node.material]
+      for (const material of materials) {
+        if (!material?.userData?.symbioteUniform) continue
+        material.userData.symbioteUniform.value = amount
+        material.roughness = THREE.MathUtils.lerp(material.userData.symbioteBaseRoughness ?? 0.48, 0.09, amount)
+      }
+    })
   })
 
   return (
@@ -67,6 +109,10 @@ class ModelErrorBoundary extends Component {
 export default function HeroModelCanvas({ interactionRef }) {
   const wrapper = useRef(null)
   const invalidateRef = useRef(null)
+  const buttonRef = useRef(null)
+  const hostAreaRef = useRef(null)
+  const modelRef = useRef(null)
+  const infectionRef = useRef(0)
   const drag = useRef({ active: false, pointerId: null, lastX: 0, lastY: 0, yaw: 0, pitch: 0 })
   const [visible, setVisible] = useState(false)
   const [pageVisible, setPageVisible] = useState(() => document.visibilityState === 'visible')
@@ -104,6 +150,7 @@ export default function HeroModelCanvas({ interactionRef }) {
 
   useEffect(() => {
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
+    buttonRef.current = document.querySelector('.symbiote-trigger')
     const aimFromPointer = (event) => {
       if (drag.current.active || event.pointerType === 'touch') return
       const bounds = wrapper.current?.getBoundingClientRect()
@@ -186,6 +233,7 @@ export default function HeroModelCanvas({ interactionRef }) {
   return (
     <>
       <div className="hero-model-canvas absolute inset-0 z-[3] pointer-events-none" ref={wrapper}>
+        <SymbioteWebGL buttonRef={buttonRef} hostRef={hostAreaRef} infectionRef={infectionRef} />
         <ModelErrorBoundary>
           <Canvas onCreated={onCanvasCreated} dpr={[1, 1.35]} frameloop={!rendering ? 'never' : reduceMotion ? 'demand' : 'always'} camera={{ position: [0, 0, 5.6], fov: 35 }} gl={{ alpha: true, antialias: false, powerPreference: 'low-power' }}>
             <ambientLight intensity={1.2} />
@@ -194,13 +242,14 @@ export default function HeroModelCanvas({ interactionRef }) {
             <pointLight position={[0, -1.5, 2]} intensity={0.8} distance={5} color={lights.deepRose} />
             <pointLight position={[2, 1, -2]} intensity={1.3} distance={6} color={lights.warm} />
             <Suspense fallback={<Html center><span className="hero-model-loading">LOADING 3D PORTRAIT</span></Html>}>
-              <Model drag={drag} motion={!reduceMotion} />
+              <Model drag={drag} motion={!reduceMotion} infectionRef={infectionRef} characterRef={modelRef} />
             </Suspense>
           </Canvas>
         </ModelErrorBoundary>
       </div>
       <div
         className="hero-model-hit-area absolute z-[4] top-[9%] left-1/2 h-[67%] w-[min(58vw,560px)] -translate-x-1/2 outline-none cursor-grab active:cursor-grabbing touch-none pointer-events-auto max-[520px]:top-[17%] max-[520px]:h-[55%] max-[520px]:w-[min(90vw,440px)] min-[521px]:max-[820px]:top-[12%] min-[521px]:max-[820px]:h-[62%] min-[521px]:max-[820px]:w-[min(76vw,620px)] min-[821px]:max-[999px]:top-[12%] min-[821px]:max-[999px]:h-[58%] min-[821px]:max-[999px]:w-[min(58vw,520px)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--hero-light-rose)_78%,transparent)] focus-visible:-outline-offset-8 focus-visible:rounded-[45%]"
+        ref={hostAreaRef}
         role="button"
         tabIndex={0}
         aria-label="Drag to rotate Ashok’s 3D portrait, or use arrow keys"

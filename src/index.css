@@ -615,6 +615,32 @@ body {
   background: var(--accent);
   color: #fff;
 }
+.symbiote-trigger.ref-primary {
+  background: transparent;
+  border-color: transparent;
+  color: #fff;
+  transition: transform 0.25s var(--ref-ease), color 0.22s ease;
+}
+.symbiote-webgl-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.symbiote-trigger.ref-primary::before {
+  content: none;
+}
+.symbiote-trigger.ref-primary:hover {
+  color: #fff;
+  transform: translateY(-1px);
+}
+.symbiote-trigger.ref-primary:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text-primary) 55%, transparent);
+  outline-offset: 4px;
+}
 .ref-secondary {
   border-color: var(--border-default);
   background: color-mix(in srgb, var(--surface-1) 82%, transparent);

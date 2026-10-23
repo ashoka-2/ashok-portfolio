@@ -14,21 +14,7 @@ import { AboutBento, CapabilitiesSection, ProcessSection, ReferenceFAQ, Referenc
 
 const HeroModelCanvas = lazy(() => import('./HeroModelCanvas.jsx'))
 
-function Ribbon() {
-  const { ribbonPhrases } = homePageContent
-  return (
-    <div className="ref-ribbon relative z-[2] overflow-hidden py-3.5 border-y border-white/12 bg-accent text-white" aria-hidden="true">
-      <div className="ref-ribbon-track flex w-max items-center gap-8 animate-[ref-ribbon-move_32s_linear_infinite] whitespace-nowrap font-[var(--font-bold)] text-[clamp(18px,2.2vw,28px)] font-extrabold tracking-[-0.03em] uppercase">
-        {[...ribbonPhrases, ...ribbonPhrases, ...ribbonPhrases].map((phrase, index) => (
-          <span key={`${phrase}-${index}`} className="flex items-center gap-8">
-            {phrase}
-            <i className="w-2 h-2 rounded-full bg-[#f5e8da]" />
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
+import CrossedMarquee from '../../components/motion/CrossedMarquee.jsx'
 
 export default function HomePage() {
   const heroRef = useRef(null)
@@ -121,7 +107,7 @@ export default function HomePage() {
       <span className="ref-hero-hint pointer-events-none absolute z-[6] bottom-[22px] left-1/2 -translate-x-1/2 font-mono text-[11px] leading-[1.3] tracking-[0.1em] text-text-tertiary uppercase max-[520px]:hidden">{hero.hint}</span>
     </header>
 
-    <Ribbon />
+    <CrossedMarquee />
     <AboutBento />
 
     <section className="section-wrap w-full relative z-[2] pt-[88px] pb-[96px] bg-base-bg max-[820px]:py-[68px]" id="work">

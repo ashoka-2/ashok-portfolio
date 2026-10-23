@@ -15,6 +15,7 @@ import { AboutBento, CapabilitiesSection, ProcessSection, ReferenceFAQ, Referenc
 const HeroModelCanvas = lazy(() => import('./HeroModelCanvas.jsx'))
 
 import CrossedMarquee from '../../components/motion/CrossedMarquee.jsx'
+import SectionBlend from '../../components/layout/SectionBlend.jsx'
 
 export default function HomePage() {
   const heroRef = useRef(null)
@@ -71,11 +72,11 @@ export default function HomePage() {
       onPointerLeave={handleHeroPointerLeave}
     >
       <div className="ref-hero-glow absolute z-0 left-1/2 top-[42%] w-[min(58vw,720px)] aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,var(--hero-glow),var(--hero-glow-soft)_42%,transparent_72%)] blur-[20px]" aria-hidden="true" />
+      {/* Film grain noise ONLY on the background and glow, placed strictly behind the 3D character and Venom */}
+      <div className="ref-hero-grain pointer-events-none absolute inset-0 z-0 bg-[url('/images/grain-noise.png')] bg-repeat [background-size:140px_140px] opacity-[0.14] mix-blend-overlay [data-theme=light]:opacity-[0.08] [data-theme=light]:mix-blend-multiply" aria-hidden="true" />
       <h1 className="ref-sr">{hero.title}</h1>
       <HeroFur />
       <Suspense fallback={<div className="ref-model-loading absolute inset-0 grid place-items-center text-text-tertiary font-mono text-xs leading-[1.4] tracking-[0.1em] uppercase">Loading interactive portrait…</div>}><HeroModelCanvas interactionRef={heroInteractionRef} /></Suspense>
-      {/* Film grain noise overlay over hero canvas and background */}
-      <div className="ref-hero-grain pointer-events-none absolute inset-0 z-[4] bg-[url('/images/grain-noise.png')] bg-repeat [background-size:140px_140px] opacity-[0.16] mix-blend-overlay [data-theme=light]:opacity-[0.09] [data-theme=light]:mix-blend-multiply" aria-hidden="true" />
       {hero.stickers.map((sticker, index) => {
         const stickerStyles = [
           'left-[7%] top-[30%] max-[820px]:left-[4%] max-[820px]:top-[20%] -rotate-8 bg-[color-mix(in_srgb,var(--text-primary)_95%,transparent)] text-base-bg',
@@ -105,10 +106,14 @@ export default function HomePage() {
         </div>
       </div>
       <span className="ref-hero-hint pointer-events-none absolute z-[6] bottom-[22px] left-1/2 -translate-x-1/2 font-mono text-[11px] leading-[1.3] tracking-[0.1em] text-text-tertiary uppercase max-[520px]:hidden">{hero.hint}</span>
+      {/* Seamless bottom fade into base-bg so hero background dissolves smoothly */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 sm:h-36 z-[3] bg-gradient-to-b from-transparent via-[color-mix(in_srgb,var(--base-bg)_70%,transparent)] to-base-bg" aria-hidden="true" />
     </header>
 
     <CrossedMarquee />
+    <SectionBlend />
     <AboutBento />
+    <SectionBlend />
 
     <section className="section-wrap w-full relative z-[2] pt-[88px] pb-[96px] bg-base-bg max-[820px]:py-[68px]" id="work">
       <div className="mx-auto w-full max-w-[1360px] px-page-gutter">
@@ -126,9 +131,14 @@ export default function HomePage() {
       </div>
     </section>
 
+    <SectionBlend />
     <ProcessSection />
+    <SectionBlend />
     <CapabilitiesSection />
+    <SectionBlend />
     <ReferenceFAQ />
+    <SectionBlend />
     <ReferencePhysics><PhysicsField items={techStack} /></ReferencePhysics>
+    <SectionBlend />
   </div>
 }

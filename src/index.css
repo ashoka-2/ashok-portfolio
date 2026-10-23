@@ -521,6 +521,20 @@ body {
       color-mix(in srgb, var(--accent-amber) 10%, transparent),
       transparent 70%
     );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black clamp(60px, 12vw, 130px),
+    black calc(100% - clamp(60px, 12vw, 130px)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black clamp(60px, 12vw, 130px),
+    black calc(100% - clamp(60px, 12vw, 130px)),
+    transparent 100%
+  );
 }
 .ref-section:nth-of-type(even)::before {
   background:
